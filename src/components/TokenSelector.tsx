@@ -78,7 +78,6 @@ const TokenSelector = ({
     if (foundToken) {
       tokens.unshift(foundToken);
     }
-    const selectedToken = tokens.find((token) => token.address === value);
 
     const balancesWithTotals = tokens?.map((token) => {
       const balance = balances?.find((b) => b.token === token.address);
@@ -96,7 +95,6 @@ const TokenSelector = ({
 
     //sort by costUsd
     balancesWithTotals.sort((a, b) => {
-      if (b?.address === selectedToken?.address) return 1e18;
       // @ts-expect-error typing is not recognized
       return (b.costUsd ?? 0) - (a.costUsd ?? 0);
     });
@@ -137,10 +135,10 @@ const TokenSelector = ({
       </SelectTrigger>
 
       <SelectContent
+        portalled={true}
         portalRef={containerRef}
         position={"fixed"}
         width={"420px"}
-        overflow={"hidden"}
       >
         <Flex
           w={"full"}
@@ -150,6 +148,7 @@ const TokenSelector = ({
           marginY={2}
         >
           <Text fontSize={"lg"}>Select a token</Text>
+
           <Input
             autoFocus
             outline={"none"}

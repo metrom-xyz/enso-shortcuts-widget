@@ -1,8 +1,10 @@
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
+import {useMemo} from "react";
 import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { isAddress } from "@/util";
+import {Token} from "@/util/common";
 
 const ENSO_API_KEY = import.meta.env.VITE_ENSO_API_KEY as string;
 const ensoClient = new EnsoClient({
@@ -74,4 +76,34 @@ export const useEnsoBalances = () => {
       ensoClient.getBalances({ useEoa: true, chainId, eoaAddress: address }),
     enabled: !!address,
   });
+};
+
+ const useEnsoTokenDetails = (address: Address) => {
+  const chainId = useChainId();
+
+  return useQuery({
+    queryKey: ["enso-token-details", address, chainId],
+    queryFn: () =>
+      ensoClient.getTokenData({ address, chainId, includeMetadata: true }),
+    enabled: isAddress(address),
+  });
+};
+
+export const useEnsoToken = (address: Address) => {
+  const { data } = useEnsoTokenDetails(address);
+
+  const token: Token = useMemo(() => {
+    if (!data?.data?.length) return null;
+    const ensoToken = data.data[0];
+
+    return {
+      address: ensoToken.address,
+      symbol: ensoToken.symbol,
+      name: ensoToken.name,
+      decimals: ensoToken.decimals,
+      logoURI: ensoToken.logosUri[0],
+    };
+  }, [data]);
+
+  return token;
 };

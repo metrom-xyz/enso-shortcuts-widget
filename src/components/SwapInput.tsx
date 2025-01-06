@@ -5,7 +5,6 @@ import { formatNumber, normalizeValue } from "@/util";
 import { useTokenFromList } from "@/util/common";
 import { useTokenBalance } from "@/util/wallet";
 import { Address } from "@/types";
-import {useEnsoBalances} from "@/util/enso";
 
 //TODO: set default USDC address
 const SwapInput = ({
@@ -28,12 +27,10 @@ const SwapInput = ({
   const { address } = useAccount();
   const balance = useTokenBalance(tokenValue);
   const tokenInInfo = useTokenFromList(tokenValue);
-  const { data: balances } = useEnsoBalances();
 
-  console.log(balances);
   const balanceValue = balance?.toString() ?? "0.0";
 
-  const notEnoughBalance = +balanceValue < +inputValue;
+  const notEnoughBalance = +balanceValue < +inputValue && !disabled;
 
   return (
     <Flex align="space-between" mb={4}>
@@ -45,7 +42,7 @@ const SwapInput = ({
         align="center"
         flex={1}
       >
-        <Flex flexDirection="column">
+        <Flex flexDirection="column" alignItems={"flex-start"}>
           <TokenSelector
             containerRef={containerRef}
             value={tokenValue}

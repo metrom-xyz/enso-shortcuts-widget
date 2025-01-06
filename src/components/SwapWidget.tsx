@@ -1,9 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { arbitrum, base, mainnet } from "viem/chains";
-import { useEnsoApprove, useEnsoQuote } from "@/util/enso";
+import { useEnsoApprove, useEnsoQuote, useEnsoToken } from "@/util/enso";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Flex, Link, Text } from "@chakra-ui/react";
-import { useTokenFromList } from "@/util/common";
 import { denormalizeValue, formatNumber, normalizeValue } from "@/util";
 import SwapInput from "@/components/SwapInput";
 import { Button } from "@/components/ui/button";
@@ -17,15 +16,19 @@ const USDC_ADDRESS: Record<number, Address> = {
 };
 
 const SwapWidget = () => {
-  const [tokenIn, setTokenIn] = useState<Address>(USDC_ADDRESS[base.id]);
+  const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
   const chainId = useChainId();
   const { address } = useAccount();
   const [tokenOut, setTokenOut] = useState<Address>();
   const { switchChain } = useSwitchChain();
 
-  const tokenInInfo = useTokenFromList(tokenIn);
-  const tokenOutInfo = useTokenFromList(tokenOut);
+  const tokenInInfo = useEnsoToken(tokenIn);
+  const tokenOutInfo = useEnsoToken(tokenOut);
+
+  useEffect(() => {
+    setTokenIn(USDC_ADDRESS[chainId]);
+  }, [chainId]);
 
   const amountIn = denormalizeValue(
     valueIn ? +valueIn : 0,
@@ -44,6 +47,7 @@ const SwapWidget = () => {
     normalizeValue(+quoteData?.amountOut, tokenOutInfo?.decimals),
     true,
   );
+
   const approveData = useEnsoApprove(tokenIn, amountIn);
   const approve = useApproveIfNecessary(
     tokenIn,
@@ -62,6 +66,8 @@ const SwapWidget = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const exchangeRate = +valueOut / +valueIn;
+
   return (
     <Flex
       flexDirection={"column"}
@@ -71,7 +77,9 @@ const SwapWidget = () => {
       ref={containerRef}
       overflow={"hidden"}
     >
-      <Text>You pay</Text>
+      <Flex>
+        <Text>You pay</Text>
+      </Flex>
       <SwapInput
         containerRef={containerRef}
         tokenValue={tokenIn}
@@ -80,7 +88,9 @@ const SwapWidget = () => {
         inputOnChange={setValueIn}
       />
 
-      <Text>You receive</Text>
+      <Flex>
+        <Text>You receive</Text>
+      </Flex>
       <SwapInput
         disabled
         loading={quoteLoading}
@@ -90,6 +100,13 @@ const SwapWidget = () => {
         inputValue={valueOut}
         inputOnChange={() => {}}
       />
+
+      <Flex justify="space-between" mb={10}>
+        <Text color="gray.500">
+          1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
+          {tokenOutInfo?.symbol}
+        </Text>
+      </Flex>
 
       <Flex w={"full"} gap={4}>
         {wrongChain ? (
@@ -117,7 +134,7 @@ const SwapWidget = () => {
           flex={1}
           variant={"outline"}
           // variant="solid"
-          // disabled={!!approve || wrongChain || !(+valueIn > 0)}
+          disabled={!!approve || wrongChain || !(+valueIn > 0)}
           // colorPalette={"gray"}
           loading={sendData.isLoading}
           onClick={sendData.send}
@@ -128,7 +145,10 @@ const SwapWidget = () => {
 
       <Flex h={"full"} flexDirection={"column"} justifyContent={"flex-end"}>
         <Text color={"gray.500"}>
-          Powered by <Link href={"https://www.enso.finance/"}>Enso</Link>
+          Powered by{" "}
+          <Link target={"_blank"} href={"https://www.enso.finance/"}>
+            Enso
+          </Link>
         </Text>
       </Flex>
     </Flex>

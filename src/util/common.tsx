@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { ETH_ADDRESS, ETH_TOKEN } from "@/constants";
-import {Address} from "@/types";
+import { ETH_ADDRESS, ETH_TOKEN, GECKO_CHAIN_NAMES } from "@/constants";
+import { Address } from "@/types";
+import { useChainId } from "wagmi";
 
 export type Token = {
   address: Address;
@@ -10,28 +11,44 @@ export type Token = {
   logoURI: string;
 };
 
-const getGeckoList = () =>
-  fetch("https://tokens.coingecko.com/base/all.json").then((res) => res.json());
+export const compareCaseInsensitive = (a: string, b: string) => {
+  return !!(a && b && a?.toLowerCase() === b?.toLowerCase());
+};
 
-const getOneInchTokenList = () =>
-  fetch("https://tokens.1inch.io/v1.2/8453").then((res) => res.json());
+const getGeckoList = (chainName: string) =>
+  fetch(`https://tokens.coingecko.com/${chainName}/all.json`)
+    .then((res) => res.json())
+    .then((data) => data?.tokens);
 
-export const useGeckoList = () =>
-  useQuery<{ tokens: Token[] } | undefined>({
-    queryKey: ["tokenList"],
-    queryFn: getGeckoList,
+const getOneInchTokenList = (chainId: number) =>
+  fetch("https://tokens.1inch.io/v1.2/" + chainId).then((res) => res.json());
+
+export const useGeckoList = () => {
+  const chainId = useChainId();
+  const chainName = GECKO_CHAIN_NAMES[chainId];
+
+  return useQuery<Token[] | undefined>({
+    queryKey: ["tokenList", chainName],
+    queryFn: () => getGeckoList(chainName),
+    enabled: !!chainName,
   });
+};
+export const useOneInchTokenList = () => {
+  const chainId = useChainId();
 
-export const useOneInchTokenList = () =>
-  useQuery<Record<string, Token> | undefined>({
-    queryKey: ["oneInchTokenList"],
-    queryFn: getOneInchTokenList,
+  return useQuery<Record<string, Token> | undefined>({
+    queryKey: ["oneInchTokenList", chainId],
+    queryFn: () => getOneInchTokenList(chainId),
+    enabled: !!chainId,
   });
+};
 
 export const useTokenFromList = (tokenAddress: Address) => {
   const { data } = useGeckoList();
 
   if (tokenAddress === ETH_ADDRESS) return ETH_TOKEN;
 
-  return data?.tokens.find((token) => token.address === tokenAddress);
+  return data?.find((token) =>
+    compareCaseInsensitive(token.address, tokenAddress),
+  );
 };

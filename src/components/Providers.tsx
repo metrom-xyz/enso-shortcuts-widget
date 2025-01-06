@@ -17,7 +17,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <Provider>{children}</Provider>
+          <Provider>
+            {children}
+          </Provider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

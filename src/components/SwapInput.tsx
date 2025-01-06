@@ -55,7 +55,7 @@ const SwapInput = ({
             whiteSpace={"nowrap"}
             visibility={address ? "visible" : "hidden"}
           >
-            Available:{" "}
+            Balance:{" "}
             {formatNumber(normalizeValue(+balance, tokenInInfo?.decimals))}{" "}
             {tokenInInfo?.symbol}
           </Text>

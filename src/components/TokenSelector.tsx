@@ -100,9 +100,7 @@ const TokenSelector = ({
     });
 
     return balancesWithTotals;
-  }, [balances, tokenMap, foundToken, value]);
-
-  console.log(tokenList);
+  }, [balances, tokenMap, foundToken]);
 
   const tokenOptions = useMemo(() => {
     const items = searchText

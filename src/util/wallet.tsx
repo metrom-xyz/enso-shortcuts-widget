@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   useReadContract,
   useAccount,
@@ -10,7 +10,6 @@ import {
   useChainId,
   UseSendTransactionReturnType,
   UseWriteContractReturnType,
-  useBlockNumber,
   useBalance,
 } from "wagmi";
 import { BaseError } from "viem";
@@ -21,7 +20,7 @@ import { useEnsoRouterData } from "./enso";
 import { RouteParams } from "@ensofinance/sdk";
 import { ETH_ADDRESS } from "@/constants";
 import { Address } from "@/types";
-import {formatNumber, normalizeValue} from "@/util/index";
+import { formatNumber, normalizeValue } from "@/util/index";
 
 enum TxState {
   Success,
@@ -33,6 +32,24 @@ const toastState: Record<TxState, "success" | "error" | "info"> = {
   [TxState.Success]: "success",
   [TxState.Failure]: "error",
   [TxState.Pending]: "info",
+};
+
+const useInterval = (callback: () => void, interval: number) => {
+  const savedCallback = useCallback(callback, []);
+
+  useEffect(() => {
+    const id = setInterval(savedCallback, interval);
+    return () => clearInterval(id);
+  }, [interval, savedCallback]);
+};
+const useChangingIndex = () => {
+  const [index, setIndex] = useState(0);
+
+  useInterval(() => {
+    setIndex(index + 1);
+  }, 6000);
+
+  return index;
 };
 
 export const useErc20Balance = (tokenAddress: `0x${string}`) => {
@@ -60,7 +77,7 @@ export const useTokenBalance = (token: Address) => {
 export const useAllowance = (token: Address, spender: Address) => {
   const { address } = useAccount();
   const chainId = useChainId();
-  const blockNumber = useBlockNumber({ watch: true });
+  const index = useChangingIndex();
   const queryClient = useQueryClient();
   const { data, queryKey } = useReadContract({
     chainId,
@@ -73,7 +90,7 @@ export const useAllowance = (token: Address, spender: Address) => {
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey });
-  }, [blockNumber, queryClient, queryKey]);
+  }, [index, queryClient, queryKey]);
 
   return data?.toString() ?? "0";
 };

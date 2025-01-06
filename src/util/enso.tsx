@@ -1,10 +1,11 @@
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
-import { useQuery } from "@tanstack/react-query";
-import {useMemo} from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
 import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { isAddress } from "@/util";
-import {Token} from "@/util/common";
+import { Token } from "@/util/common";
 
 const ENSO_API_KEY = import.meta.env.VITE_ENSO_API_KEY as string;
 const ensoClient = new EnsoClient({
@@ -30,21 +31,28 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
 };
 
 export const useEnsoRouterData = (params: RouteParams) => {
-  return useQuery({
-    queryKey: [
+  const searchParams = useDebounce(
+    [
       "enso-router",
+      params.amountIn,
       params.chainId,
       params.fromAddress,
-      params.amountIn,
       params.tokenIn,
       params.tokenOut,
     ],
+    500,
+  );
+
+  return useQuery({
+    queryKey: searchParams,
     queryFn: () => ensoClient.getRouterData(params),
     enabled:
       +params.amountIn > 0 &&
       isAddress(params.fromAddress) &&
       isAddress(params.tokenIn) &&
       isAddress(params.tokenOut),
+    staleTime: 500,
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -78,7 +86,7 @@ export const useEnsoBalances = () => {
   });
 };
 
- const useEnsoTokenDetails = (address: Address) => {
+const useEnsoTokenDetails = (address: Address) => {
   const chainId = useChainId();
 
   return useQuery({

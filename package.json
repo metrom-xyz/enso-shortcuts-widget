@@ -15,6 +15,7 @@
     "@ensofinance/sdk": "^1.0.1",
     "@rainbow-me/rainbowkit": "^2.2.1",
     "@tanstack/react-query": "^5.62.10",
+    "@uidotdev/usehooks": "^2.4.1",
     "next-themes": "^0.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

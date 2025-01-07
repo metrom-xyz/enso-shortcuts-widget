@@ -15,7 +15,7 @@ import {
 import { BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTokenFromList } from "./common";
-import erc20Abi from "../../erc20Abi.json";
+import erc20Abi from "@/erc20Abi.json";
 import { useEnsoRouterData } from "./enso";
 import { RouteParams } from "@ensofinance/sdk";
 import { ETH_ADDRESS } from "@/constants";

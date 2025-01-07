@@ -7,11 +7,14 @@ import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { isAddress } from "@/util";
 import { Token } from "@/util/common";
 
-const ENSO_API_KEY = import.meta.env.VITE_ENSO_API_KEY as string;
-const ensoClient = new EnsoClient({
-  // baseURL: "http://localhost:3000/api/v1",
-  apiKey: ENSO_API_KEY,
-});
+let ensoClient;
+
+export const setApiKey = (apiKey: string) => {
+  ensoClient = new EnsoClient({
+    // baseURL: "http://localhost:3000/api/v1",
+    apiKey,
+  });
+};
 
 export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   const { address } = useAccount();

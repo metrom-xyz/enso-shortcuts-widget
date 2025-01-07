@@ -63,13 +63,15 @@ const TokenSelector = ({
   value,
   onChange,
   containerRef,
+  obligatedToken,
 }: {
   value: string;
   onChange: (value: string) => void;
   containerRef?: React.RefObject<HTMLDivElement>;
+  obligatedToken?: Address;
 }) => {
   const { data: tokenMap } = useOneInchTokenList();
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState(obligatedToken ?? "");
   const { data: balances } = useEnsoBalances();
   const foundToken = useEnsoToken(searchText as Address);
 
@@ -120,6 +122,7 @@ const TokenSelector = ({
 
   return (
     <SelectRoot
+      disabled={!!obligatedToken}
       collection={tokenOptions}
       value={[value]}
       onValueChange={({ value }) => onChange(value[0] as string)}
@@ -137,23 +140,24 @@ const TokenSelector = ({
         portalRef={containerRef}
         mt={"-5"}
         ml={"-5"}
-        width={"442px"}
+        width={"500px"}
       >
         <Flex
-          w={"full"}
           height={"350px"}
           flexDirection={"column"}
           gap={2}
           marginY={2}
+          p={1}
+          width={"100%"}
         >
           <Text fontSize={"lg"}>Select a token</Text>
 
           <Input
             autoFocus
-            outline={"none"}
+            // outline={"none"}
             placeholder="Search by name or paste address"
             value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={(e) => obligatedToken || setSearchText(e.target.value)}
           />
 
           <Box height={"300px"} overflow={"scroll"}>

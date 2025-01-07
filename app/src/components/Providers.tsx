@@ -3,7 +3,6 @@ import { base, mainnet, arbitrum } from "viem/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import React from "react";
-import { Provider } from "@/components/ui/provider";
 
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
@@ -16,11 +15,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-          <Provider>
-            {children}
-          </Provider>
-        </RainbowKitProvider>
+        <RainbowKitProvider>{children}</RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

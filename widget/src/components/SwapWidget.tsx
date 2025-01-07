@@ -3,6 +3,7 @@ import { arbitrum, base, mainnet } from "viem/chains";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Flex, Link, Text } from "@chakra-ui/react";
 import {
+  setApiKey,
   useEnsoApprove,
   useEnsoPrice,
   useEnsoQuote,
@@ -12,7 +13,7 @@ import { denormalizeValue, formatNumber, normalizeValue } from "@/util";
 import SwapInput from "@/components/SwapInput";
 import { Button } from "@/components/ui/button";
 import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
-import { Address } from "@/types";
+import { Address, WidgetProps } from "@/types";
 
 const USDC_ADDRESS: Record<number, Address> = {
   [mainnet.id]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -20,7 +21,7 @@ const USDC_ADDRESS: Record<number, Address> = {
   [base.id]: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
 };
 
-const SwapWidget = () => {
+const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
   const chainId = useChainId();
@@ -30,6 +31,12 @@ const SwapWidget = () => {
 
   const tokenInInfo = useEnsoToken(tokenIn);
   const tokenOutInfo = useEnsoToken(tokenOut);
+
+  // initialize client with key before it is used
+  useEffect(() => {
+    setApiKey(apiKey);
+    if (obligatedTokenOut) setTokenOut(obligatedTokenOut);
+  }, []);
 
   useEffect(() => {
     setTokenIn(USDC_ADDRESS[chainId]);
@@ -108,6 +115,7 @@ const SwapWidget = () => {
 
       <SwapInput
         disabled
+        obligatedToken={obligatedTokenOut}
         title={"You receive"}
         loading={quoteLoading}
         containerRef={containerRef}

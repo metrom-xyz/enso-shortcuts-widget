@@ -17,6 +17,7 @@ const SwapInput = ({
   loading,
   disabled,
   containerRef,
+  obligatedToken,
 }: {
   tokenValue: Address;
   tokenOnChange: (value: Address) => void;
@@ -27,6 +28,7 @@ const SwapInput = ({
   disabled?: boolean;
   loading?: boolean;
   containerRef?: React.RefObject<HTMLDivElement>;
+  obligatedToken?: Address;
 }) => {
   const { address } = useAccount();
   const balance = useTokenBalance(tokenValue);
@@ -53,12 +55,18 @@ const SwapInput = ({
           w={"100%"}
           pr={2}
         >
-          <Flex gridColumn={"span 2"} color={"gray.500"}>
+          <Flex
+            gridColumn={"span 2"}
+            color={"gray.500"}
+            fontSize={"sm"}
+            alignContent={"center"}
+          >
             {title}
           </Flex>
 
           <Flex height={"100%"} alignItems={"center"}>
             <TokenSelector
+              obligatedToken={obligatedToken}
               containerRef={containerRef}
               value={tokenValue}
               onChange={tokenOnChange}

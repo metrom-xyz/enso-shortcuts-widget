@@ -115,3 +115,13 @@ export const useEnsoToken = (address: Address) => {
 
   return token;
 };
+
+export const useEnsoPrice = (address: Address) => {
+  const chainId = useChainId();
+
+  return useQuery({
+    queryKey: ["enso-token-price", address, chainId],
+    queryFn: () => ensoClient.getPriceData({ address, chainId }),
+    enabled: chainId && isAddress(address),
+  });
+};

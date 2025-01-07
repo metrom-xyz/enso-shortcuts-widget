@@ -1,7 +1,7 @@
 import TokenSelector from "@/components/TokenSelector";
-import { chakra, Flex, Skeleton, Text } from "@chakra-ui/react";
+import { chakra, Flex, Grid, Skeleton, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
-import { formatNumber, normalizeValue } from "@/util";
+import { formatNumber, formatUSD, normalizeValue } from "@/util";
 import { useTokenFromList } from "@/util/common";
 import { useTokenBalance } from "@/util/wallet";
 import { Address } from "@/types";
@@ -12,6 +12,8 @@ const SwapInput = ({
   tokenOnChange,
   inputValue,
   inputOnChange,
+  usdValue,
+  title,
   loading,
   disabled,
   containerRef,
@@ -20,6 +22,8 @@ const SwapInput = ({
   tokenOnChange: (value: Address) => void;
   inputValue: string;
   inputOnChange: (value: string) => void;
+  title?: string;
+  usdValue?: number;
   disabled?: boolean;
   loading?: boolean;
   containerRef?: React.RefObject<HTMLDivElement>;
@@ -42,44 +46,65 @@ const SwapInput = ({
         align="center"
         flex={1}
       >
-        <Flex flexDirection="column" alignItems={"flex-start"}>
-          <TokenSelector
-            containerRef={containerRef}
-            value={tokenValue}
-            onChange={tokenOnChange}
-          />
-          <Text
-            color={notEnoughBalance ? "red" : "gray.500"}
-            fontSize="sm"
-            mb={1}
-            whiteSpace={"nowrap"}
-            visibility={address ? "visible" : "hidden"}
-          >
-            Balance:{" "}
-            {formatNumber(normalizeValue(+balance, tokenInInfo?.decimals))}{" "}
-            {tokenInInfo?.symbol}
-          </Text>
-        </Flex>
+        <Grid
+          gridTemplateRows="0.5fr 2fr 0.5fr"
+          gridTemplateColumns="1fr 2fr"
+          alignItems={"flex-start"}
+          w={"100%"}
+          pr={2}
+        >
+          <Flex gridColumn={"span 2"} color={"gray.500"}>
+            {title}
+          </Flex>
 
-        <Flex mr={5} w={"100%"}>
-          {loading ? (
-            <Flex justifyContent={"flex-end"} w={"100%"}>
-              <Skeleton h={"30px"} w={150} ml={5} />
-            </Flex>
-          ) : (
-            <chakra.input
-              disabled={disabled}
-              fontSize="xl"
-              border={"none"}
-              outline={"none"}
-              background={"transparent"}
-              placeholder="0.0"
-              textAlign="right"
-              value={inputValue}
-              onChange={(e) => inputOnChange(e.target.value)}
+          <Flex height={"100%"} alignItems={"center"}>
+            <TokenSelector
+              containerRef={containerRef}
+              value={tokenValue}
+              onChange={tokenOnChange}
             />
-          )}
-        </Flex>
+          </Flex>
+          <Flex
+            alignItems={"center"}
+            justifyContent={"flex-end"}
+            w={"100%"}
+            h={"100%"}
+          >
+            {loading ? (
+              <Skeleton h={"30px"} w={150} ml={5} />
+            ) : (
+              <chakra.input
+                disabled={disabled}
+                fontSize="xl"
+                border={"none"}
+                outline={"none"}
+                background={"transparent"}
+                placeholder="0.0"
+                textAlign="right"
+                value={inputValue}
+                onChange={(e) => inputOnChange(e.target.value)}
+              />
+            )}
+          </Flex>
+
+          <Flex>
+            <Text
+              color={notEnoughBalance ? "red" : "gray.500"}
+              fontSize="sm"
+              whiteSpace={"nowrap"}
+              visibility={address ? "visible" : "hidden"}
+            >
+              Balance:{" "}
+              {formatNumber(normalizeValue(+balance, tokenInInfo?.decimals))}{" "}
+              {tokenInInfo?.symbol}
+            </Text>
+          </Flex>
+          <Flex justifyContent={"flex-end"}>
+            {usdValue ? (
+              <Text color={"gray.500"}>~{formatUSD(usdValue)}</Text>
+            ) : null}
+          </Flex>
+        </Grid>
       </Flex>
     </Flex>
   );

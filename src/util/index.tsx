@@ -20,12 +20,20 @@ const formatter = Intl.NumberFormat("en", {
 const preciseFormatter = Intl.NumberFormat("en", {
   maximumFractionDigits: 6,
 });
+const usdFormatter = Intl.NumberFormat("en", {
+  style: "currency",
+  currency: "USD",
+});
 
 export const formatNumber = (value: number | string, precise?: boolean) => {
   const formatterToUse = precise ? preciseFormatter : formatter;
 
   return isNaN(+value) ? "0.0" : formatterToUse.format(+value);
 };
+
+export const formatUSD = (value: number | string) => {
+  return usdFormatter.format(+value);
+}
 
 export const isAddress = (address: string) =>
   /^0x[a-fA-F0-9]{40}$/.test(address);

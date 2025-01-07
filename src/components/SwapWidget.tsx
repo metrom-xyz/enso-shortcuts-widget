@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { arbitrum, base, mainnet } from "viem/chains";
-import { useEnsoApprove, useEnsoQuote, useEnsoToken } from "@/util/enso";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Flex, Link, Text } from "@chakra-ui/react";
+import {
+  useEnsoApprove,
+  useEnsoPrice,
+  useEnsoQuote,
+  useEnsoToken,
+} from "@/util/enso";
 import { denormalizeValue, formatNumber, normalizeValue } from "@/util";
 import SwapInput from "@/components/SwapInput";
 import { Button } from "@/components/ui/button";
@@ -68,6 +73,19 @@ const SwapWidget = () => {
 
   const exchangeRate = +valueOut / +valueIn;
 
+  const { data: inUsdPrice } = useEnsoPrice(tokenIn);
+  const { data: outUsdPrice } = useEnsoPrice(tokenOut);
+
+  const tokenInUsdPrice = +(inUsdPrice?.price ?? 0) * +valueIn;
+  const tokenOutUsdPrice =
+    +(outUsdPrice?.price ?? 0) *
+    +normalizeValue(+quoteData?.amountOut, tokenOutInfo?.decimals);
+  console.log(tokenInUsdPrice, tokenOutUsdPrice);
+  console.log(
+    "slippage: ",
+    (tokenInUsdPrice - tokenOutUsdPrice) / tokenInUsdPrice,
+  );
+  console.log(quoteData);
 
   return (
     <Flex
@@ -78,35 +96,38 @@ const SwapWidget = () => {
       ref={containerRef}
       overflow={"hidden"}
     >
-      <Flex>
-        <Text>You pay</Text>
-      </Flex>
       <SwapInput
+        title={"You pay"}
         containerRef={containerRef}
         tokenValue={tokenIn}
         tokenOnChange={setTokenIn}
         inputValue={valueIn}
         inputOnChange={setValueIn}
+        usdValue={tokenInUsdPrice}
       />
 
-      <Flex>
-        <Text>You receive</Text>
-      </Flex>
       <SwapInput
         disabled
+        title={"You receive"}
         loading={quoteLoading}
         containerRef={containerRef}
         tokenValue={tokenOut}
         tokenOnChange={setTokenOut}
         inputValue={valueOut}
         inputOnChange={() => {}}
+        usdValue={tokenOutUsdPrice}
       />
 
-      <Flex justify="space-between" mb={10}>
+      <Flex justify="space-between" mb={10} mt={-2}>
         <Text color="gray.500">
           1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
           {tokenOutInfo?.symbol}
         </Text>
+        {quoteData?.priceImpact && (
+          <Text color="gray.500">
+            Price impact: {(quoteData?.priceImpact / 1000).toFixed(2)}%
+          </Text>
+        )}
       </Flex>
 
       <Flex w={"full"} gap={4}>

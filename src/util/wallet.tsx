@@ -53,8 +53,8 @@ const useChangingIndex = () => {
 };
 
 export const useErc20Balance = (tokenAddress: `0x${string}`) => {
-  console.log(tokenAddress, "tokenAddress");
   const { address } = useAccount();
+
   return useReadContract({
     address: tokenAddress,
     abi: erc20Abi,
@@ -85,7 +85,6 @@ export const useAllowance = (token: Address, spender: Address) => {
     abi: erc20Abi,
     functionName: "allowance",
     args: [address, spender],
-    blockTag: "pending",
   });
 
   useEffect(() => {

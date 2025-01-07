@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { useChainId } from "wagmi";
 import { ETH_ADDRESS, ETH_TOKEN, GECKO_CHAIN_NAMES } from "@/constants";
 import { Address } from "@/types";
-import { useChainId } from "wagmi";
 
 export type Token = {
   address: Address;

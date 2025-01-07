@@ -133,14 +133,15 @@ const TokenSelector = ({
       </SelectTrigger>
 
       <SelectContent
-        portalled={true}
+        position={"absolute"}
         portalRef={containerRef}
-        position={"fixed"}
-        width={"420px"}
+        mt={"-5"}
+        ml={"-5"}
+        width={"442px"}
       >
         <Flex
           w={"full"}
-          height={"full"}
+          height={"350px"}
           flexDirection={"column"}
           gap={2}
           marginY={2}
@@ -155,7 +156,7 @@ const TokenSelector = ({
             onChange={(e) => setSearchText(e.target.value)}
           />
 
-          <Box height={"350px"} overflow={"scroll"}>
+          <Box height={"300px"} overflow={"scroll"}>
             {tokenOptions.items.map((token) => (
               <SelectItem item={token} key={token.address}>
                 <DetailedTokenIndicator token={token} />

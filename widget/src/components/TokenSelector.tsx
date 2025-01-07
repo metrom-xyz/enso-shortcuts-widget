@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Box, createListCollection, Flex, Input, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  createListCollection,
+  Flex,
+  Input,
+  Text,
+} from "@chakra-ui/react";
 import { useMemo } from "react";
 import {
   SelectContent,
@@ -76,9 +83,9 @@ const TokenSelector = ({
   const foundToken = useEnsoToken(searchText as Address);
 
   const tokenList = useMemo(() => {
-    const tokens = tokenMap ? Object.values(tokenMap) : [];
+    let tokens = tokenMap ? Object.values(tokenMap) : [];
     if (foundToken) {
-      tokens.unshift(foundToken);
+      tokens = [foundToken];
     }
 
     const balancesWithTotals = tokens?.map((token) => {
@@ -150,11 +157,13 @@ const TokenSelector = ({
           p={1}
           width={"100%"}
         >
-          <Text fontSize={"lg"}>Select a token</Text>
+          <Center>
+            <Text fontSize={"lg"}>Select a token</Text>
+          </Center>
 
           <Input
             autoFocus
-            // outline={"none"}
+            paddingX={2}
             placeholder="Search by name or paste address"
             value={searchText}
             onChange={(e) => obligatedToken || setSearchText(e.target.value)}

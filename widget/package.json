@@ -1,8 +1,14 @@
 {
   "name": "@ensofinance/shortcuts-widget",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.1.5",
   "type": "module",
+  "homepage": "https://www.enso.build/",
+  "repository": {
+    "url": "https://github.com/EnsoFinance/shortcuts-widget"
+  },
+  "author": "Enso finance",
+  "license": "MIT",
+  "description": "Multi-purpose widget utilizing Enso API",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -44,10 +50,8 @@
   "exports": {
     ".": {
       "import": "./dist/shortcuts-widget.es.js",
-      "require": "./dist/shortcuts-widget.umd.js"
+      "require": "./dist/shortcuts-widget.umd.js",
+      "types": "./dist/index.d.ts"
     }
-  },
-  "author": "Enso finance",
-  "license": "ISC",
-  "description": ""
+  }
 }

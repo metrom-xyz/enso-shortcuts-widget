@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { arbitrum, base, mainnet } from "viem/chains";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
-import { Flex, Link, Text } from "@chakra-ui/react";
+import {Box, Center, Flex, Link, Text} from "@chakra-ui/react";
 import {
   setApiKey,
   useEnsoApprove,
@@ -35,8 +35,10 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
   // initialize client with key before it is used
   useEffect(() => {
     setApiKey(apiKey);
-    if (obligatedTokenOut) setTokenOut(obligatedTokenOut);
   }, []);
+  useEffect(() => {
+    if (obligatedTokenOut) setTokenOut(obligatedTokenOut);
+  }, [obligatedTokenOut]);
 
   useEffect(() => {
     setTokenIn(USDC_ADDRESS[chainId]);
@@ -87,21 +89,15 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
   const tokenOutUsdPrice =
     +(outUsdPrice?.price ?? 0) *
     +normalizeValue(+quoteData?.amountOut, tokenOutInfo?.decimals);
-  console.log(tokenInUsdPrice, tokenOutUsdPrice);
-  console.log(
-    "slippage: ",
-    (tokenInUsdPrice - tokenOutUsdPrice) / tokenInUsdPrice,
-  );
-  console.log(quoteData);
 
   return (
     <Flex
       flexDirection={"column"}
       layerStyle={"outline.subtle"}
       p={5}
-      h={450}
       ref={containerRef}
       overflow={"hidden"}
+      gap={2}
     >
       <SwapInput
         title={"You pay"}
@@ -113,30 +109,32 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
         usdValue={tokenInUsdPrice}
       />
 
-      <SwapInput
-        disabled
-        obligatedToken={obligatedTokenOut}
-        title={"You receive"}
-        loading={quoteLoading}
-        containerRef={containerRef}
-        tokenValue={tokenOut}
-        tokenOnChange={setTokenOut}
-        inputValue={valueOut}
-        inputOnChange={() => {}}
-        usdValue={tokenOutUsdPrice}
-      />
+      <Box>
+        <SwapInput
+          disabled
+          obligatedToken={obligatedTokenOut}
+          title={"You receive"}
+          loading={quoteLoading}
+          containerRef={containerRef}
+          tokenValue={tokenOut}
+          tokenOnChange={setTokenOut}
+          inputValue={valueOut}
+          inputOnChange={() => {}}
+          usdValue={tokenOutUsdPrice}
+        />
 
-      <Flex justify="space-between" mb={10} mt={-2}>
-        <Text color="gray.500">
-          1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
-          {tokenOutInfo?.symbol}
-        </Text>
-        {quoteData?.priceImpact && (
-          <Text color="gray.500">
-            Price impact: {(quoteData?.priceImpact / 1000).toFixed(2)}%
+        <Flex justify="space-between" mt={-2}>
+          <Text color="gray.500" fontSize={"xs"}>
+            1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
+            {tokenOutInfo?.symbol}
           </Text>
-        )}
-      </Flex>
+          {quoteData?.priceImpact && (
+            <Text color="gray.500">
+              Price impact: {(quoteData?.priceImpact / 1000).toFixed(2)}%
+            </Text>
+          )}
+        </Flex>
+      </Box>
 
       <Flex w={"full"} gap={4}>
         {wrongChain ? (
@@ -173,14 +171,14 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
         </Button>
       </Flex>
 
-      <Flex h={"full"} flexDirection={"column"} justifyContent={"flex-end"}>
+      <Center>
         <Text color={"gray.500"}>
           Powered by{" "}
           <Link target={"_blank"} href={"https://www.enso.finance/"}>
             Enso
           </Link>
         </Text>
-      </Flex>
+      </Center>
     </Flex>
   );
 };

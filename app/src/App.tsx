@@ -26,10 +26,7 @@ function App() {
           {/*
           TODO: Integration point, should integrate a widget here
           */}
-          <SwapWidget
-            apiKey={EnsoApiKey}
-            obligatedTokenOut={"0x88A43bbDF9D098eEC7bCEda4e2494615dfD9bB9C"}
-          />
+          <SwapWidget apiKey={EnsoApiKey} />
         </div>
       </div>
     </Providers>

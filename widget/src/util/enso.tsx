@@ -108,7 +108,7 @@ export const useEnsoToken = (address: Address) => {
     const ensoToken = data.data[0];
 
     return {
-      address: ensoToken.address,
+      address: ensoToken.address.toLowerCase(),
       symbol: ensoToken.symbol,
       name: ensoToken.name,
       decimals: ensoToken.decimals,

@@ -1,11 +1,11 @@
 import { Address } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { isAddress } from "@/util";
-import { Token } from "@/util/common";
+import { Token, usePriorityChainId } from "@/util/common";
 
 let ensoClient;
 
@@ -18,7 +18,7 @@ export const setApiKey = (apiKey: string) => {
 
 export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   const { address } = useAccount();
-  const chainId = useChainId();
+  const chainId = usePriorityChainId();
 
   return useQuery({
     queryKey: ["enso-approval", tokenAddress, chainId, address, amount],
@@ -79,7 +79,7 @@ export const useEnsoQuote = (params: QuoteParams) => {
 
 export const useEnsoBalances = () => {
   const { address } = useAccount();
-  const chainId = useChainId();
+  const chainId = usePriorityChainId();
 
   return useQuery({
     queryKey: ["enso-balances", chainId, address],
@@ -90,7 +90,7 @@ export const useEnsoBalances = () => {
 };
 
 const useEnsoTokenDetails = (address: Address) => {
-  const chainId = useChainId();
+  const chainId = usePriorityChainId();
 
   return useQuery({
     queryKey: ["enso-token-details", address, chainId],
@@ -120,7 +120,7 @@ export const useEnsoToken = (address: Address) => {
 };
 
 export const useEnsoPrice = (address: Address) => {
-  const chainId = useChainId();
+  const chainId = usePriorityChainId();
 
   return useQuery({
     queryKey: ["enso-token-price", address, chainId],

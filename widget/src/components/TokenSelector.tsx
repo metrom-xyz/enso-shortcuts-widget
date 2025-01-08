@@ -134,7 +134,7 @@ const TokenSelector = ({
       value={[value]}
       onValueChange={({ value }) => onChange(value[0] as string)}
       size="sm"
-      minWidth="150px"
+      // minWidth="150px"
     >
       <SelectTrigger>
         <SelectValueText placeholder="Select token">
@@ -147,7 +147,7 @@ const TokenSelector = ({
         portalRef={containerRef}
         mt={"-5"}
         ml={"-5"}
-        width={"500px"}
+        minWidth={"350px"}
       >
         <Flex
           height={"350px"}

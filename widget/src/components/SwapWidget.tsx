@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { arbitrum, base, mainnet } from "viem/chains";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
-import {Box, Center, Flex, Link, Text} from "@chakra-ui/react";
+import { Box, Center, Flex, Link, Text } from "@chakra-ui/react";
 import {
   setApiKey,
   useEnsoApprove,
@@ -13,6 +13,7 @@ import { denormalizeValue, formatNumber, normalizeValue } from "@/util";
 import SwapInput from "@/components/SwapInput";
 import { Button } from "@/components/ui/button";
 import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
+import { usePriorityChainId } from "@/util/common";
 import { Address, WidgetProps } from "@/types";
 
 const USDC_ADDRESS: Record<number, Address> = {
@@ -24,7 +25,7 @@ const USDC_ADDRESS: Record<number, Address> = {
 const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
-  const chainId = useChainId();
+  const chainId = usePriorityChainId();
   const { address } = useAccount();
   const [tokenOut, setTokenOut] = useState<Address>();
   const { switchChain } = useSwitchChain();
@@ -76,7 +77,9 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
   );
   const approveNeeded = !!approve && +amountIn > 0 && !!tokenIn;
 
-  const wrongChain = false;
+  const wagmiChainId = useChainId();
+
+  const wrongChain = chainId && wagmiChainId !== chainId;
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -161,9 +164,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
         <Button
           flex={1}
           variant={"outline"}
-          // variant="solid"
           disabled={!!approve || wrongChain || !(+valueIn > 0)}
-          // colorPalette={"gray"}
           loading={sendData.isLoading}
           onClick={sendData.send}
         >

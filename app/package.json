@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
     "@ensofinance/sdk": "^1.0.1",
     "@ensofinance/shortcuts-widget": "workspace:*",
     "@rainbow-me/rainbowkit": "^2.2.1",

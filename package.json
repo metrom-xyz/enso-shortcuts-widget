@@ -1,0 +1,13 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "scripts": {
+    "dev:app": "pnpm --filter widget-app run dev",
+    "dev:widget": "pnpm --filter @ensofinance/shortcuts-widget run dev",
+    "build:app": "pnpm --filter widget-app run build",
+    "build:widget": "pnpm --filter @ensofinance/shortcuts-widget run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

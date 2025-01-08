@@ -1,6 +1,6 @@
 {
   "name": "@ensofinance/shortcuts-widget",
-  "version": "0.1.5",
+  "version": "0.2.1",
   "type": "module",
   "homepage": "https://www.enso.build/",
   "repository": {
@@ -10,7 +10,9 @@
   "license": "MIT",
   "description": "Multi-purpose widget utilizing Enso API",
   "scripts": {
-    "dev": "vite",
+    "bump": "npm version patch",
+    "publish": "npm publish --access public",
+    "dev": "vite build --watch",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -25,9 +27,11 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0",
+    "react-virtualized": "^9.22.5",
     "url": "^0.11.4",
     "viem": "2.x",
-    "wagmi": "^2.14.6"
+    "wagmi": "^2.14.6",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -43,6 +47,7 @@
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",
     "vite-plugin-dts": "^4.4.0",
+    "vite-plugin-lib-inject-css": "^2.2.1",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "main": "./dist/shortcuts-widget.umd.js",

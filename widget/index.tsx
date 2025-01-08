@@ -1,15 +1,30 @@
 import SwapWidget from "@/components/SwapWidget";
-import { Provider } from "@/components/ui/provider";
-import { ColorModeProvider } from "@/components/ui/color-mode";
 import { Address, WidgetProps } from "@/types";
+import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
+import { useStore } from "@/store";
+import { useEffect } from "react";
 
-export default ({ apiKey, obligatedTokenOut }: WidgetProps) => (
-  <Provider>
-    <ColorModeProvider>
+export const system = createSystem(defaultConfig, {
+  disableLayers: true,
+});
+
+export default ({
+  apiKey,
+  obligatedTokenOut,
+  obligatedChainId,
+}: WidgetProps) => {
+  const { setObligatedChainId } = useStore();
+
+  useEffect(() => {
+    setObligatedChainId(obligatedChainId);
+  }, []);
+
+  return (
+    <ChakraProvider value={system}>
       <SwapWidget
         apiKey={apiKey}
         obligatedTokenOut={obligatedTokenOut?.toLowerCase() as Address}
       />
-    </ColorModeProvider>
-  </Provider>
-);
+    </ChakraProvider>
+  );
+};

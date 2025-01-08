@@ -7,14 +7,13 @@ import {
   useSimulateContract,
   useWaitForTransactionReceipt,
   useWriteContract,
-  useChainId,
   UseSendTransactionReturnType,
   UseWriteContractReturnType,
   useBalance,
 } from "wagmi";
 import { BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
-import { useTokenFromList } from "./common";
+import { usePriorityChainId, useTokenFromList } from "./common";
 import erc20Abi from "@/erc20Abi.json";
 import { useEnsoRouterData } from "./enso";
 import { RouteParams } from "@ensofinance/sdk";
@@ -54,8 +53,10 @@ const useChangingIndex = () => {
 
 export const useErc20Balance = (tokenAddress: `0x${string}`) => {
   const { address } = useAccount();
+  const chainId = usePriorityChainId();
 
   return useReadContract({
+    chainId,
     address: tokenAddress,
     abi: erc20Abi,
     functionName: "balanceOf",
@@ -76,7 +77,7 @@ export const useTokenBalance = (token: Address) => {
 
 export const useAllowance = (token: Address, spender: Address) => {
   const { address } = useAccount();
-  const chainId = useChainId();
+  const chainId = usePriorityChainId();
   const index = useChangingIndex();
   const queryClient = useQueryClient();
   const { data, queryKey } = useReadContract({
@@ -96,7 +97,7 @@ export const useAllowance = (token: Address, spender: Address) => {
 
 export const useApprove = (token: Address, target: Address, amount: string) => {
   const tokenData = useTokenFromList(token);
-  const chainId = useChainId();
+  const chainId = usePriorityChainId();
 
   return {
     title: `Approve ${formatNumber(normalizeValue(+amount, tokenData?.decimals))} of ${tokenData?.symbol} for spending`,
@@ -257,7 +258,7 @@ export const useSendEnsoTransaction = (
   slippage: number,
 ) => {
   const { address } = useAccount();
-  const chainId = useChainId();
+  const chainId = usePriorityChainId();
   const preparedData: RouteParams = {
     fromAddress: address,
     receiver: address,

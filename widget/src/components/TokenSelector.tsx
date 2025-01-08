@@ -8,6 +8,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
+import { FixedSizeList as List } from "react-window";
 import {
   SelectContent,
   SelectItem,
@@ -169,13 +170,27 @@ const TokenSelector = ({
             onChange={(e) => obligatedToken || setSearchText(e.target.value)}
           />
 
-          <Box height={"300px"} overflow={"scroll"}>
-            {tokenOptions.items.map((token) => (
-              <SelectItem item={token} key={token.address}>
-                <DetailedTokenIndicator token={token} />
-              </SelectItem>
-            ))}
-          </Box>
+          <List
+            height={400}
+            itemCount={tokenOptions.items.length}
+            itemSize={48}
+            width={350}
+          >
+            {({ index, style }) => {
+              const token = tokenOptions.items[index];
+
+              return (
+                <SelectItem
+                  item={token}
+                  key={token.address}
+                  style={style}
+                  _hover={{ background: "gray.100" }}
+                >
+                  <DetailedTokenIndicator token={token} />
+                </SelectItem>
+              );
+            }}
+          </List>
         </Flex>
       </SelectContent>
     </SelectRoot>

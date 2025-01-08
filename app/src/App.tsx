@@ -7,7 +7,6 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "./App.css";
 
 const EnsoApiKey = import.meta.env.VITE_ENSO_API_KEY;
-console.log(EnsoApiKey);
 
 function App() {
   return (

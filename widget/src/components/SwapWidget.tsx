@@ -13,7 +13,7 @@ import { denormalizeValue, formatNumber, normalizeValue } from "@/util";
 import SwapInput from "@/components/SwapInput";
 import { Button } from "@/components/ui/button";
 import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
-import { usePriorityChainId } from "@/util/common";
+import { getChainName, usePriorityChainId } from "@/util/common";
 import Notification from "@/components/Notification";
 import { Address, WidgetProps } from "@/types";
 
@@ -70,17 +70,16 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
     approveData.data?.spender,
     amountIn,
   );
-  const { sendTransaction: sendData } = useSendEnsoTransaction(
-    amountIn,
-    tokenOut,
-    tokenIn,
-    3000,
-  );
+  const {
+    sendTransaction: sendData,
+    isEnsoDataLoading,
+    ensoData,
+  } = useSendEnsoTransaction(amountIn, tokenOut, tokenIn, 3000);
   const approveNeeded = !!approve && +amountIn > 0 && !!tokenIn;
 
   const wagmiChainId = useChainId();
 
-  const wrongChain = chainId && wagmiChainId !== chainId;
+  const wrongChain = chainId && +wagmiChainId !== +chainId;
 
   const portalRef = useRef<HTMLDivElement>(null);
 
@@ -153,9 +152,9 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
             <Button
               bg="gray.solid"
               _hover={{ bg: "blackAlpha.solid" }}
-              onClick={() => switchChain({ chainId: base.id })}
+              onClick={() => switchChain({ chainId })}
             >
-              Switch to Base
+              Switch to {getChainName(chainId)}
             </Button>
           ) : (
             approveNeeded && (
@@ -170,11 +169,12 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
               </Button>
             )
           )}
+
           <Button
             flex={1}
             variant={"outline"}
-            disabled={!!approve || wrongChain || !(+valueOut > 0)}
-            loading={sendData.isLoading}
+            disabled={!!approve || wrongChain || !(+ensoData?.amountOut > 0)}
+            loading={sendData.isLoading || isEnsoDataLoading}
             onClick={sendData.send}
           >
             Swap

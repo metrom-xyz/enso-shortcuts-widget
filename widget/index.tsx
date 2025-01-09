@@ -17,7 +17,7 @@ export default ({
 
   useEffect(() => {
     setObligatedChainId(obligatedChainId);
-  }, []);
+  }, [obligatedChainId]);
 
   return (
     <ChakraProvider value={system}>

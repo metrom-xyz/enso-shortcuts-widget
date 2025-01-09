@@ -11,7 +11,7 @@ let ensoClient;
 
 export const setApiKey = (apiKey: string) => {
   ensoClient = new EnsoClient({
-    baseURL: "http://localhost:3000/api/v1",
+    // baseURL: "http://localhost:3000/api/v1",
     apiKey,
   });
 };

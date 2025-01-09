@@ -5,10 +5,11 @@ import {
   ETH_ADDRESS,
   ETH_TOKEN,
   GECKO_CHAIN_NAMES,
+  SupportedChainId,
 } from "@/constants";
-import { Address } from "@/types";
 import tokenList from "../tokenList";
 import { useStore } from "@/store";
+import { Address } from "@/types";
 
 export type Token = {
   address: Address;
@@ -77,4 +78,10 @@ export const useEtherscanUrl = (
   const chainPrefix = CHAINS_ETHERSCAN[chainId];
 
   if (address) return `${chainPrefix}${type}/${address}`;
+};
+
+export const getChainName = (chainId: SupportedChainId) => {
+  const geckoName = GECKO_CHAIN_NAMES[chainId];
+
+  return geckoName?.charAt(0).toUpperCase() + geckoName?.slice(1).split("-")[0];
 };

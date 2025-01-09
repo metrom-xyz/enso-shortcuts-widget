@@ -81,7 +81,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
 
   const wrongChain = chainId && wagmiChainId !== chainId;
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
 
   const exchangeRate = +valueOut / +valueIn;
 
@@ -94,93 +94,100 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
     +normalizeValue(+quoteData?.amountOut, tokenOutInfo?.decimals);
 
   return (
-    <Flex
-      flexDirection={"column"}
-      layerStyle={"outline.subtle"}
-      p={5}
-      ref={containerRef}
-      overflow={"hidden"}
-      gap={2}
-    >
-      <SwapInput
-        title={"You pay"}
-        containerRef={containerRef}
-        tokenValue={tokenIn}
-        tokenOnChange={setTokenIn}
-        inputValue={valueIn}
-        inputOnChange={setValueIn}
-        usdValue={tokenInUsdPrice}
+    <Box position={"relative"} layerStyle={"outline.subtle"}>
+      {/* Portal for notifications and swap popover */}
+      <Flex
+        ref={portalRef}
+        position={"absolute"}
+        css={{
+          [`&:has(> div:not([data-state="closed"]))`]: {
+            width: "100%",
+            height: "100%",
+          },
+        }}
       />
 
-      <Box>
+      <Flex flexDirection={"column"} p={3} overflow={"hidden"} gap={2}>
         <SwapInput
-          disabled
-          obligatedToken={obligatedTokenOut}
-          title={"You receive"}
-          loading={quoteLoading}
-          containerRef={containerRef}
-          tokenValue={tokenOut}
-          tokenOnChange={setTokenOut}
-          inputValue={valueOut}
-          inputOnChange={() => {}}
-          usdValue={tokenOutUsdPrice}
+          title={"You pay"}
+          portalRef={portalRef}
+          tokenValue={tokenIn}
+          tokenOnChange={setTokenIn}
+          inputValue={valueIn}
+          inputOnChange={setValueIn}
+          usdValue={tokenInUsdPrice}
         />
 
-        <Flex justify="space-between" mt={-2}>
-          <Text color="gray.500" fontSize={"xs"}>
-            1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
-            {tokenOutInfo?.symbol}
-          </Text>
-          {quoteData?.priceImpact && (
-            <Text color="gray.500">
-              Price impact: {(quoteData?.priceImpact / 1000).toFixed(2)}%
+        <Box>
+          <SwapInput
+            disabled
+            obligatedToken={obligatedTokenOut}
+            title={"You receive"}
+            loading={quoteLoading}
+            portalRef={portalRef}
+            tokenValue={tokenOut}
+            tokenOnChange={setTokenOut}
+            inputValue={valueOut}
+            inputOnChange={() => {}}
+            usdValue={tokenOutUsdPrice}
+          />
+
+          <Flex justify="space-between" mt={-2}>
+            <Text color="gray.500" fontSize={"xs"}>
+              1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
+              {tokenOutInfo?.symbol}
             </Text>
-          )}
-        </Flex>
-      </Box>
+            {quoteData?.priceImpact && (
+              <Text color="gray.500" fontSize={"sm"}>
+                Price impact: {(quoteData?.priceImpact / 1000).toFixed(2)}%
+              </Text>
+            )}
+          </Flex>
+        </Box>
 
-      <Flex w={"full"} gap={4}>
-        {wrongChain ? (
-          <Button
-            bg="gray.solid"
-            _hover={{ bg: "blackAlpha.solid" }}
-            onClick={() => switchChain({ chainId: base.id })}
-          >
-            Switch to Base
-          </Button>
-        ) : (
-          approveNeeded && (
+        <Flex w={"full"} gap={4}>
+          {wrongChain ? (
             <Button
-              flex={1}
-              loading={approve.isLoading}
-              // colorPalette={"gray"}
-              variant={"subtle"}
-              onClick={approve.write}
+              bg="gray.solid"
+              _hover={{ bg: "blackAlpha.solid" }}
+              onClick={() => switchChain({ chainId: base.id })}
             >
-              Approve
+              Switch to Base
             </Button>
-          )
-        )}
-        <Button
-          flex={1}
-          variant={"outline"}
-          disabled={!!approve || wrongChain || !(+valueIn > 0)}
-          loading={sendData.isLoading}
-          onClick={sendData.send}
-        >
-          Swap
-        </Button>
-      </Flex>
+          ) : (
+            approveNeeded && (
+              <Button
+                flex={1}
+                loading={approve.isLoading}
+                // colorPalette={"gray"}
+                variant={"subtle"}
+                onClick={approve.write}
+              >
+                Approve
+              </Button>
+            )
+          )}
+          <Button
+            flex={1}
+            variant={"outline"}
+            disabled={!!approve || wrongChain || !(+valueIn > 0)}
+            loading={sendData.isLoading}
+            onClick={sendData.send}
+          >
+            Swap
+          </Button>
+        </Flex>
 
-      <Center>
-        <Text color={"gray.500"}>
-          Powered by{" "}
-          <Link target={"_blank"} href={"https://www.enso.finance/"}>
-            Enso
-          </Link>
-        </Text>
-      </Center>
-    </Flex>
+        <Center>
+          <Text color={"gray.500"}>
+            Powered by{" "}
+            <Link target={"_blank"} href={"https://www.enso.build/"}>
+              Enso
+            </Link>
+          </Text>
+        </Center>
+      </Flex>
+    </Box>
   );
 };
 

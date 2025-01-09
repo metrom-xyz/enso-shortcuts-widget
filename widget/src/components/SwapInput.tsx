@@ -1,5 +1,5 @@
 import TokenSelector from "@/components/TokenSelector";
-import { chakra, Flex, Grid, Skeleton, Text } from "@chakra-ui/react";
+import { chakra, Flex, Grid, Input, Skeleton, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
 import { formatNumber, formatUSD, normalizeValue } from "@/util";
 import { useTokenFromList } from "@/util/common";
@@ -16,7 +16,7 @@ const SwapInput = ({
   title,
   loading,
   disabled,
-  containerRef,
+  portalRef,
   obligatedToken,
 }: {
   tokenValue: Address;
@@ -27,7 +27,7 @@ const SwapInput = ({
   usdValue?: number;
   disabled?: boolean;
   loading?: boolean;
-  containerRef?: React.RefObject<HTMLDivElement>;
+  portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: Address;
 }) => {
   const { address } = useAccount();
@@ -67,7 +67,7 @@ const SwapInput = ({
           <Flex height={"100%"} alignItems={"center"}>
             <TokenSelector
               obligatedToken={obligatedToken}
-              containerRef={containerRef}
+              portalRef={portalRef}
               value={tokenValue}
               onChange={tokenOnChange}
             />
@@ -84,6 +84,8 @@ const SwapInput = ({
             ) : (
               <chakra.input
                 disabled={disabled}
+                width={"full"}
+                minWidth={"140px"}
                 fontSize="xl"
                 border={"none"}
                 outline={"none"}

@@ -70,12 +70,12 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
 const TokenSelector = ({
   value,
   onChange,
-  containerRef,
+  portalRef,
   obligatedToken,
 }: {
   value: string;
   onChange: (value: string) => void;
-  containerRef?: React.RefObject<HTMLDivElement>;
+  portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: Address;
 }) => {
   const { data: tokenMap } = useOneInchTokenList();
@@ -143,13 +143,7 @@ const TokenSelector = ({
         </SelectValueText>
       </SelectTrigger>
 
-      <SelectContent
-        position={"absolute"}
-        portalRef={containerRef}
-        mt={"-5"}
-        ml={"-5"}
-        minWidth={"350px"}
-      >
+      <SelectContent portalRef={portalRef} w={"100%"} minWidth={"350px"}>
         <Flex
           height={"350px"}
           flexDirection={"column"}
@@ -174,7 +168,7 @@ const TokenSelector = ({
             height={400}
             itemCount={tokenOptions.items.length}
             itemSize={48}
-            width={350}
+            width={"100%"}
           >
             {({ index, style }) => {
               const token = tokenOptions.items[index];

@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
-import { ETH_ADDRESS, ETH_TOKEN, GECKO_CHAIN_NAMES } from "@/constants";
+import {
+  CHAINS_ETHERSCAN,
+  ETH_ADDRESS,
+  ETH_TOKEN,
+  GECKO_CHAIN_NAMES,
+} from "@/constants";
 import { Address } from "@/types";
 import tokenList from "../tokenList";
 import { useStore } from "@/store";
@@ -62,4 +67,14 @@ export const usePriorityChainId = () => {
   const chainId = useChainId();
 
   return obligatedChainId ?? chainId;
+};
+
+export const useEtherscanUrl = (
+  address: string,
+  type: "/address" | "/tx" = "/tx",
+) => {
+  const chainId = usePriorityChainId();
+  const chainPrefix = CHAINS_ETHERSCAN[chainId];
+
+  if (address) return `${chainPrefix}${type}/${address}`;
 };

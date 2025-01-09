@@ -1,25 +1,31 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  useReadContract,
   useAccount,
+  useBalance,
+  useReadContract,
   useSendTransaction,
-  UseSimulateContractParameters,
+  UseSendTransactionReturnType,
   useSimulateContract,
+  UseSimulateContractParameters,
   useWaitForTransactionReceipt,
   useWriteContract,
-  UseSendTransactionReturnType,
   UseWriteContractReturnType,
-  useBalance,
 } from "wagmi";
 import { BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePriorityChainId, useTokenFromList } from "./common";
+import {
+  useEtherscanUrl,
+  usePriorityChainId,
+  useTokenFromList,
+} from "./common";
 import erc20Abi from "@/erc20Abi.json";
 import { useEnsoRouterData } from "./enso";
 import { RouteParams } from "@ensofinance/sdk";
 import { ETH_ADDRESS } from "@/constants";
 import { Address } from "@/types";
 import { formatNumber, normalizeValue } from "@/util/index";
+import { useStore } from "@/store";
+import { NotifyType } from "@/components/Notification";
 
 enum TxState {
   Success,
@@ -27,7 +33,7 @@ enum TxState {
   Pending,
 }
 
-const toastState: Record<TxState, "success" | "error" | "info"> = {
+export const toastState: Record<TxState, "success" | "error" | "info"> = {
   [TxState.Success]: "success",
   [TxState.Failure]: "error",
   [TxState.Pending]: "info",
@@ -117,6 +123,7 @@ export const useExtendedContractWrite = (
 ) => {
   const simulateContract = useSimulateContract(writeContractVariables);
   const contractWrite = useWatchWriteTransactionHash(title);
+  const { setNotification } = useStore();
 
   const write = useCallback(() => {
     if (
@@ -128,10 +135,10 @@ export const useExtendedContractWrite = (
       // @ts-ignore
       contractWrite.writeContract(writeContractVariables, {
         onError: (error: BaseError) => {
-          // enqueueSnackbar({
-          //   message: error?.shortMessage || error.message,
-          //   variant: "error",
-          // });
+          setNotification({
+            message: error?.shortMessage || error.message,
+            variant: NotifyType.Error,
+          });
           console.error(error);
         },
       });
@@ -154,6 +161,7 @@ const useWatchTransactionHash = <
   // const addRecentTransaction = useAddRecentTransaction();
 
   const hash = usedWriteContract.data;
+  const { setNotification } = useStore();
 
   // useEffect(() => {
   //   if (hash) addRecentTransaction({ hash, description });
@@ -162,24 +170,29 @@ const useWatchTransactionHash = <
   const waitForTransaction = useWaitForTransactionReceipt({
     hash,
   });
+  const link = useEtherscanUrl(hash);
+
   const writeLoading = usedWriteContract.status === "pending";
 
   // toast error if tx failed to be mined and success if it is having confirmation
   useEffect(() => {
     if (waitForTransaction.error) {
-      console.log({
+      setNotification({
         message: waitForTransaction.error.message,
-        variant: toastState[TxState.Failure],
+        variant: NotifyType.Error,
+        link,
       });
     } else if (waitForTransaction.data) {
-      console.log({
+      setNotification({
         message: description,
-        variant: toastState[TxState.Success],
+        variant: NotifyType.Success,
+        link,
       });
     } else if (waitForTransaction.isLoading) {
-      console.log({
+      setNotification({
         message: description,
-        variant: toastState[TxState.Pending],
+        variant: NotifyType.Info,
+        link,
       });
     }
   }, [
@@ -214,14 +227,15 @@ export const useExtendedSendTransaction = (
   args: UseSimulateContractParameters,
 ) => {
   const sendTransaction = useWatchSendTransactionHash(title);
+  const { setNotification } = useStore();
 
   const send = useCallback(() => {
     sendTransaction.sendTransaction(args, {
       onError: (error) => {
-        console.log({
+        setNotification({
           // @ts-ignore
           message: error?.cause?.shortMessage,
-          variant: "error",
+          variant: NotifyType.Error,
         });
         console.error(error);
       },

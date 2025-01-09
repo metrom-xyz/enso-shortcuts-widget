@@ -135,9 +135,9 @@ const TokenSelector = ({
       value={[value]}
       onValueChange={({ value }) => onChange(value[0] as string)}
       size="sm"
-      minWidth="150px"
+      minWidth="140px"
     >
-      <SelectTrigger>
+      <SelectTrigger noIndicator={!!obligatedToken}>
         <SelectValueText placeholder="Select token">
           {(tokens: Token[]) => <TokenIndicator token={tokens[0]} />}
         </SelectValueText>

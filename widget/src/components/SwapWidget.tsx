@@ -14,6 +14,7 @@ import SwapInput from "@/components/SwapInput";
 import { Button } from "@/components/ui/button";
 import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
 import { usePriorityChainId } from "@/util/common";
+import Notification from "@/components/Notification";
 import { Address, WidgetProps } from "@/types";
 
 const USDC_ADDRESS: Record<number, Address> = {
@@ -105,7 +106,9 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
             height: "100%",
           },
         }}
-      />
+      >
+        <Notification />
+      </Flex>
 
       <Flex flexDirection={"column"} p={3} overflow={"hidden"} gap={2}>
         <SwapInput
@@ -137,7 +140,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
               1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
               {tokenOutInfo?.symbol}
             </Text>
-            {quoteData?.priceImpact && (
+            {!!quoteData?.priceImpact && (
               <Text color="gray.500" fontSize={"sm"}>
                 Price impact: {(quoteData?.priceImpact / 1000).toFixed(2)}%
               </Text>
@@ -170,7 +173,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
           <Button
             flex={1}
             variant={"outline"}
-            disabled={!!approve || wrongChain || !(+valueIn > 0)}
+            disabled={!!approve || wrongChain || !(+valueOut > 0)}
             loading={sendData.isLoading}
             onClick={sendData.send}
           >

@@ -104,10 +104,16 @@ const SwapInput = ({
               fontSize="sm"
               whiteSpace={"nowrap"}
               visibility={address ? "visible" : "hidden"}
+              _hover={{ color: "gray.800" }}
+              cursor={"pointer"}
+              onClick={() => {
+                inputOnChange(
+                  normalizeValue(+balance, tokenInInfo?.decimals).toString(),
+                );
+              }}
             >
               Balance:{" "}
               {formatNumber(normalizeValue(+balance, tokenInInfo?.decimals))}{" "}
-              {tokenInInfo?.symbol}
             </Text>
           </Flex>
           <Flex justifyContent={"flex-end"}>

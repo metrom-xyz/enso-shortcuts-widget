@@ -59,9 +59,9 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
     tokenOut,
     routingStrategy: "router",
   });
-  const valueOut = formatNumber(
-    normalizeValue(+quoteData?.amountOut, tokenOutInfo?.decimals),
-    true,
+  const valueOut = normalizeValue(
+    +quoteData?.amountOut,
+    tokenOutInfo?.decimals,
   );
 
   const approveData = useEnsoApprove(tokenIn, amountIn);
@@ -83,7 +83,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
 
   const portalRef = useRef<HTMLDivElement>(null);
 
-  const exchangeRate = +valueOut / +valueIn;
+  const exchangeRate = valueOut / +valueIn;
 
   const { data: inUsdPrice } = useEnsoPrice(tokenIn);
   const { data: outUsdPrice } = useEnsoPrice(tokenOut);
@@ -129,7 +129,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
             portalRef={portalRef}
             tokenValue={tokenOut}
             tokenOnChange={setTokenOut}
-            inputValue={valueOut}
+            inputValue={valueOut?.toString()}
             inputOnChange={() => {}}
             usdValue={tokenOutUsdPrice}
           />
@@ -161,7 +161,6 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
               <Button
                 flex={1}
                 loading={approve.isLoading}
-                // colorPalette={"gray"}
                 variant={"subtle"}
                 onClick={approve.write}
               >

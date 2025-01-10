@@ -20,7 +20,7 @@ export enum SupportedChainId {
   SCROLL = 534352,
   LINEA = 59144,
   // ARBITRUM_RINKEBY = 421611,
-  // OPTIMISM_GOERLI = 420,
+  // OPTIMISM_GOERLI = 420,w
   // GOERLI = 5,
   // POLYGON_MUMBAI = 80001,
   // CELO = 42220,

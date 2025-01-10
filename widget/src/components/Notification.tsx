@@ -54,14 +54,13 @@ export const Notification = () => {
       background={"white"}
       flexDirection={"column"}
     >
-      <Flex
-        width={"100%"}
+      <CloseButton
         position={"absolute"}
-        justifyContent={"flex-end"}
-        paddingX={5}
-      >
-        <CloseButton onClick={handleClose} />
-      </Flex>
+        top={5}
+        right={0}
+        onClick={handleClose}
+        mr={5}
+      />
       <Flex
         flexDirection={"column"}
         width={"full"}

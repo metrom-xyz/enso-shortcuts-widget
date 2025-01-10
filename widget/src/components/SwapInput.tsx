@@ -1,5 +1,5 @@
 import TokenSelector from "@/components/TokenSelector";
-import { chakra, Flex, Grid, Input, Skeleton, Text } from "@chakra-ui/react";
+import { chakra, Flex, Grid, Skeleton, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
 import { formatNumber, formatUSD, normalizeValue } from "@/util";
 import { useTokenFromList } from "@/util/common";
@@ -34,7 +34,8 @@ const SwapInput = ({
   const balance = useTokenBalance(tokenValue);
   const tokenInInfo = useTokenFromList(tokenValue);
 
-  const balanceValue = balance?.toString() ?? "0.0";
+  const balanceValue =
+    normalizeValue(+balance, tokenInInfo?.decimals)?.toString() ?? "0.0";
 
   const notEnoughBalance = +balanceValue < +inputValue && !disabled;
 
@@ -83,6 +84,13 @@ const SwapInput = ({
               <Skeleton h={"30px"} w={150} ml={5} />
             ) : (
               <chakra.input
+                css={{
+                  "&::-webkit-inner-spin-button, &::-webkit-outer-spin-button":
+                    {
+                      WebkitAppearance: "none",
+                    },
+                }}
+                type={"number"}
                 disabled={disabled}
                 width={"full"}
                 minWidth={"140px"}
@@ -112,11 +120,10 @@ const SwapInput = ({
                 );
               }}
             >
-              Balance:{" "}
-              {formatNumber(normalizeValue(+balance, tokenInInfo?.decimals))}{" "}
+              Balance: {formatNumber(balanceValue)}
             </Text>
           </Flex>
-          <Flex justifyContent={"flex-end"}>
+          <Flex justifyContent={"flex-end"} fontSize="sm">
             {usdValue ? (
               <Text color={"gray.500"}>~{formatUSD(usdValue)}</Text>
             ) : null}

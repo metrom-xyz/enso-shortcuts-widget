@@ -13,6 +13,7 @@ import {
 } from "wagmi";
 import { BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
+import { RouteParams } from "@ensofinance/sdk";
 import {
   useEtherscanUrl,
   usePriorityChainId,
@@ -20,12 +21,10 @@ import {
 } from "./common";
 import erc20Abi from "@/erc20Abi.json";
 import { useEnsoRouterData } from "./enso";
-import { RouteParams } from "@ensofinance/sdk";
 import { ETH_ADDRESS } from "@/constants";
-import { Address } from "@/types";
 import { formatNumber, normalizeValue } from "@/util/index";
 import { useStore } from "@/store";
-import { NotifyType } from "@/components/Notification";
+import { Address, NotifyType } from "@/types";
 
 enum TxState {
   Success,
@@ -191,7 +190,7 @@ const useWatchTransactionHash = <
     } else if (waitForTransaction.isLoading) {
       setNotification({
         message: description,
-        variant: NotifyType.Info,
+        variant: NotifyType.Loading,
         link,
       });
     }

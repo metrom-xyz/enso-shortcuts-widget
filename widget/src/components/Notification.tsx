@@ -1,19 +1,16 @@
-import { useStore } from "@/store";
+import { useEffect } from "react";
 import { CircleCheck, CircleX, ExternalLink, Info } from "lucide-react";
+import { Box, Flex, Link, Text, Center, Spinner } from "@chakra-ui/react";
+import { useStore } from "@/store";
 import { CloseButton } from "@/components/ui/close-button";
-import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
-
-export enum NotifyType {
-  Success = "success",
-  Error = "error",
-  Info = "info",
-}
+import { NotifyType } from "@/types";
 
 const NOTIFICATION_COLORS = {
   [NotifyType.Success]: "green.400",
   [NotifyType.Error]: "red.400",
   [NotifyType.Info]: "blue.400",
+  [NotifyType.Loading]: "blue.400",
 };
 
 const NotificationIcons = {
@@ -23,6 +20,14 @@ const NotificationIcons = {
 };
 
 const getIcon = (variant: NotifyType) => {
+  if (variant === NotifyType.Loading) {
+    return (
+      <Center w={"96px"} h={"96px"}>
+        <Spinner size={"xl"} borderWidth={"5px"} />
+      </Center>
+    );
+  }
+
   const Component = NotificationIcons[variant];
 
   return <Component size={96} />;
@@ -30,10 +35,10 @@ const getIcon = (variant: NotifyType) => {
 
 export const Notification = () => {
   const { notification, setNotification } = useStore();
-  // // Testing purposes
+  // Testing purposes
   // useEffect(() => {
   //   setNotification({
-  //     variant: NotifyType.Info,
+  //     variant: NotifyType.Loading,
   //     message: "Transaction submitted",
   //     link: "https://basescan.org/tx/0xf7fd0e5153288af243be2dbc97884a766ca316d49a908bdd01191a3a8f8ac95f",
   //   });

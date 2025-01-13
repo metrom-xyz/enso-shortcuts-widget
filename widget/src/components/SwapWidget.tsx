@@ -46,10 +46,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
     setTokenIn(USDC_ADDRESS[chainId]);
   }, [chainId]);
 
-  const amountIn = denormalizeValue(
-    valueIn ? +valueIn : 0,
-    tokenInInfo?.decimals,
-  );
+  const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
   const { data: quoteData, isFetching: quoteLoading } = useEnsoQuote({
     chainId,
@@ -59,10 +56,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
     tokenOut,
     routingStrategy: "router",
   });
-  const valueOut = normalizeValue(
-    +quoteData?.amountOut,
-    tokenOutInfo?.decimals,
-  );
+  const valueOut = normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
 
   const approveData = useEnsoApprove(tokenIn, amountIn);
   const approve = useApproveIfNecessary(
@@ -83,7 +77,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
 
   const portalRef = useRef<HTMLDivElement>(null);
 
-  const exchangeRate = valueOut / +valueIn;
+  const exchangeRate = +valueOut / +valueIn;
 
   const { data: inUsdPrice } = useEnsoPrice(tokenIn);
   const { data: outUsdPrice } = useEnsoPrice(tokenOut);
@@ -91,7 +85,7 @@ const SwapWidget = ({ apiKey, obligatedTokenOut }: WidgetProps) => {
   const tokenInUsdPrice = +(inUsdPrice?.price ?? 0) * +valueIn;
   const tokenOutUsdPrice =
     +(outUsdPrice?.price ?? 0) *
-    +normalizeValue(+quoteData?.amountOut, tokenOutInfo?.decimals);
+    +normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
 
   return (
     <Box position={"relative"} layerStyle={"outline.subtle"}>

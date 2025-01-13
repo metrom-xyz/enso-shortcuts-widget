@@ -105,7 +105,7 @@ export const useApprove = (token: Address, target: Address, amount: string) => {
   const chainId = usePriorityChainId();
 
   return {
-    title: `Approve ${formatNumber(normalizeValue(+amount, tokenData?.decimals))} of ${tokenData?.symbol} for spending`,
+    title: `Approve ${formatNumber(normalizeValue(amount, tokenData?.decimals))} of ${tokenData?.symbol} for spending`,
     args: {
       chainId,
       address: token,
@@ -290,7 +290,7 @@ export const useSendEnsoTransaction = (
   const tokenFromData = useTokenFromList(tokenIn);
 
   const sendTransaction = useExtendedSendTransaction(
-    `Purchase ${formatNumber(normalizeValue(+amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
+    `Purchase ${formatNumber(normalizeValue(amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
     ensoData?.tx,
   );
 

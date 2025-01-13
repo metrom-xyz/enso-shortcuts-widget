@@ -1,9 +1,18 @@
+import { formatUnits, parseUnits } from "viem";
 import { Address } from "@/types";
 
-export const denormalizeValue = (value = 0, decimals = 0) =>
-  (value * 10 ** decimals).toFixed();
-export const normalizeValue = (value = 0, decimals = 0) =>
-  value / 10 ** decimals;
+export const denormalizeValue = (value: string, decimals = 0) =>
+  parseUnits(value, decimals).toString();
+
+export const normalizeValue = (value: bigint | string = "0", decimals = 0) => {
+  try {
+    return formatUnits(BigInt(value), decimals);
+  } catch (e) {
+    console.error(e);
+    debugger
+    return "0";
+  }
+};
 
 export const compareCaseInsensitive = (a: string, b: string) => {
   return !!(a && b && a?.toLowerCase() === b?.toLowerCase());
@@ -33,7 +42,4 @@ export const formatNumber = (value: number | string, precise?: boolean) => {
 
 export const formatUSD = (value: number | string) => {
   return usdFormatter.format(+value);
-}
-
-export const isAddress = (address: string) =>
-  /^0x[a-fA-F0-9]{40}$/.test(address);
+};

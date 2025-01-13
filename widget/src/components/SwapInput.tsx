@@ -35,7 +35,7 @@ const SwapInput = ({
   const tokenInInfo = useTokenFromList(tokenValue);
 
   const balanceValue =
-    normalizeValue(+balance, tokenInInfo?.decimals)?.toString() ?? "0.0";
+    normalizeValue(balance, tokenInInfo?.decimals)?.toString() ?? "0.0";
 
   const notEnoughBalance = +balanceValue < +inputValue && !disabled;
 
@@ -116,7 +116,7 @@ const SwapInput = ({
               cursor={"pointer"}
               onClick={() => {
                 inputOnChange(
-                  normalizeValue(+balance, tokenInInfo?.decimals).toString(),
+                  normalizeValue(balance, tokenInInfo?.decimals).toString(),
                 );
               }}
             >

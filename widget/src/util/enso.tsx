@@ -4,7 +4,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
-import { isAddress } from "@/util";
+import { isAddress } from "viem";
 import { Token, usePriorityChainId } from "@/util/common";
 
 let ensoClient;
@@ -29,7 +29,7 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
         chainId,
         amount,
       }),
-    enabled: +amount > 0 && !!address && !!tokenAddress,
+    enabled: +amount > 0 && isAddress(address) && isAddress(tokenAddress),
   });
 };
 
@@ -92,7 +92,7 @@ export const useEnsoBalances = () => {
     queryKey: ["enso-balances", chainId, address],
     queryFn: () =>
       ensoClient.getBalances({ useEoa: true, chainId, eoaAddress: address }),
-    enabled: !!address,
+    enabled: isAddress(address),
   });
 };
 

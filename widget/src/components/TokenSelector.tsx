@@ -56,7 +56,7 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
     <Flex flexDirection={"column"} flex={1} alignItems={"flex-end"}>
       <Text fontSize={"md"}>
         {token.balance
-          ? `${normalizeValue(+token.balance, token.decimals)}`
+          ? `${normalizeValue(token.balance, token.decimals)}`
           : ""}
       </Text>
 
@@ -90,15 +90,19 @@ const TokenSelector = ({
     }
 
     const balancesWithTotals = tokens?.map((token) => {
-      const balance = balances?.find((b) => b.token === token.address);
+      const balanceValue = balances?.find((b) => b.token === token.address);
+      // cut scientific notation
+      const balance = Number(balanceValue?.amount).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
 
-      return balance
+      return balanceValue
         ? {
             ...token,
-            balance: balance.amount,
+            balance,
             costUsd:
-              +normalizeValue(+balance.amount, balance.decimals) *
-              +balance.price,
+              +normalizeValue(balance, balanceValue?.decimals) *
+              +balanceValue?.price,
           }
         : token;
     });

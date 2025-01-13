@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { NotifyType } from "@/types";
 
 const NOTIFICATION_COLORS = {
-  [NotifyType.Success]: "green.400",
+  [NotifyType.Success]: "green.500",
   [NotifyType.Error]: "red.400",
   [NotifyType.Info]: "blue.400",
   [NotifyType.Loading]: "blue.400",

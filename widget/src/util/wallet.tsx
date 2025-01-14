@@ -11,7 +11,7 @@ import {
   useWriteContract,
   UseWriteContractReturnType,
 } from "wagmi";
-import { BaseError } from "viem";
+import { Address, BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 import { RouteParams } from "@ensofinance/sdk";
 import {
@@ -20,11 +20,11 @@ import {
   useTokenFromList,
 } from "./common";
 import erc20Abi from "@/erc20Abi.json";
-import { useEnsoRouterData } from "./enso";
 import { ETH_ADDRESS } from "@/constants";
 import { formatNumber, normalizeValue } from "@/util/index";
 import { useStore } from "@/store";
-import { Address, NotifyType } from "@/types";
+import { useEnsoRouterData } from "./enso";
+import { NotifyType } from "@/types";
 
 enum TxState {
   Success,

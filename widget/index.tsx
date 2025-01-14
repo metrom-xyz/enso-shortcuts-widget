@@ -1,22 +1,29 @@
-import SwapWidget from "@/components/SwapWidget";
-import { Address, WidgetProps } from "@/types";
+import { useEffect, useMemo } from "react";
 import {
   ChakraProvider,
   createSystem,
   defaultConfig,
   SystemConfig,
 } from "@chakra-ui/react";
+import { Address } from "viem";
+import SwapWidget from "@/components/SwapWidget";
 import { useStore } from "@/store";
-import { useEffect, useMemo } from "react";
+import { WidgetProps } from "@/types";
 
 export { type SystemConfig };
 
 export default ({
   apiKey,
-  obligatedTokenOut,
-  obligatedChainId,
+  tokenOut,
+  tokenIn,
+  chainId,
   themeConfig,
-}: WidgetProps & { themeConfig?: SystemConfig; obligatedChainId?: number }) => {
+  enableShare,
+}: WidgetProps & {
+  themeConfig?: SystemConfig;
+  chainId?: number;
+  shareRoute?: boolean;
+}) => {
   const { setObligatedChainId } = useStore();
 
   const system = useMemo(
@@ -28,14 +35,16 @@ export default ({
   );
 
   useEffect(() => {
-    setObligatedChainId(obligatedChainId);
-  }, [obligatedChainId]);
+    setObligatedChainId(chainId);
+  }, [chainId]);
 
   return (
     <ChakraProvider value={system}>
       <SwapWidget
         apiKey={apiKey}
-        obligatedTokenOut={obligatedTokenOut?.toLowerCase() as Address}
+        tokenIn={tokenIn?.toLowerCase() as Address}
+        tokenOut={tokenOut?.toLowerCase() as Address}
+        enableShare={enableShare}
       />
     </ChakraProvider>
   );

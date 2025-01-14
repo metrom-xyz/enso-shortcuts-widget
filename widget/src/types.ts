@@ -1,8 +1,11 @@
-export type Address = `${"0x"}${string}`;
+import { Address } from "viem";
 
 export type WidgetProps = {
   apiKey: string;
-  obligatedTokenOut?: Address;
+  tokenOut?: Address;
+  tokenIn?: Address;
+  obligateSelection?: boolean;
+  enableShare?: boolean;
 };
 
 export enum NotifyType {

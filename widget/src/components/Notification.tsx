@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { CircleCheck, CircleX, ExternalLink, Info } from "lucide-react";
-import { Box, Flex, Link, Text, Center, Spinner } from "@chakra-ui/react";
+import { Box, Flex, Link, Text, Center } from "@chakra-ui/react";
 import { useStore } from "@/store";
 import { CloseButton } from "@/components/ui/close-button";
 import { Button } from "@/components/ui/button";

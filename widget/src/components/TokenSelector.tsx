@@ -8,6 +8,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
+import { Address } from "viem";
 import { FixedSizeList as List } from "react-window";
 import {
   SelectContent,
@@ -20,7 +21,6 @@ import { Token, useOneInchTokenList } from "@/util/common";
 import { normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
 import { MOCK_IMAGE_URL } from "@/constants";
-import { Address } from "@/types";
 
 type TokenWithBalance = Token & { balance?: string; costUsd?: number };
 
@@ -76,10 +76,10 @@ const TokenSelector = ({
   value: string;
   onChange: (value: string) => void;
   portalRef?: React.RefObject<HTMLDivElement>;
-  obligatedToken?: Address;
+  obligatedToken?: boolean;
 }) => {
   const { data: tokenMap } = useOneInchTokenList();
-  const [searchText, setSearchText] = useState(obligatedToken ?? "");
+  const [searchText, setSearchText] = useState(obligatedToken ? value : "");
   const { data: balances } = useEnsoBalances();
   const foundToken = useEnsoToken(searchText as Address);
 
@@ -120,8 +120,8 @@ const TokenSelector = ({
     const items = searchText
       ? tokenList.filter(
           (token) =>
-            token.symbol.toLowerCase().includes(searchText.toLowerCase()) ||
-            token.address.toLowerCase().includes(searchText.toLowerCase()),
+            token.symbol.toLowerCase().includes(searchText?.toLowerCase()) ||
+            token.address.toLowerCase().includes(searchText?.toLowerCase()),
         )
       : tokenList;
 

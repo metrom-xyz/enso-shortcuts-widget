@@ -1,10 +1,10 @@
-import TokenSelector from "@/components/TokenSelector";
 import { chakra, Flex, Grid, Skeleton, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
+import { Address } from "viem";
+import TokenSelector from "@/components/TokenSelector";
 import { formatNumber, formatUSD, normalizeValue } from "@/util";
 import { useTokenFromList } from "@/util/common";
 import { useTokenBalance } from "@/util/wallet";
-import { Address } from "@/types";
 
 //TODO: set default USDC address
 const SwapInput = ({
@@ -28,7 +28,7 @@ const SwapInput = ({
   disabled?: boolean;
   loading?: boolean;
   portalRef?: React.RefObject<HTMLDivElement>;
-  obligatedToken?: Address;
+  obligatedToken?: boolean;
 }) => {
   const { address } = useAccount();
   const balance = useTokenBalance(tokenValue);

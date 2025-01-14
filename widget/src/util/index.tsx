@@ -1,5 +1,4 @@
-import { formatUnits, parseUnits } from "viem";
-import { Address } from "@/types";
+import { Address, formatUnits, parseUnits } from "viem";
 
 export const denormalizeValue = (value: string, decimals = 0) =>
   parseUnits(value, decimals).toString();
@@ -9,7 +8,7 @@ export const normalizeValue = (value: bigint | string = "0", decimals = 0) => {
     return formatUnits(BigInt(value), decimals);
   } catch (e) {
     console.error(e);
-    debugger
+    debugger;
     return "0";
   }
 };

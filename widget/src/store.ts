@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { NotifyType } from "@/components/Notification";
+import { NotifyType } from "@/types";
 
 type Notification = {
   message: string;

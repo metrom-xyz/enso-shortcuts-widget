@@ -4,6 +4,10 @@ import { Box, Flex, Link, Text, Center, Spinner } from "@chakra-ui/react";
 import { useStore } from "@/store";
 import { CloseButton } from "@/components/ui/close-button";
 import { Button } from "@/components/ui/button";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
 import { NotifyType } from "@/types";
 
 const NOTIFICATION_COLORS = {
@@ -23,14 +27,20 @@ const getIcon = (variant: NotifyType) => {
   if (variant === NotifyType.Loading) {
     return (
       <Center w={"96px"} h={"96px"}>
-        <Spinner size={"xl"} borderWidth={"5px"} />
+        <ProgressCircleRoot value={null} size={"xl"} colorPalette={"blue"}>
+          <ProgressCircleRing />
+        </ProgressCircleRoot>
       </Center>
     );
   }
 
   const Component = NotificationIcons[variant];
 
-  return <Component size={96} />;
+  return (
+    <Box color={NOTIFICATION_COLORS[variant]}>
+      <Component size={96} />
+    </Box>
+  );
 };
 
 export const Notification = () => {
@@ -74,9 +84,7 @@ export const Notification = () => {
         alignItems={"center"}
         gap={2}
       >
-        <Box color={NOTIFICATION_COLORS[notification.variant]}>
-          {getIcon(notification.variant)}
-        </Box>
+        {getIcon(notification.variant)}
         <Text fontSize={"xl"}>{notification.message}</Text>
         <Button mt={5} w={200} variant={"subtle"} onClick={handleClose}>
           Close

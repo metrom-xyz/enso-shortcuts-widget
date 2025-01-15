@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { arbitrum, base, mainnet } from "viem/chains";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Box, Center, Flex, Link, Text } from "@chakra-ui/react";
 import { Address } from "viem";
@@ -17,13 +16,8 @@ import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import Notification from "@/components/Notification";
 import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
+import { USDC_ADDRESS } from "@/constants";
 import { WidgetProps } from "@/types";
-
-const USDC_ADDRESS: Record<number, Address> = {
-  [mainnet.id]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  [arbitrum.id]: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
-  [base.id]: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-};
 
 const SwapWidget = ({
   apiKey,
@@ -157,7 +151,7 @@ const SwapWidget = ({
               1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
               {tokenOutInfo?.symbol}
             </Text>
-            {!!quoteData?.priceImpact && (
+            {typeof quoteData?.priceImpact === "number" && (
               <Text color="gray.500" fontSize={"sm"}>
                 Price impact: {(quoteData?.priceImpact / 1000).toFixed(2)}%
               </Text>

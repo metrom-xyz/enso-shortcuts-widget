@@ -1,3 +1,16 @@
+import { Address } from "viem";
+import {
+  arbitrum,
+  avalanche,
+  base,
+  gnosis,
+  linea,
+  mainnet,
+  optimism,
+  polygon,
+  zksync,
+} from "viem/chains";
+
 export const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export const ETH_TOKEN = {
   address: ETH_ADDRESS,
@@ -54,4 +67,16 @@ export const CHAINS_ETHERSCAN: Record<SupportedChainId, string> = {
   [SupportedChainId.BLAST]: "https://blastscan.io",
   [SupportedChainId.SCROLL]: "https://scrollscan.com",
   [SupportedChainId.LINEA]: "https://lineascan.build",
+};
+
+export const USDC_ADDRESS: Record<number, Address> = {
+  [mainnet.id]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  [arbitrum.id]: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+  [base.id]: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+  [zksync.id]: "0x1d17cbcf0d6d143135ae902365d2e5e2a16538d4",
+  [optimism.id]: "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+  [linea.id]: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
+  [polygon.id]: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+  [avalanche.id]: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+  [gnosis.id]: "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
 };

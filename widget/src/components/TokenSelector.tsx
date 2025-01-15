@@ -17,10 +17,10 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { Token, useOneInchTokenList } from "@/util/common";
+import { Token, useGeckoList, usePriorityChainId } from "@/util/common";
 import { normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
-import { MOCK_IMAGE_URL } from "@/constants";
+import { ETH_TOKEN, MOCK_IMAGE_URL, NATIVE_ETH_CHAINS } from "@/constants";
 
 type TokenWithBalance = Token & { balance?: string; costUsd?: number };
 
@@ -96,13 +96,18 @@ const TokenSelector = ({
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
 }) => {
-  const { data: tokenMap } = useOneInchTokenList();
+  const { data: geckoTokens } = useGeckoList();
+  const chainId = usePriorityChainId();
   const [searchText, setSearchText] = useState(obligatedToken ? value : "");
   const { data: balances } = useEnsoBalances();
   const foundToken = useEnsoToken(searchText as Address);
 
   const tokenList = useMemo(() => {
-    let tokens = tokenMap ? Object.values(tokenMap) : [];
+    let tokens = geckoTokens ?? [];
+
+    if (NATIVE_ETH_CHAINS.includes(chainId)) {
+      tokens = [...tokens, ETH_TOKEN];
+    }
     if (foundToken) {
       tokens = [foundToken];
     }
@@ -132,7 +137,7 @@ const TokenSelector = ({
     });
 
     return balancesWithTotals;
-  }, [balances, tokenMap, foundToken]);
+  }, [balances, geckoTokens, foundToken]);
 
   const tokenOptions = useMemo(() => {
     let items = tokenList;

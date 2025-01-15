@@ -102,8 +102,6 @@ const SwapWidget = ({
     return url.toString();
   }, [tokenIn, tokenOut, chainId]);
 
-  console.log(providedTokenIn, tokenIn, providedTokenOut, tokenOut);
-
   return (
     <Box position={"relative"} layerStyle={"outline.subtle"}>
       {/* Portal for notifications and swap popover */}

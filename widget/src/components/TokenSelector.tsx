@@ -48,9 +48,27 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
     </Box>
 
     <Flex ml={2} flexDirection={"column"} flex={1}>
-      <Text fontSize={"md"}>{token?.symbol}</Text>
+      <Text
+        fontSize={"md"}
+        textOverflow={"ellipsis"}
+        whiteSpace={"nowrap"}
+        overflow={"hidden"}
+        w={"150px"}
+        title={token?.symbol}
+      >
+        {token?.symbol}
+      </Text>
 
-      <Text color={"gray.400"}>{token.name}</Text>
+      <Text
+        color={"gray.400"}
+        textOverflow={"ellipsis"}
+        whiteSpace={"nowrap"}
+        overflow={"hidden"}
+        w={"150px"}
+        title={token.name}
+      >
+        {token.name}
+      </Text>
     </Flex>
 
     <Flex flexDirection={"column"} flex={1} alignItems={"flex-end"}>
@@ -117,13 +135,17 @@ const TokenSelector = ({
   }, [balances, tokenMap, foundToken]);
 
   const tokenOptions = useMemo(() => {
-    const items = searchText
-      ? tokenList.filter(
-          (token) =>
-            token.symbol.toLowerCase().includes(searchText?.toLowerCase()) ||
-            token.address.toLowerCase().includes(searchText?.toLowerCase()),
-        )
-      : tokenList;
+    let items = tokenList;
+
+    if (searchText) {
+      const search = searchText.toLocaleLowerCase();
+
+      items = tokenList.filter((token) =>
+        [token.symbol, token.name, token.address].some((val) =>
+          val.toLocaleLowerCase().includes(search),
+        ),
+      );
+    }
 
     return createListCollection({
       items,
@@ -140,6 +162,9 @@ const TokenSelector = ({
       onValueChange={({ value }) => onChange(value[0] as string)}
       size="sm"
       minWidth="140px"
+      onOpenChange={({ open }) =>
+        open || obligatedToken || foundToken || setSearchText("")
+      }
     >
       <SelectTrigger noIndicator={!!obligatedToken}>
         <SelectValueText placeholder="Select token">

@@ -8,7 +8,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 import { FixedSizeList as List } from "react-window";
 import {
   SelectContent,
@@ -20,7 +20,12 @@ import {
 import { Token, useGeckoList, usePriorityChainId } from "@/util/common";
 import { normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
-import { ETH_TOKEN, MOCK_IMAGE_URL, NATIVE_ETH_CHAINS } from "@/constants";
+import {
+  ETH_ADDRESS,
+  ETH_TOKEN,
+  MOCK_IMAGE_URL,
+  NATIVE_ETH_CHAINS,
+} from "@/constants";
 
 type TokenWithBalance = Token & { balance?: string; costUsd?: number };
 
@@ -113,7 +118,13 @@ const TokenSelector = ({
     }
 
     const balancesWithTotals = tokens?.map((token) => {
-      const balanceValue = balances?.find((b) => b.token === token.address);
+      let balanceValue = balances?.find((b) => b.token === token.address);
+
+      // debank return ''arb" and "zksync" native token names instead of token address
+      if (token.address === ETH_ADDRESS) {
+        balanceValue = balances?.find(({ token }) => token && !isAddress(token));
+      }
+
       // cut scientific notation
       const balance = Number(balanceValue?.amount).toLocaleString("fullwide", {
         useGrouping: false,

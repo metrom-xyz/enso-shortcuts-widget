@@ -159,7 +159,7 @@ const useWatchTransactionHash = <
 ) => {
   // const addRecentTransaction = useAddRecentTransaction();
 
-  const hash = usedWriteContract.data;
+  const { data: hash, reset } = usedWriteContract;
   const { setNotification } = useStore();
 
   // useEffect(() => {
@@ -182,6 +182,8 @@ const useWatchTransactionHash = <
         link,
       });
     } else if (waitForTransaction.data) {
+      // reset tx hash to eliminate recurring notifications
+      reset();
       setNotification({
         message: description,
         variant: NotifyType.Success,

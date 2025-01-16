@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Center,
@@ -103,9 +103,13 @@ const TokenSelector = ({
 }) => {
   const { data: geckoTokens } = useGeckoList();
   const chainId = usePriorityChainId();
-  const [searchText, setSearchText] = useState(obligatedToken ? value : "");
+  const [searchText, setSearchText] = useState("");
   const { data: balances } = useEnsoBalances();
   const foundToken = useEnsoToken(searchText as Address);
+
+  useEffect(() => {
+    if (obligatedToken) setSearchText(value);
+  }, [obligatedToken, value]);
 
   const tokenList = useMemo(() => {
     let tokens = geckoTokens ?? [];
@@ -122,7 +126,9 @@ const TokenSelector = ({
 
       // debank return ''arb" and "zksync" native token names instead of token address
       if (token.address === ETH_ADDRESS) {
-        balanceValue = balances?.find(({ token }) => token && !isAddress(token));
+        balanceValue = balances?.find(
+          ({ token }) => token && !isAddress(token),
+        );
       }
 
       // cut scientific notation
@@ -193,7 +199,6 @@ const TokenSelector = ({
           height={"350px"}
           flexDirection={"column"}
           gap={2}
-          marginY={2}
           p={1}
           width={"100%"}
         >

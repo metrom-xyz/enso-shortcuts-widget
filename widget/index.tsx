@@ -19,6 +19,7 @@ export default ({
   chainId,
   themeConfig,
   enableShare,
+  obligateSelection,
 }: WidgetProps & {
   themeConfig?: SystemConfig;
   chainId?: number;
@@ -41,6 +42,7 @@ export default ({
   return (
     <ChakraProvider value={system}>
       <SwapWidget
+        obligateSelection={obligateSelection}
         apiKey={apiKey}
         tokenIn={tokenIn?.toLowerCase() as Address}
         tokenOut={tokenOut?.toLowerCase() as Address}

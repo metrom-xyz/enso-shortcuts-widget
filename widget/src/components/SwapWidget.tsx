@@ -103,7 +103,12 @@ const SwapWidget = ({
   }, [tokenIn, tokenOut, chainId]);
 
   return (
-    <Box position={"relative"} layerStyle={"outline.subtle"}>
+    <Box
+      position={"relative"}
+      border="solid 1px"
+      borderColor="gray.200"
+      borderRadius="md"
+    >
       {/* Portal for notifications and swap popover */}
       <Flex
         ref={portalRef}

@@ -1,7 +1,6 @@
 import { Address } from "viem";
 
 export type WidgetProps = {
-  apiKey: string;
   tokenOut?: Address;
   tokenIn?: Address;
   obligateSelection?: boolean;

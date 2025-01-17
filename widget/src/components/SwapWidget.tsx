@@ -3,7 +3,6 @@ import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Box, Center, Flex, Link, Text } from "@chakra-ui/react";
 import { Address } from "viem";
 import {
-  setApiKey,
   useEnsoApprove,
   useEnsoPrice,
   useEnsoQuote,
@@ -20,7 +19,6 @@ import { USDC_ADDRESS } from "@/constants";
 import { WidgetProps } from "@/types";
 
 const SwapWidget = ({
-  apiKey,
   tokenOut: providedTokenOut,
   tokenIn: providedTokenIn,
   obligateSelection,
@@ -35,11 +33,6 @@ const SwapWidget = ({
 
   const tokenInInfo = useEnsoToken(tokenIn);
   const tokenOutInfo = useEnsoToken(tokenOut);
-
-  // initialize client with key before it is used
-  useEffect(() => {
-    setApiKey(apiKey);
-  }, []);
 
   // set default token in
   useEffect(() => {

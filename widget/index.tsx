@@ -1,16 +1,24 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  Box,
   ChakraProvider,
   createSystem,
   defaultConfig,
   SystemConfig,
+  EnvironmentProvider,
 } from "@chakra-ui/react";
 import { Address } from "viem";
+import root from "react-shadow/emotion";
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
 import SwapWidget from "@/components/SwapWidget";
 import { useStore } from "@/store";
+import { setApiKey } from "@/util/enso";
 import { WidgetProps } from "@/types";
 
 export { type SystemConfig };
+
+const varRoot = ":host";
 
 export default ({
   apiKey,
@@ -21,16 +29,38 @@ export default ({
   enableShare,
   obligateSelection,
 }: WidgetProps & {
+  apiKey: string;
   themeConfig?: SystemConfig;
   chainId?: number;
   shareRoute?: boolean;
 }) => {
+  const [shadow, setShadow] = useState<HTMLElement | null>(null);
+  const [cache, setCache] = useState<ReturnType<typeof createCache> | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (!shadow?.shadowRoot || cache) return;
+    const emotionCache = createCache({
+      key: "root",
+      container: shadow.shadowRoot,
+    });
+    setCache(emotionCache);
+  }, [shadow, cache]);
+
   const { setObligatedChainId } = useStore();
 
   const system = useMemo(
     () =>
       createSystem(defaultConfig, themeConfig, {
-        disableLayers: true,
+        cssVarsRoot: varRoot,
+        preflight: { scope: varRoot },
+        conditions: {
+          light: `${varRoot} &, .light &`,
+        },
+        globalCss: {
+          [varRoot]: defaultConfig.globalCss?.html ?? {},
+        },
       }),
     [themeConfig],
   );
@@ -39,15 +69,29 @@ export default ({
     setObligatedChainId(chainId);
   }, [chainId]);
 
+  // initialize client with key before it is used
+  useEffect(() => {
+    setApiKey(apiKey);
+  }, []);
+
   return (
-    <ChakraProvider value={system}>
-      <SwapWidget
-        obligateSelection={obligateSelection}
-        apiKey={apiKey}
-        tokenIn={tokenIn?.toLowerCase() as Address}
-        tokenOut={tokenOut?.toLowerCase() as Address}
-        enableShare={enableShare}
-      />
-    </ChakraProvider>
+    <root.div ref={setShadow}>
+      {shadow && cache && (
+        <EnvironmentProvider value={() => shadow.shadowRoot ?? document}>
+          <CacheProvider value={cache}>
+            <ChakraProvider value={system}>
+              <Box>
+                <SwapWidget
+                  obligateSelection={obligateSelection}
+                  tokenIn={tokenIn?.toLowerCase() as Address}
+                  tokenOut={tokenOut?.toLowerCase() as Address}
+                  enableShare={enableShare}
+                />
+              </Box>
+            </ChakraProvider>
+          </CacheProvider>
+        </EnvironmentProvider>
+      )}
+    </root.div>
   );
 };

@@ -156,7 +156,7 @@ const SwapWidget = ({
             </Text>
             {typeof quoteData?.priceImpact === "number" && (
               <Text color="gray.500" fontSize={"sm"}>
-                Price impact: {(quoteData?.priceImpact / 1000).toFixed(2)}%
+                Price impact: {(quoteData?.priceImpact / 100).toFixed(2)}%
               </Text>
             )}
           </Flex>

@@ -6,7 +6,6 @@ import { formatNumber, formatUSD, normalizeValue } from "@/util";
 import { useTokenFromList } from "@/util/common";
 import { useTokenBalance } from "@/util/wallet";
 
-//TODO: set default USDC address
 const SwapInput = ({
   tokenValue,
   tokenOnChange,

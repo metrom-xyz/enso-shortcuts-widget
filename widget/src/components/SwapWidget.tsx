@@ -38,10 +38,22 @@ const SwapWidget = ({
   useEffect(() => {
     setTokenIn(USDC_ADDRESS[chainId]);
   }, [chainId]);
+  // sets selected tokens if ones are provided
   useEffect(() => {
     if (providedTokenOut) setTokenOut(providedTokenOut);
     if (providedTokenIn) setTokenIn(providedTokenIn);
   }, [providedTokenOut, providedTokenIn]);
+
+  // sets query params for tokenIn, tokenOut, and chainId
+  useEffect(() => {
+    if (!enableShare) return;
+
+    const url = new URL(window.location.href);
+    if (tokenIn) url.searchParams.set("tokenIn", tokenIn);
+    if (tokenOut) url.searchParams.set("tokenOut", tokenOut);
+    url.searchParams.set("chainId", chainId.toString());
+    window.history.replaceState({}, "", url.toString());
+  }, [tokenIn, tokenOut, chainId]);
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 

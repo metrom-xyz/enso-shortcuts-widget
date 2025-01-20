@@ -107,7 +107,7 @@ const useEnsoTokenDetails = (address: Address) => {
   });
 };
 
-export const useEnsoToken = (address: Address) => {
+export const useEnsoToken = (address?: Address) => {
   const { data } = useEnsoTokenDetails(address);
 
   const token: Token = useMemo(() => {

@@ -3,9 +3,9 @@ import { useChainId } from "wagmi";
 import { Address } from "viem";
 import {
   CHAINS_ETHERSCAN,
-  ETH_ADDRESS,
   ETH_TOKEN,
   GECKO_CHAIN_NAMES,
+  NATIVE_ETH_CHAINS,
   SupportedChainId,
 } from "@/constants";
 import tokenList from "../tokenList";
@@ -37,12 +37,19 @@ export const useGeckoList = () => {
   const chainId = usePriorityChainId();
   const chainName = GECKO_CHAIN_NAMES[chainId];
 
-  return useQuery<Token[] | undefined>({
+  const { data } = useQuery<Token[] | undefined>({
     queryKey: ["tokenList", chainName],
     queryFn: () => getGeckoList(chainName),
     enabled: !!chainName,
   });
+
+  if (data) {
+    return NATIVE_ETH_CHAINS.includes(chainId) ? [...data, ETH_TOKEN] : data;
+  }
+
+  return [];
 };
+
 export const useOneInchTokenList = () => {
   const chainId = usePriorityChainId();
 
@@ -54,9 +61,7 @@ export const useOneInchTokenList = () => {
 };
 
 export const useTokenFromList = (tokenAddress: Address) => {
-  const { data } = useGeckoList();
-
-  if (tokenAddress === ETH_ADDRESS) return ETH_TOKEN;
+  const data = useGeckoList();
 
   return data?.find((token) =>
     compareCaseInsensitive(token.address, tokenAddress),

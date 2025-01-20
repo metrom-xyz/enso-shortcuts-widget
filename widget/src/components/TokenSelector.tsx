@@ -90,35 +90,46 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
   </Flex>
 );
 
+const hasCoincidence = (tokens: Token[], address: Address) =>
+  tokens.some(
+    (token) =>
+      token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase(),
+  );
+
 const TokenSelector = ({
   value,
   onChange,
   portalRef,
   obligatedToken,
 }: {
-  value: string;
+  value: Address;
   onChange: (value: string) => void;
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
 }) => {
-  const { data: geckoTokens } = useGeckoList();
-  const chainId = usePriorityChainId();
+  const geckoTokens = useGeckoList();
   const [searchText, setSearchText] = useState("");
   const { data: balances } = useEnsoBalances();
-  const foundToken = useEnsoToken(searchText as Address);
 
-  useEffect(() => {
-    if (obligatedToken) setSearchText(value);
-  }, [obligatedToken, value]);
+  const searchedToken = useEnsoToken(
+    geckoTokens.length && !hasCoincidence(geckoTokens, searchText as Address)
+      ? (searchText as Address)
+      : undefined,
+  );
+  const valueToken = useEnsoToken(
+    geckoTokens.length && !hasCoincidence(geckoTokens, value)
+      ? value
+      : undefined,
+  );
 
   const tokenList = useMemo(() => {
-    let tokens = geckoTokens ?? [];
+    let tokens = geckoTokens;
 
-    if (NATIVE_ETH_CHAINS.includes(chainId)) {
-      tokens = [...tokens, ETH_TOKEN];
+    if (searchedToken) {
+      tokens = [...tokens, searchedToken];
     }
-    if (foundToken) {
-      tokens = [foundToken];
+    if (valueToken) {
+      tokens = [...tokens, valueToken];
     }
 
     const balancesWithTotals = tokens?.map((token) => {
@@ -154,7 +165,7 @@ const TokenSelector = ({
     });
 
     return balancesWithTotals;
-  }, [balances, geckoTokens, foundToken]);
+  }, [balances, geckoTokens, searchedToken]);
 
   const tokenOptions = useMemo(() => {
     let items = tokenList;
@@ -185,7 +196,7 @@ const TokenSelector = ({
       size="sm"
       minWidth="140px"
       onOpenChange={({ open }) =>
-        open || obligatedToken || foundToken || setSearchText("")
+        open || obligatedToken || searchedToken || setSearchText("")
       }
     >
       <SelectTrigger noIndicator={!!obligatedToken}>

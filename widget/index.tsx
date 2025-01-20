@@ -28,11 +28,11 @@ export default ({
   themeConfig,
   enableShare,
   obligateSelection,
+  indicateRoute,
 }: WidgetProps & {
   apiKey: string;
   themeConfig?: SystemConfig;
   chainId?: number;
-  shareRoute?: boolean;
 }) => {
   const [shadow, setShadow] = useState<HTMLElement | null>(null);
   const [cache, setCache] = useState<ReturnType<typeof createCache> | null>(
@@ -71,7 +71,8 @@ export default ({
 
   // initialize client with key before it is used
   useEffect(() => {
-    setApiKey(apiKey);
+    if (apiKey) setApiKey(apiKey);
+    else alert("Provide Enso API key to the widget");
   }, []);
 
   return (
@@ -82,6 +83,7 @@ export default ({
             <ChakraProvider value={system}>
               <Box>
                 <SwapWidget
+                  indicateRoute={indicateRoute}
                   obligateSelection={obligateSelection}
                   tokenIn={tokenIn?.toLowerCase() as Address}
                   tokenOut={tokenOut?.toLowerCase() as Address}

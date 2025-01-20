@@ -19,6 +19,7 @@ function App() {
     const props: ComponentProps<typeof SwapWidget> = {
       apiKey: EnsoApiKey,
       enableShare: true,
+      indicateRoute: true,
     };
 
     if (chainIdParam) {

@@ -5,6 +5,7 @@ export type WidgetProps = {
   tokenIn?: Address;
   obligateSelection?: boolean;
   enableShare?: boolean;
+  indicateRoute?: boolean;
 };
 
 export enum NotifyType {

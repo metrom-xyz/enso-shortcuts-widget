@@ -24,6 +24,7 @@ const SwapWidget = ({
   tokenIn: providedTokenIn,
   obligateSelection,
   enableShare,
+  indicateRoute,
 }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
@@ -204,21 +205,23 @@ const SwapWidget = ({
           </Button>
         </Flex>
 
-        <Box>
-          <Flex color={"gray.500"}>
-            <Text
-              textDecoration={"dotted"}
-              _hover={{ textDecoration: "underline" }}
-              cursor={"pointer"}
-              fontSize={"xs"}
-              onClick={toggleRoute}
-              whiteSpace={"nowrap"}
-            >
-              {showRoute ? "Hide" : "Show"} route
-            </Text>
-          </Flex>
-          {showRoute && <RouteIndication route={ensoData?.route} />}
-        </Box>
+        {indicateRoute && (
+          <Box>
+            <Flex color={"gray.500"}>
+              <Text
+                textDecoration={"dotted"}
+                _hover={{ textDecoration: "underline" }}
+                cursor={"pointer"}
+                fontSize={"xs"}
+                onClick={toggleRoute}
+                whiteSpace={"nowrap"}
+              >
+                {showRoute ? "Hide" : "Show"} route
+              </Text>
+            </Flex>
+            {showRoute && <RouteIndication route={ensoData?.route} />}
+          </Box>
+        )}
 
         <Flex w={"100%"}>
           {enableShare && (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Center,
@@ -17,29 +17,13 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { Token, useGeckoList, usePriorityChainId } from "@/util/common";
+import { Token, useGeckoList } from "@/util/common";
 import { normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
-import {
-  ETH_ADDRESS,
-  ETH_TOKEN,
-  MOCK_IMAGE_URL,
-  NATIVE_ETH_CHAINS,
-} from "@/constants";
+import { ETH_ADDRESS, MOCK_IMAGE_URL } from "@/constants";
+import { TokenIndicator } from "@/components/TokenIndicator";
 
 type TokenWithBalance = Token & { balance?: string; costUsd?: number };
-
-const TokenIndicator = ({ token }: { token: Token }) => (
-  <Flex align="center">
-    <img
-      src={token?.logoURI ?? MOCK_IMAGE_URL}
-      alt={token?.symbol}
-      width={24}
-      height={24}
-    />
-    <Text ml={2}>{token?.symbol}</Text>
-  </Flex>
-);
 
 const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
   <Flex align="center" w={"full"}>

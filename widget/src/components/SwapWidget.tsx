@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
-import { Box, Center, Flex, Link, Text } from "@chakra-ui/react";
+import { Box, Center, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { Address } from "viem";
 import {
   useEnsoApprove,
@@ -16,6 +16,7 @@ import { getChainName, usePriorityChainId } from "@/util/common";
 import Notification from "@/components/Notification";
 import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
 import { USDC_ADDRESS } from "@/constants";
+import RouteIndication from "@/components/RouteIndication";
 import { WidgetProps } from "@/types";
 
 const SwapWidget = ({
@@ -30,6 +31,9 @@ const SwapWidget = ({
   const { address } = useAccount();
   const [tokenOut, setTokenOut] = useState<Address>();
   const { switchChain } = useSwitchChain();
+  const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
+    defaultOpen: true,
+  });
 
   const tokenInInfo = useEnsoToken(tokenIn);
   const tokenOutInfo = useEnsoToken(tokenOut);
@@ -199,6 +203,22 @@ const SwapWidget = ({
             Swap
           </Button>
         </Flex>
+
+        <Box>
+          <Flex color={"gray.500"}>
+            <Text
+              textDecoration={"dotted"}
+              _hover={{ textDecoration: "underline" }}
+              cursor={"pointer"}
+              fontSize={"xs"}
+              onClick={toggleRoute}
+              whiteSpace={"nowrap"}
+            >
+              {showRoute ? "Hide" : "Show"} route
+            </Text>
+          </Flex>
+          {showRoute && <RouteIndication route={ensoData?.route} />}
+        </Box>
 
         <Flex w={"100%"}>
           {enableShare && (

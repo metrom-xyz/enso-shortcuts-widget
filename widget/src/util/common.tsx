@@ -85,8 +85,10 @@ export const useEtherscanUrl = (
   if (address) return `${chainPrefix}${type}/${address}`;
 };
 
+export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 export const getChainName = (chainId: SupportedChainId) => {
   const geckoName = GECKO_CHAIN_NAMES[chainId];
 
-  return geckoName?.charAt(0).toUpperCase() + geckoName?.slice(1).split("-")[0];
+  return capitalize(geckoName).split("-")[0];
 };

@@ -99,8 +99,8 @@ importers:
         specifier: ^11.14.0
         version: 11.14.0(@types/react@18.3.18)(react@18.3.1)
       '@ensofinance/sdk':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.7
+        version: 1.0.7
       '@tanstack/react-query':
         specifier: ^5.62.10
         version: 5.62.16(react@18.3.1)
@@ -408,6 +408,12 @@ packages:
 
   '@ensofinance/sdk@1.0.1':
     resolution: {integrity: sha512-pJmggn/tk7MluvysYCMXcUbzuECDSWXHaeX67tLi5aN7252yC3zQXAby7FVAh7tM7bupq7JGEpuk1fAV/EyWbw==}
+
+  '@ensofinance/sdk@1.0.6':
+    resolution: {integrity: sha512-xSINKZl1cmcfoUBYw8Zx8zzxUJLqG3GD3NUILNAQasjmx2nTRW4yN0ksh4HaSr0ROhPxy6kSrfHPKCRsEB3+tw==}
+
+  '@ensofinance/sdk@1.0.7':
+    resolution: {integrity: sha512-BNphPW8Ur710KmXSzyqq5JRpy3BPJAjQxsS9PkUAxx0/700hgCV81ImkZ7J5119bXKsi1qah6N/Os4h33FBXYg==}
 
   '@esbuild/aix-ppc64@0.24.2':
     resolution: {integrity: sha512-thpVCb/rhxE/BnMLQ7GReQLLN8q9qbHmI55F4489/ByVg2aQaQ6kbcLb6FHkocZzQhxc4gx0sCk0tJkKBFzDhA==}
@@ -3725,6 +3731,19 @@ snapshots:
   '@emotion/weak-memoize@0.4.0': {}
 
   '@ensofinance/sdk@1.0.1':
+    dependencies:
+      '@ensofinance/sdk': 1.0.6
+      axios: 1.7.9
+    transitivePeerDependencies:
+      - debug
+
+  '@ensofinance/sdk@1.0.6':
+    dependencies:
+      axios: 1.7.9
+    transitivePeerDependencies:
+      - debug
+
+  '@ensofinance/sdk@1.0.7':
     dependencies:
       axios: 1.7.9
     transitivePeerDependencies:

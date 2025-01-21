@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  Box,
   Center,
   createListCollection,
   Flex,
@@ -20,21 +19,14 @@ import {
 import { Token, useGeckoList } from "@/util/common";
 import { normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
-import { ETH_ADDRESS, MOCK_IMAGE_URL } from "@/constants";
-import { TokenIndicator } from "@/components/TokenIndicator";
+import { ETH_ADDRESS } from "@/constants";
+import {TokenIcon, TokenIndicator} from "@/components/TokenIndicator";
 
 type TokenWithBalance = Token & { balance?: string; costUsd?: number };
 
 const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
   <Flex align="center" w={"full"}>
-    <Box>
-      <img
-        src={token?.logoURI ?? MOCK_IMAGE_URL}
-        alt={token?.symbol}
-        width={24}
-        height={24}
-      />
-    </Box>
+      <TokenIcon token={token}/>
 
     <Flex ml={2} flexDirection={"column"} flex={1}>
       <Text
@@ -191,7 +183,7 @@ const TokenSelector = ({
 
       <SelectContent portalRef={portalRef} w={"100%"} minWidth={"350px"}>
         <Flex
-          height={"350px"}
+          height={"100%"}
           flexDirection={"column"}
           gap={2}
           p={1}

@@ -110,7 +110,7 @@ const useEnsoTokenDetails = (address: Address) => {
 export const useEnsoToken = (address?: Address) => {
   const { data } = useEnsoTokenDetails(address);
 
-  const token: Token = useMemo(() => {
+  const token: Token | null = useMemo(() => {
     if (!data?.data?.length) return null;
     const ensoToken = data.data[0];
 

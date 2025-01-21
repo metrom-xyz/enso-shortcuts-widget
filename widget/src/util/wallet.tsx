@@ -5,7 +5,6 @@ import {
   useReadContract,
   useSendTransaction,
   UseSendTransactionReturnType,
-  useSimulateContract,
   UseSimulateContractParameters,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -120,7 +119,6 @@ export const useExtendedContractWrite = (
   title: string,
   writeContractVariables: UseSimulateContractParameters,
 ) => {
-  const simulateContract = useSimulateContract(writeContractVariables);
   const contractWrite = useWatchWriteTransactionHash(title);
   const { setNotification } = useStore();
 
@@ -147,7 +145,6 @@ export const useExtendedContractWrite = (
   return {
     ...contractWrite,
     write,
-    estimateError: simulateContract.error,
   };
 };
 

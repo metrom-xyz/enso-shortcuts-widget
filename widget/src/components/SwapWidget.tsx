@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Box, Center, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
+import { TriangleAlert } from "lucide-react";
 import { Address } from "viem";
 import {
   useEnsoApprove,
@@ -17,7 +18,8 @@ import Notification from "@/components/Notification";
 import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
 import { USDC_ADDRESS } from "@/constants";
 import RouteIndication from "@/components/RouteIndication";
-import { WidgetProps } from "@/types";
+import { useStore } from "@/store";
+import { NotifyType, WidgetProps } from "@/types";
 
 const SwapWidget = ({
   tokenOut: providedTokenOut,
@@ -28,13 +30,16 @@ const SwapWidget = ({
 }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
+  const [warningAccepted, setWarningAccepted] = useState(false);
+  const [tokenOut, setTokenOut] = useState<Address>();
+
   const chainId = usePriorityChainId();
   const { address } = useAccount();
-  const [tokenOut, setTokenOut] = useState<Address>();
   const { switchChain } = useSwitchChain();
   const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
     defaultOpen: true,
   });
+  const { setNotification } = useStore();
 
   const tokenInInfo = useEnsoToken(tokenIn);
   const tokenOutInfo = useEnsoToken(tokenOut);
@@ -59,6 +64,11 @@ const SwapWidget = ({
     url.searchParams.set("chainId", chainId.toString());
     window.history.replaceState({}, "", url.toString());
   }, [tokenIn, tokenOut, chainId]);
+
+  // reset warning if token changes
+  useEffect(() => {
+    setWarningAccepted(false);
+  }, [tokenIn, tokenOut]);
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
@@ -112,6 +122,22 @@ const SwapWidget = ({
     return url.toString();
   }, [tokenIn, tokenOut, chainId]);
 
+  // warn if >3%
+  const priceImpactWarning =
+    typeof quoteData?.priceImpact === "number" && quoteData?.priceImpact >= 300;
+
+  const needToAcceptWarning = priceImpactWarning && !warningAccepted;
+  const formatterPriceImpact = (-(quoteData?.priceImpact / 100)).toFixed(2);
+
+  const showWarning = useCallback(() => {
+    setNotification({
+      message: `High price impact (${formatterPriceImpact}%). 
+      Due to the amount of ${tokenOutInfo?.symbol} liquidity currently available, the more ${tokenInInfo?.symbol} you try to swap, the less ${tokenOutInfo?.symbol} you will receive.`,
+      variant: NotifyType.Warning,
+    });
+    setWarningAccepted(true);
+  }, [formatterPriceImpact, tokenInInfo?.symbol, tokenOutInfo?.symbol]);
+
   return (
     <Box
       position={"relative"}
@@ -125,9 +151,14 @@ const SwapWidget = ({
         position={"absolute"}
         css={{
           [`&:has(> div:not([data-state="closed"]))`]: {
-            width: "100%",
-            height: "100%",
+            zIndex: 1000,
           },
+          zIndex: -1,
+          top: 0,
+          bottom: 0,
+          margin: "auto",
+          left: 0,
+          right: 0,
         }}
       >
         <Notification />
@@ -159,15 +190,23 @@ const SwapWidget = ({
             usdValue={tokenOutUsdPrice}
           />
 
-          <Flex justify="space-between" mt={-2}>
+          <Flex justify="space-between" mt={-2} alignItems={"center"}>
             <Text color="gray.500" fontSize={"xs"}>
               1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
               {tokenOutInfo?.symbol}
             </Text>
             {typeof quoteData?.priceImpact === "number" && (
-              <Text color="gray.500" fontSize={"sm"}>
-                Price impact: {(quoteData?.priceImpact / 100).toFixed(2)}%
-              </Text>
+              <Flex>
+                <Flex
+                  color={priceImpactWarning ? "yellow.500" : "gray.500"}
+                  fontSize={"sm"}
+                  gap={1}
+                  alignItems={"center"}
+                >
+                  Price impact: {formatterPriceImpact}%
+                  {priceImpactWarning && <TriangleAlert size={16} />}
+                </Flex>
+              </Flex>
             )}
           </Flex>
         </Box>
@@ -199,7 +238,7 @@ const SwapWidget = ({
             variant={"outline"}
             disabled={!!approve || wrongChain || !(+ensoData?.amountOut > 0)}
             loading={sendData.isLoading || isEnsoDataLoading}
-            onClick={sendData.send}
+            onClick={needToAcceptWarning ? showWarning : sendData.send}
           >
             Swap
           </Button>

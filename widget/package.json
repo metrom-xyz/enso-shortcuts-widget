@@ -1,10 +1,12 @@
 {
   "name": "@ensofinance/shortcuts-widget",
-  "version": "0.2.25",
+  "version": "0.2.28",
   "type": "module",
   "homepage": "https://www.enso.build/",
   "repository": {
-    "url": "https://github.com/EnsoFinance/shortcuts-widget"
+    "url": "https://github.com/EnsoFinance/shortcuts-widget",
+    "type": "git",
+    "directory": "widget"
   },
   "author": "Enso finance",
   "license": "MIT",

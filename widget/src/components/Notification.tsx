@@ -1,6 +1,12 @@
 import { useEffect } from "react";
-import { CircleCheck, CircleX, ExternalLink, Info } from "lucide-react";
-import { Box, Flex, Link, Text, Center } from "@chakra-ui/react";
+import {
+  CircleCheck,
+  CircleX,
+  ExternalLink,
+  Info,
+  TriangleAlert,
+} from "lucide-react";
+import { Box, Center, Flex, Link, Text } from "@chakra-ui/react";
 import { useStore } from "@/store";
 import { CloseButton } from "@/components/ui/close-button";
 import { Button } from "@/components/ui/button";
@@ -15,12 +21,14 @@ const NOTIFICATION_COLORS = {
   [NotifyType.Error]: "red.400",
   [NotifyType.Info]: "blue.400",
   [NotifyType.Loading]: "blue.400",
+  [NotifyType.Warning]: "yellow.400",
 };
 
 const NotificationIcons = {
   [NotifyType.Success]: CircleCheck,
   [NotifyType.Error]: CircleX,
   [NotifyType.Info]: Info,
+  [NotifyType.Warning]: TriangleAlert,
 };
 
 const getIcon = (variant: NotifyType) => {
@@ -85,7 +93,11 @@ export const Notification = () => {
         gap={2}
       >
         {getIcon(notification.variant)}
-        <Text fontSize={"xl"}>{notification.message}</Text>
+        <Text
+          fontSize={notification.variant === NotifyType.Warning ? "lg" : "xl"}
+        >
+          {notification.message}
+        </Text>
         <Button mt={5} w={200} variant={"subtle"} onClick={handleClose}>
           Close
         </Button>

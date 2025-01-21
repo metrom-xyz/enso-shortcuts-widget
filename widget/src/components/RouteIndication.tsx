@@ -3,19 +3,17 @@ import { Box, Text, Flex } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronsRight } from "lucide-react";
 import { Address } from "viem";
 import { RouteData } from "@ensofinance/sdk";
-import { capitalize, useTokenFromList } from "@/util/common";
-import { MOCK_IMAGE_URL } from "@/constants";
+import { capitalize, Token, useTokenFromList } from "@/util/common";
 import { useEnsoToken } from "@/util/enso";
+import { TokenIcon } from "@/components/TokenIndicator";
 
 const TokenBadge = ({ address }: { address: Address }) => {
   const token = useTokenFromList(address);
   const ensoToken = useEnsoToken(address);
   const symbol = ensoToken?.symbol ?? token?.symbol;
-  const logoURI = token?.logoURI ?? ensoToken.logoURI ?? MOCK_IMAGE_URL;
+  const logoURI = token?.logoURI ?? ensoToken.logoURI;
 
-  return (
-    <img title={symbol} src={logoURI} alt={symbol} width={24} height={24} />
-  );
+  return <TokenIcon token={{ logoURI, symbol } as Token} />;
 };
 
 type RouteSegment = RouteData["route"][0];

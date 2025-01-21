@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Box,
   ChakraProvider,
   createSystem,
   defaultConfig,
@@ -81,15 +80,13 @@ export default ({
         <EnvironmentProvider value={() => shadow.shadowRoot ?? document}>
           <CacheProvider value={cache}>
             <ChakraProvider value={system}>
-              <Box>
-                <SwapWidget
-                  indicateRoute={indicateRoute}
-                  obligateSelection={obligateSelection}
-                  tokenIn={tokenIn?.toLowerCase() as Address}
-                  tokenOut={tokenOut?.toLowerCase() as Address}
-                  enableShare={enableShare}
-                />
-              </Box>
+              <SwapWidget
+                indicateRoute={indicateRoute}
+                obligateSelection={obligateSelection}
+                tokenIn={tokenIn?.toLowerCase() as Address}
+                tokenOut={tokenOut?.toLowerCase() as Address}
+                enableShare={enableShare}
+              />
             </ChakraProvider>
           </CacheProvider>
         </EnvironmentProvider>

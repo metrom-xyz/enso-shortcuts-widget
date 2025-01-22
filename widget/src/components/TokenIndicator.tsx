@@ -23,9 +23,9 @@ export const TokenIcon = ({ token }: { token: Token }) => (
   </Box>
 );
 
-export const TokenIndicator = ({ token }: { token: Token }) => (
+export const TokenIndicator = ({ token }: { token?: Token }) => (
   <Flex align="center" gap={2}>
-    {token.symbol === "UNI-V2" && token.underlyingTokens ? (
+    {token?.symbol === "UNI-V2" && token.underlyingTokens ? (
       <Box position="relative" width={"28px"} height={"28px"}>
         <Box
           position="absolute"

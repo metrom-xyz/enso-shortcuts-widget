@@ -20,13 +20,13 @@ import { Token, useGeckoList } from "@/util/common";
 import { normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
 import { ETH_ADDRESS } from "@/constants";
-import {TokenIcon, TokenIndicator} from "@/components/TokenIndicator";
+import { TokenIcon, TokenIndicator } from "@/components/TokenIndicator";
 
 type TokenWithBalance = Token & { balance?: string; costUsd?: number };
 
 const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
   <Flex align="center" w={"full"}>
-      <TokenIcon token={token}/>
+    <TokenIcon token={token} />
 
     <Flex ml={2} flexDirection={"column"} flex={1}>
       <Text
@@ -93,7 +93,9 @@ const TokenSelector = ({
       : undefined,
   );
   const valueToken = useEnsoToken(
-    geckoTokens.length && !hasCoincidence(geckoTokens, value)
+    geckoTokens.length &&
+      !hasCoincidence(geckoTokens, value) &&
+      value !== searchedToken?.address
       ? value
       : undefined,
   );

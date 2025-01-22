@@ -34,20 +34,17 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
 };
 
 export const useEnsoRouterData = (params: RouteParams) => {
-  const queryKey = useDebounce(
-    [
+  const amountIn = useDebounce(params.amountIn, 500);
+
+  return useQuery({
+    queryKey: [
       "enso-router",
-      params.amountIn,
       params.chainId,
       params.fromAddress,
       params.tokenIn,
       params.tokenOut,
+      amountIn,
     ],
-    500,
-  );
-
-  return useQuery({
-    queryKey,
     queryFn: () => ensoClient.getRouterData(params),
     enabled:
       +params.amountIn > 0 &&
@@ -60,20 +57,17 @@ export const useEnsoRouterData = (params: RouteParams) => {
 };
 
 export const useEnsoQuote = (params: QuoteParams) => {
-  const queryKey = useDebounce(
-    [
+  const debouncedAmount = useDebounce(params.amountIn, 500);
+
+  return useQuery({
+    queryKey: [
       "enso-quote",
       params.chainId,
       params.fromAddress,
-      params.amountIn,
       params.tokenIn,
       params.tokenOut,
+      debouncedAmount,
     ],
-    500,
-  );
-
-  return useQuery({
-    queryKey,
     queryFn: () => ensoClient.getQuoteData(params),
     enabled:
       +params.amountIn > 0 &&

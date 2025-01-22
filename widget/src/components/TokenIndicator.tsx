@@ -17,7 +17,30 @@ export const TokenIcon = ({ token }: { token: Token }) => (
 
 export const TokenIndicator = ({ token }: { token: Token }) => (
   <Flex align="center" gap={2}>
-    <TokenIcon token={token} />
+    {token.symbol === "UNI-V2" && token.underlyingTokens ? (
+      <Box position="relative" width={"24px"} height={"24px"}>
+        <Box
+          position="absolute"
+          width="100%"
+          height="100%"
+          overflow="hidden"
+          clipPath={"polygon(0 0, 45% 0, 45% 100%, 0% 100%)"}
+        >
+          <TokenIcon token={token.underlyingTokens[0]} />
+        </Box>
+        <Box
+          position="absolute"
+          width="100%"
+          height="100%"
+          overflow="hidden"
+          clipPath={"polygon(55% 0, 100% 0, 100% 100%, 55% 100%)"}
+        >
+          <TokenIcon token={token.underlyingTokens[1]} />
+        </Box>
+      </Box>
+    ) : (
+      <TokenIcon token={token} />
+    )}
     <Text>{token?.symbol}</Text>
   </Flex>
 );

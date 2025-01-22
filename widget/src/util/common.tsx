@@ -17,6 +17,7 @@ export type Token = {
   symbol: string;
   decimals: number;
   logoURI: string;
+  underlyingTokens?: Token[];
 };
 
 export const compareCaseInsensitive = (a: string, b: string) => {

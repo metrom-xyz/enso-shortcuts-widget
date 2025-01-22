@@ -120,6 +120,13 @@ export const useEnsoToken = (address?: Address) => {
       name: ensoToken.name,
       decimals: ensoToken.decimals,
       logoURI: ensoToken.logosUri[0],
+      underlyingTokens: ensoToken.underlyingTokens?.map((token) => ({
+        address: token.address.toLowerCase(),
+        symbol: token.symbol,
+        name: token.name,
+        decimals: token.decimals,
+        logoURI: token.logosUri[0],
+      })),
     };
   }, [data]);
 

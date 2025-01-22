@@ -9,16 +9,26 @@ import {
   useEnsoQuote,
   useEnsoToken,
 } from "@/util/enso";
-import { denormalizeValue, formatNumber, normalizeValue } from "@/util";
-import SwapInput from "@/components/SwapInput";
-import { Button } from "@/components/ui/button";
+import {
+  denormalizeValue,
+  formatNumber,
+  formatUSD,
+  normalizeValue,
+} from "@/util";
 import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
+import {
+  PRICE_IMPACT_WARN_THRESHOLD,
+  SWAP_LIMITS,
+  USDC_ADDRESS,
+} from "@/constants";
+import { useStore } from "@/store";
+import SwapInput from "@/components/SwapInput";
+import { Button } from "@/components/ui/button";
 import Notification from "@/components/Notification";
 import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
-import { USDC_ADDRESS } from "@/constants";
 import RouteIndication from "@/components/RouteIndication";
-import { useStore } from "@/store";
+import { Tooltip } from "@/components/ui/tooltip";
 import { NotifyType, WidgetProps } from "@/types";
 
 const SwapWidget = ({
@@ -122,21 +132,31 @@ const SwapWidget = ({
     return url.toString();
   }, [tokenIn, tokenOut, chainId]);
 
-  // warn if >3%
-  const priceImpactWarning =
-    typeof quoteData?.priceImpact === "number" && quoteData?.priceImpact >= 300;
+  const shouldWarnPriceImpact =
+    typeof quoteData?.priceImpact === "number" &&
+    quoteData?.priceImpact >= PRICE_IMPACT_WARN_THRESHOLD;
 
-  const needToAcceptWarning = priceImpactWarning && !warningAccepted;
-  const formatterPriceImpact = (-(quoteData?.priceImpact / 100)).toFixed(2);
+  const needToAcceptWarning = shouldWarnPriceImpact && !warningAccepted;
+  const swapLimitExceeded = tokenInUsdPrice > SWAP_LIMITS[tokenOut];
+  const swapDisabled =
+    !!approve || wrongChain || !(+ensoData?.amountOut > 0) || swapLimitExceeded;
 
-  const showWarning = useCallback(() => {
+  const swapWarning = swapLimitExceeded
+    ? `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}.  You can do multiple transactions of this size.`
+    : "";
+
+  const formattedPriceImpact = (-(quoteData?.priceImpact / 100)).toFixed(2);
+  const priceImpactWarning = shouldWarnPriceImpact
+    ? `High price impact (${formattedPriceImpact}%). Due to the amount of ${tokenOutInfo?.symbol} liquidity currently available, the more ${tokenInInfo?.symbol} you try to swap, the less ${tokenOutInfo?.symbol} you will receive.`
+    : "";
+
+  const showPriceImpactWarning = useCallback(() => {
     setNotification({
-      message: `High price impact (${formatterPriceImpact}%). 
-      Due to the amount of ${tokenOutInfo?.symbol} liquidity currently available, the more ${tokenInInfo?.symbol} you try to swap, the less ${tokenOutInfo?.symbol} you will receive.`,
+      message: priceImpactWarning,
       variant: NotifyType.Warning,
     });
     setWarningAccepted(true);
-  }, [formatterPriceImpact, tokenInInfo?.symbol, tokenOutInfo?.symbol]);
+  }, [priceImpactWarning]);
 
   return (
     <Box
@@ -198,13 +218,18 @@ const SwapWidget = ({
             {typeof quoteData?.priceImpact === "number" && (
               <Flex>
                 <Flex
-                  color={priceImpactWarning ? "yellow.500" : "gray.500"}
+                  color={shouldWarnPriceImpact ? "orange.400" : "gray.500"}
                   fontSize={"sm"}
                   gap={1}
                   alignItems={"center"}
+                  cursor={"default"}
                 >
-                  Price impact: {formatterPriceImpact}%
-                  {priceImpactWarning && <TriangleAlert size={16} />}
+                  Price impact: {formattedPriceImpact}%
+                  {shouldWarnPriceImpact && (
+                    <Tooltip openDelay={0} content={priceImpactWarning}>
+                      <TriangleAlert size={16} />
+                    </Tooltip>
+                  )}
                 </Flex>
               </Flex>
             )}
@@ -233,15 +258,20 @@ const SwapWidget = ({
             )
           )}
 
-          <Button
-            flex={1}
-            variant={"outline"}
-            disabled={!!approve || wrongChain || !(+ensoData?.amountOut > 0)}
-            loading={sendData.isLoading || isEnsoDataLoading}
-            onClick={needToAcceptWarning ? showWarning : sendData.send}
-          >
-            Swap
-          </Button>
+          <Tooltip content={swapWarning} disabled={!swapWarning}>
+            <Button
+              colorPalette={swapWarning ? "orange" : "gray"}
+              flex={1}
+              variant={"outline"}
+              disabled={swapDisabled}
+              loading={sendData.isLoading || isEnsoDataLoading}
+              onClick={
+                needToAcceptWarning ? showPriceImpactWarning : sendData.send
+              }
+            >
+              Swap
+            </Button>
+          </Tooltip>
         </Flex>
 
         {indicateRoute && (

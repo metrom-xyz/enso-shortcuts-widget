@@ -101,3 +101,9 @@ export const NATIVE_ETH_CHAINS = [
   SupportedChainId.LINEA,
   SupportedChainId.ZKSYNC,
 ];
+
+export const SWAP_LIMITS: Record<Address, number> = {
+  ["0x09def5abc67e967d54e8233a4b5ebbc1b3fbe34b"]: 100000, // WABTC limit
+};
+
+export const PRICE_IMPACT_WARN_THRESHOLD = 300 // basis points

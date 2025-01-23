@@ -18,6 +18,7 @@ import {
 import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import {
+  DEFAULT_SLIPPAGE,
   PRICE_IMPACT_WARN_THRESHOLD,
   SWAP_LIMITS,
   USDC_ADDRESS,
@@ -44,6 +45,8 @@ const SwapWidget = ({
   const [tokenOut, setTokenOut] = useState<Address>();
 
   const chainId = usePriorityChainId();
+  const wagmiChainId = useChainId();
+
   const { address } = useAccount();
   const { switchChain } = useSwitchChain();
   const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
@@ -102,10 +105,8 @@ const SwapWidget = ({
     sendTransaction: sendData,
     isEnsoDataLoading,
     ensoData,
-  } = useSendEnsoTransaction(amountIn, tokenOut, tokenIn, 3000);
+  } = useSendEnsoTransaction(amountIn, tokenOut, tokenIn, DEFAULT_SLIPPAGE);
   const approveNeeded = !!approve && +amountIn > 0 && !!tokenIn;
-
-  const wagmiChainId = useChainId();
 
   const wrongChain = chainId && +wagmiChainId !== +chainId;
 

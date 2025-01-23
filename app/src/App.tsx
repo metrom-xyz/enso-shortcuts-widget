@@ -1,4 +1,5 @@
 import React, { ComponentProps, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import Providers from "@/components/Providers";
 import { isAddress } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -10,6 +11,7 @@ import "./App.css";
 const EnsoApiKey = import.meta.env.VITE_ENSO_API_KEY;
 
 function App() {
+  const location = useLocation();
   const props = useMemo(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const tokenInParam = searchParams.get("tokenIn");
@@ -29,7 +31,7 @@ function App() {
     }
 
     return props;
-  }, []);
+  }, [location]);
 
   return (
     <Providers>

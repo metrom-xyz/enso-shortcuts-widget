@@ -107,3 +107,4 @@ export const SWAP_LIMITS: Record<Address, number> = {
 };
 
 export const PRICE_IMPACT_WARN_THRESHOLD = 300 // basis points
+export const DEFAULT_SLIPPAGE = 50 // 0.5%

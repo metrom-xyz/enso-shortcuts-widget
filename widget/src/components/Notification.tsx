@@ -69,46 +69,49 @@ export const Notification = () => {
   };
 
   return (
-    <Flex
-      width={"full"}
-      p={5}
-      layerStyle={"outline.subtle"}
-      zIndex={1000}
-      background={"white"}
-      flexDirection={"column"}
-    >
-      <CloseButton
-        position={"absolute"}
-        top={5}
-        right={0}
-        onClick={handleClose}
-        mr={5}
-      />
+    <Center w={"full"} h={"full"}>
       <Flex
+        width={"95%"}
+        height={"95%"}
+        p={5}
+        boxShadow={"lg"}
+        zIndex={1000}
+        background={"white"}
         flexDirection={"column"}
-        width={"full"}
-        height={"full"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        gap={2}
       >
-        {getIcon(notification.variant)}
-        <Text
-          fontSize={notification.variant === NotifyType.Warning ? "lg" : "xl"}
+        <CloseButton
+          position={"absolute"}
+          top={10}
+          right={5}
+          onClick={handleClose}
+          mr={5}
+        />
+        <Flex
+          flexDirection={"column"}
+          width={"full"}
+          height={"full"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          gap={2}
         >
-          {notification.message}
-        </Text>
-        <Button mt={5} w={200} variant={"subtle"} onClick={handleClose}>
-          Close
-        </Button>
-        {notification.link && (
-          <Link href={notification.link} target={"_blank"}>
-            View details
-            <ExternalLink size={14} />
-          </Link>
-        )}
+          {getIcon(notification.variant)}
+          <Text
+            fontSize={notification.variant === NotifyType.Warning ? "lg" : "xl"}
+          >
+            {notification.message}
+          </Text>
+          <Button mt={5} w={200} variant={"subtle"} onClick={handleClose}>
+            Close
+          </Button>
+          {notification.link && (
+            <Link href={notification.link} target={"_blank"}>
+              View details
+              <ExternalLink size={14} />
+            </Link>
+          )}
+        </Flex>
       </Flex>
-    </Flex>
+    </Center>
   );
 };
 

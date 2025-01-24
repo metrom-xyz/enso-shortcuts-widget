@@ -71,8 +71,20 @@ export const useErc20Balance = (tokenAddress: `0x${string}`) => {
 // if token is native ETH, use usBalance instead
 export const useTokenBalance = (token: Address) => {
   const { address } = useAccount();
-  const { data: erc20Balance } = useErc20Balance(token);
-  const { data: balance } = useBalance({ address });
+  const chainId = usePriorityChainId();
+  const index = useChangingIndex();
+  const queryClient = useQueryClient();
+  const { data: erc20Balance, queryKey: erc20QueryKey } =
+    useErc20Balance(token);
+  const { data: balance, queryKey: balanceQueryKey } = useBalance({
+    address,
+    chainId,
+  });
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: erc20QueryKey });
+    queryClient.invalidateQueries({ queryKey: balanceQueryKey });
+  }, [index, queryClient, erc20QueryKey, balanceQueryKey]);
 
   const value = token === ETH_ADDRESS ? balance?.value : erc20Balance;
 

@@ -1,5 +1,4 @@
-import React from "react";
-import { Box, Text, Flex } from "@chakra-ui/react";
+import { Box, Text, Flex, Skeleton } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronsRight } from "lucide-react";
 import { Address } from "viem";
 import { RouteData } from "@ensofinance/sdk";
@@ -51,40 +50,52 @@ const RouteSegment = ({ step }: { step: RouteSegment }) => (
   </Flex>
 );
 
-const RouteIndication = ({ route }: { route?: RouteSegment[] }) => {
+const RouteIndication = ({
+  route,
+  loading,
+}: {
+  route?: RouteSegment[];
+  loading?: boolean;
+}) => {
   return (
-    <Flex w={"full"} justifyContent={"center"}>
-      <Flex
-        border={"solid 1px"}
-        borderColor="gray.200"
-        borderRadius="md"
-        p={1}
-        alignItems={"center"}
-      >
-        {route?.reduce((acc, step, currentIndex) => {
-          acc.push(
-            <Box>
-              {step.action === "split" ? (
-                step.internalRoutes?.map(([step], i) => (
-                  <RouteSegment step={step} key={i} />
-                ))
-              ) : (
-                <RouteSegment step={step} />
-              )}
-            </Box>,
-          );
+    <Flex w={"full"} justifyContent={"center"} h={"77px"}>
+      {loading ? (
+        <Skeleton h="full" w="100px" />
+      ) : (
+        route?.length > 0 && (
+          <Flex
+            border={"solid 1px"}
+            borderColor="gray.200"
+            borderRadius="md"
+            p={1}
+            alignItems={"center"}
+          >
+            {route.reduce((acc, step, currentIndex) => {
+              acc.push(
+                <Box>
+                  {step.action === "split" ? (
+                    step.internalRoutes?.map(([step], i) => (
+                      <RouteSegment step={step} key={i} />
+                    ))
+                  ) : (
+                    <RouteSegment step={step} />
+                  )}
+                </Box>,
+              );
 
-          if (route.length - 1 !== currentIndex) {
-            acc.push(
-              <Box color={"gray.400"}>
-                <ChevronsRight />
-              </Box>,
-            );
-          }
+              if (route.length - 1 !== currentIndex) {
+                acc.push(
+                  <Box color={"gray.400"}>
+                    <ChevronsRight />
+                  </Box>,
+                );
+              }
 
-          return acc;
-        }, [])}
-      </Flex>
+              return acc;
+            }, [])}
+          </Flex>
+        )
+      )}
     </Flex>
   );
 };

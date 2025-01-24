@@ -70,7 +70,7 @@ export const useTokenFromList = (tokenAddress: Address) => {
 };
 
 export const usePriorityChainId = () => {
-  const { obligatedChainId } = useStore();
+  const obligatedChainId = useStore((state) => state.obligatedChainId);
   const chainId = useChainId();
 
   return obligatedChainId ?? chainId;

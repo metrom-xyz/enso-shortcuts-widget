@@ -3,6 +3,7 @@ import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Box, Center, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { TriangleAlert } from "lucide-react";
 import { Address } from "viem";
+import { usePrevious } from "@uidotdev/usehooks";
 import {
   useEnsoApprove,
   useEnsoPrice,
@@ -52,14 +53,17 @@ const SwapWidget = ({
   const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
     defaultOpen: true,
   });
-  const { setNotification } = useStore();
+  const setNotification = useStore((state) => state.setNotification);
+  const setObligatedChainId = useStore((state) => state.setObligatedChainId);
 
+  const prevWagmiChainId = usePrevious(wagmiChainId);
   const tokenInInfo = useEnsoToken(tokenIn);
   const tokenOutInfo = useEnsoToken(tokenOut);
 
   // set default token in
   useEffect(() => {
     setTokenIn(USDC_ADDRESS[chainId]);
+    setTokenOut(undefined);
   }, [chainId]);
   // sets selected tokens if ones are provided
   useEffect(() => {
@@ -67,16 +71,33 @@ const SwapWidget = ({
     if (providedTokenIn) setTokenIn(providedTokenIn);
   }, [providedTokenOut, providedTokenIn]);
 
+  // reset tokens if chain changes not to target
+  useEffect(() => {
+    if (
+      enableShare &&
+      prevWagmiChainId &&
+      prevWagmiChainId !== wagmiChainId &&
+      wagmiChainId !== chainId
+    ) {
+      setObligatedChainId(wagmiChainId);
+      setTokenIn(USDC_ADDRESS[wagmiChainId]);
+      setTokenOut(undefined);
+    }
+  }, [wagmiChainId]);
   // sets query params for tokenIn, tokenOut, and chainId
   useEffect(() => {
     if (!enableShare) return;
 
     const url = new URL(window.location.href);
-    if (tokenIn) url.searchParams.set("tokenIn", tokenIn);
-    if (tokenOut) url.searchParams.set("tokenOut", tokenOut);
+    tokenIn
+      ? url.searchParams.set("tokenIn", tokenIn)
+      : url.searchParams.delete("tokenIn");
+    tokenOut
+      ? url.searchParams.set("tokenOut", tokenOut)
+      : url.searchParams.delete("tokenOut");
     url.searchParams.set("chainId", chainId.toString());
     window.history.replaceState({}, "", url.toString());
-  }, [tokenIn, tokenOut, chainId]);
+  }, [tokenIn, tokenOut]);
 
   // reset warning if token changes
   useEffect(() => {
@@ -211,7 +232,12 @@ const SwapWidget = ({
             usdValue={tokenOutUsdPrice}
           />
 
-          <Flex justify="space-between" mt={-2} alignItems={"center"}>
+          <Flex
+            justify="space-between"
+            mt={-2}
+            alignItems={"center"}
+            h={"21px"}
+          >
             <Text color="gray.500" fontSize={"xs"}>
               1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
               {tokenOutInfo?.symbol}
@@ -289,7 +315,12 @@ const SwapWidget = ({
                 {showRoute ? "Hide" : "Show"} route
               </Text>
             </Flex>
-            {showRoute && <RouteIndication route={ensoData?.route} />}
+            {showRoute && (
+              <RouteIndication
+                route={ensoData?.route}
+                loading={isEnsoDataLoading}
+              />
+            )}
           </Box>
         )}
 

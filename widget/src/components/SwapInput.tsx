@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
 import { chakra, Flex, Grid, Skeleton, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
@@ -32,6 +34,15 @@ const SwapInput = ({
   const { address } = useAccount();
   const balance = useTokenBalance(tokenValue);
   const tokenInInfo = useTokenFromList(tokenValue);
+  const [tempInputValue, setTempInputValue] = useState<string>("");
+  const debouncedValue = useDebounce(tempInputValue, 400);
+
+  useEffect(() => {
+    inputOnChange(debouncedValue);
+  }, [debouncedValue]);
+  useEffect(() => {
+    setTempInputValue(inputValue);
+  }, [inputValue]);
 
   const balanceValue =
     normalizeValue(balance, tokenInInfo?.decimals)?.toString() ?? "0.0";
@@ -99,8 +110,8 @@ const SwapInput = ({
                 background={"transparent"}
                 placeholder="0.0"
                 textAlign="right"
-                value={inputValue}
-                onChange={(e) => inputOnChange(e.target.value)}
+                value={tempInputValue}
+                onChange={(e) => setTempInputValue(e.target.value)}
               />
             )}
           </Flex>

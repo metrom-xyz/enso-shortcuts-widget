@@ -8,7 +8,6 @@ export const normalizeValue = (value: bigint | string = "0", decimals = 0) => {
     return formatUnits(BigInt(value), decimals);
   } catch (e) {
     console.error(e);
-    debugger;
     return "0";
   }
 };

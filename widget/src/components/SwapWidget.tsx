@@ -301,8 +301,8 @@ const SwapWidget = ({
               </ClipboardRoot>
             </Box>
           )}
-          <Center w={"100%"}>
-            <Text color={"gray.500"}>
+          <Center w={"full"}>
+            <Text color={"gray.500"} fontSize={"sm"}>
               Powered by{" "}
               <Link target={"_blank"} href={"https://www.enso.build/"}>
                 Enso

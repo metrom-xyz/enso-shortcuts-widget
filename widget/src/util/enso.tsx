@@ -1,8 +1,7 @@
 import { Address } from "viem";
 import { useAccount } from "wagmi";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useDebounce } from "@uidotdev/usehooks";
 import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { isAddress } from "viem";
 import { Token, usePriorityChainId } from "@/util/common";
@@ -33,50 +32,44 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
-export const useEnsoRouterData = (params: RouteParams) => {
-  const amountIn = useDebounce(params.amountIn, 500);
-
-  return useQuery({
+export const useEnsoRouterData = (params: RouteParams) =>
+  useQuery({
     queryKey: [
       "enso-router",
       params.chainId,
       params.fromAddress,
       params.tokenIn,
       params.tokenOut,
-      amountIn,
+      params.amountIn,
     ],
     queryFn: () => ensoClient.getRouterData(params),
     enabled:
       +params.amountIn > 0 &&
       isAddress(params.fromAddress) &&
       isAddress(params.tokenIn) &&
-      isAddress(params.tokenOut),
-    staleTime: 500,
-    placeholderData: keepPreviousData,
+      isAddress(params.tokenOut) &&
+      params.tokenIn !== params.tokenOut,
+    retry: 2,
   });
-};
 
-export const useEnsoQuote = (params: QuoteParams) => {
-  const debouncedAmount = useDebounce(params.amountIn, 500);
-
-  return useQuery({
+export const useEnsoQuote = (params: QuoteParams) =>
+  useQuery({
     queryKey: [
       "enso-quote",
       params.chainId,
       params.fromAddress,
       params.tokenIn,
       params.tokenOut,
-      debouncedAmount,
+      params.amountIn,
     ],
     queryFn: () => ensoClient.getQuoteData(params),
     enabled:
       +params.amountIn > 0 &&
       isAddress(params.tokenIn) &&
-      isAddress(params.tokenOut),
-    staleTime: 500,
-    placeholderData: keepPreviousData,
+      isAddress(params.tokenOut) &&
+      params.tokenIn !== params.tokenOut,
+    retry: 2,
   });
-};
 
 export const useEnsoBalances = () => {
   const { address } = useAccount();

@@ -10,7 +10,7 @@ const TokenBadge = ({ address }: { address: Address }) => {
   const token = useTokenFromList(address);
   const ensoToken = useEnsoToken(address);
   const symbol = ensoToken?.symbol ?? token?.symbol;
-  const logoURI = token?.logoURI ?? ensoToken.logoURI;
+  const logoURI = token?.logoURI ?? ensoToken?.logoURI;
 
   return <TokenIcon token={{ logoURI, symbol } as Token} />;
 };
@@ -56,48 +56,46 @@ const RouteIndication = ({
 }: {
   route?: RouteSegment[];
   loading?: boolean;
-}) => {
-  return (
-    <Flex w={"full"} justifyContent={"center"} h={"77px"}>
-      {loading ? (
-        <Skeleton h="full" w="100px" />
-      ) : (
-        route?.length > 0 && (
-          <Flex
-            border={"solid 1px"}
-            borderColor="gray.200"
-            borderRadius="md"
-            p={1}
-            alignItems={"center"}
-          >
-            {route.reduce((acc, step, currentIndex) => {
+}) => (
+  <Flex w={"full"} justifyContent={"center"} minHeight={"77px"}>
+    {loading ? (
+      <Skeleton h="full" w="100px" />
+    ) : (
+      route?.length > 0 && (
+        <Flex
+          border={"solid 1px"}
+          borderColor="gray.200"
+          borderRadius="md"
+          p={1}
+          alignItems={"center"}
+        >
+          {route.reduce((acc, step, currentIndex) => {
+            acc.push(
+              <Box>
+                {step.action === "split" ? (
+                  step.internalRoutes?.map(([step], i) => (
+                    <RouteSegment step={step} key={i} />
+                  ))
+                ) : (
+                  <RouteSegment step={step} />
+                )}
+              </Box>,
+            );
+
+            if (route.length - 1 !== currentIndex) {
               acc.push(
-                <Box>
-                  {step.action === "split" ? (
-                    step.internalRoutes?.map(([step], i) => (
-                      <RouteSegment step={step} key={i} />
-                    ))
-                  ) : (
-                    <RouteSegment step={step} />
-                  )}
+                <Box color={"gray.400"}>
+                  <ChevronsRight />
                 </Box>,
               );
+            }
 
-              if (route.length - 1 !== currentIndex) {
-                acc.push(
-                  <Box color={"gray.400"}>
-                    <ChevronsRight />
-                  </Box>,
-                );
-              }
-
-              return acc;
-            }, [])}
-          </Flex>
-        )
-      )}
-    </Flex>
-  );
-};
+            return acc;
+          }, [])}
+        </Flex>
+      )
+    )}
+  </Flex>
+);
 
 export default RouteIndication;

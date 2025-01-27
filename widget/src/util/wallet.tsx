@@ -22,7 +22,7 @@ import erc20Abi from "@/erc20Abi.json";
 import { ETH_ADDRESS } from "@/constants";
 import { formatNumber, normalizeValue } from "@/util/index";
 import { useStore } from "@/store";
-import { useEnsoRouterData } from "./enso";
+import { useEnsoRouterData, useEnsoToken } from "./enso";
 import { NotifyType } from "@/types";
 
 enum TxState {
@@ -297,8 +297,8 @@ export const useSendEnsoTransaction = (
 
   const { data: ensoData, isFetching: isEnsoDataLoading } =
     useEnsoRouterData(preparedData);
-  const tokenData = useTokenFromList(tokenOut);
-  const tokenFromData = useTokenFromList(tokenIn);
+  const tokenData = useEnsoToken(tokenOut);
+  const tokenFromData = useEnsoToken(tokenIn);
 
   const sendTransaction = useExtendedSendTransaction(
     `Purchase ${formatNumber(normalizeValue(amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,

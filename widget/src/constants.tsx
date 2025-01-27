@@ -106,5 +106,23 @@ export const SWAP_LIMITS: Record<Address, number> = {
   ["0x09def5abc67e967d54e8233a4b5ebbc1b3fbe34b"]: 100000, // WABTC limit
 };
 
-export const PRICE_IMPACT_WARN_THRESHOLD = 300 // basis points
-export const DEFAULT_SLIPPAGE = 50 // 0.5%
+export const PRICE_IMPACT_WARN_THRESHOLD = 300; // basis points
+export const DEFAULT_SLIPPAGE = 50; // 0.5%
+
+export const MAINNET_ZAP_INPUT_TOKENS: Address[] = [
+  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+  "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+  "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
+  "0x97ad75064b20fb2b2447fed4fa953bf7f007a706", // beraSTONE
+  "0x6982508145454ce325ddbe47a25d4ec3d2311933", // PEPE
+  "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+  "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", // UNI
+  "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf", // cbBTC
+  "0x514910771af9ca656af840dff83e8264ecf986ca", // LINK
+  "0x8236a87084f8b84306f72007f36f2618a5634494", // LBTC
+  "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", // wstETH
+  "0xae78736cd615f374d3085123a210448e74fc6393", // rETH
+  "0x4c9edd5852cd905f086c759e8383e09bff1e68b3", // USDe
+  ETH_ADDRESS,
+];

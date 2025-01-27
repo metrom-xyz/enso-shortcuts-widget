@@ -28,13 +28,13 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
   <Flex align="center" w={"full"}>
     <TokenIcon token={token} />
 
-    <Flex ml={2} flexDirection={"column"} flex={1}>
+    <Flex ml={2} flexDirection={"column"} w={"full"}>
       <Text
         fontSize={"md"}
         textOverflow={"ellipsis"}
         whiteSpace={"nowrap"}
         overflow={"hidden"}
-        w={"150px"}
+        minWidth={"100px"}
         title={token?.symbol}
       >
         {token?.symbol}
@@ -45,14 +45,14 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
         textOverflow={"ellipsis"}
         whiteSpace={"nowrap"}
         overflow={"hidden"}
-        w={"150px"}
+        minWidth={"100px"}
         title={token.name}
       >
         {token.name}
       </Text>
     </Flex>
 
-    <Flex flexDirection={"column"} flex={1} alignItems={"flex-end"}>
+    <Flex flexDirection={"column"} alignItems={"flex-end"}>
       <Text fontSize={"md"}>
         {token.balance
           ? `${normalizeValue(token.balance, token.decimals)}`
@@ -77,18 +77,22 @@ const TokenSelector = ({
   onChange,
   portalRef,
   obligatedToken,
+  limitTokens,
 }: {
   value: Address;
   onChange: (value: string) => void;
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
+  limitTokens?: Address[];
 }) => {
   const geckoTokens = useGeckoList();
   const [searchText, setSearchText] = useState("");
   const { data: balances } = useEnsoBalances();
 
   const searchedToken = useEnsoToken(
-    geckoTokens.length && !hasCoincidence(geckoTokens, searchText as Address)
+    geckoTokens.length &&
+      !hasCoincidence(geckoTokens, searchText as Address) &&
+      !limitTokens
       ? (searchText as Address)
       : undefined,
   );
@@ -101,7 +105,9 @@ const TokenSelector = ({
   );
 
   const tokenList = useMemo(() => {
-    let tokens = geckoTokens;
+    let tokens = limitTokens
+      ? geckoTokens.filter((token) => limitTokens.includes(token.address))
+      : geckoTokens;
 
     if (searchedToken) {
       tokens = [...tokens, searchedToken];
@@ -172,7 +178,7 @@ const TokenSelector = ({
       value={[value]}
       onValueChange={({ value }) => onChange(value[0] as string)}
       size="sm"
-      minWidth="140px"
+      minWidth="120px"
       onOpenChange={({ open }) =>
         open || obligatedToken || searchedToken || setSearchText("")
       }
@@ -183,7 +189,7 @@ const TokenSelector = ({
         </SelectValueText>
       </SelectTrigger>
 
-      <SelectContent portalRef={portalRef} w={"100%"} minWidth={"350px"}>
+      <SelectContent portalRef={portalRef} w={"100%"} minWidth={"300px"}>
         <Flex
           height={"100%"}
           flexDirection={"column"}

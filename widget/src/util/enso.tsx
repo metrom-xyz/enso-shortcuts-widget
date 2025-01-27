@@ -100,13 +100,18 @@ export const useEnsoToken = (address?: Address) => {
   const token: Token | null = useMemo(() => {
     if (!data?.data?.length) return null;
     const ensoToken = data.data[0];
+    let logoURI = ensoToken.logosUri[0];
+
+    if (!logoURI && ensoToken.underlyingTokens?.length === 1) {
+      logoURI = ensoToken.underlyingTokens[0].logosUri[0];
+    }
 
     return {
       address: ensoToken.address.toLowerCase(),
       symbol: ensoToken.symbol,
       name: ensoToken.name,
       decimals: ensoToken.decimals,
-      logoURI: ensoToken.logosUri[0],
+      logoURI,
       underlyingTokens: ensoToken.underlyingTokens?.map((token) => ({
         address: token.address.toLowerCase(),
         symbol: token.symbol,

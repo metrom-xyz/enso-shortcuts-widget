@@ -3,6 +3,7 @@ import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Box, Center, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { TriangleAlert } from "lucide-react";
 import { Address } from "viem";
+import { mainnet } from "viem/chains";
 import { usePrevious } from "@uidotdev/usehooks";
 import {
   useEnsoApprove,
@@ -20,6 +21,7 @@ import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import {
   DEFAULT_SLIPPAGE,
+  MAINNET_ZAP_INPUT_TOKENS,
   PRICE_IMPACT_WARN_THRESHOLD,
   SWAP_LIMITS,
   USDC_ADDRESS,
@@ -180,6 +182,9 @@ const SwapWidget = ({
     setWarningAccepted(true);
   }, [priceImpactWarning]);
 
+  const limitInputTokens =
+    chainId === mainnet.id && tokenOutInfo?.symbol === "UNI-V2";
+
   return (
     <Box
       position={"relative"}
@@ -209,6 +214,7 @@ const SwapWidget = ({
       <Flex flexDirection={"column"} p={3} overflow={"hidden"} gap={2}>
         <SwapInput
           title={"You pay"}
+          limitTokens={limitInputTokens && MAINNET_ZAP_INPUT_TOKENS}
           obligatedToken={providedTokenIn && obligateSelection}
           portalRef={portalRef}
           tokenValue={tokenIn}

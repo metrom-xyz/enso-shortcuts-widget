@@ -5,8 +5,8 @@ import { useAccount } from "wagmi";
 import { Address } from "viem";
 import TokenSelector from "@/components/TokenSelector";
 import { formatNumber, formatUSD, normalizeValue } from "@/util";
-import { useTokenFromList } from "@/util/common";
 import { useTokenBalance } from "@/util/wallet";
+import { useEnsoToken } from "@/util/enso";
 
 const SwapInput = ({
   tokenValue,
@@ -19,6 +19,7 @@ const SwapInput = ({
   disabled,
   portalRef,
   obligatedToken,
+  limitTokens,
 }: {
   tokenValue: Address;
   tokenOnChange: (value: Address) => void;
@@ -30,10 +31,11 @@ const SwapInput = ({
   loading?: boolean;
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
+  limitTokens?: Address[];
 }) => {
   const { address } = useAccount();
   const balance = useTokenBalance(tokenValue);
-  const tokenInInfo = useTokenFromList(tokenValue);
+  const tokenInInfo = useEnsoToken(tokenValue);
   const [tempInputValue, setTempInputValue] = useState<string>("");
   const debouncedValue = useDebounce(tempInputValue, 400);
 
@@ -77,6 +79,7 @@ const SwapInput = ({
 
           <Flex height={"100%"} alignItems={"center"}>
             <TokenSelector
+              limitTokens={limitTokens}
               obligatedToken={obligatedToken}
               portalRef={portalRef}
               value={tokenValue}
@@ -91,7 +94,7 @@ const SwapInput = ({
             h={"100%"}
           >
             {loading ? (
-              <Skeleton h={"30px"} w={150} ml={5} />
+              <Skeleton h={"30px"} w={130} ml={5} />
             ) : (
               <chakra.input
                 css={{
@@ -103,7 +106,7 @@ const SwapInput = ({
                 type={"number"}
                 disabled={disabled}
                 width={"full"}
-                minWidth={"140px"}
+                minWidth={"120px"}
                 fontSize="xl"
                 border={"none"}
                 outline={"none"}

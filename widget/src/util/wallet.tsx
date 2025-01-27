@@ -12,7 +12,7 @@ import {
 } from "wagmi";
 import { Address, BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
-import { RouteParams } from "@ensofinance/sdk";
+import { QuoteParams, RouteData } from "@ensofinance/sdk";
 import {
   useEtherscanUrl,
   usePriorityChainId,
@@ -22,7 +22,7 @@ import erc20Abi from "@/erc20Abi.json";
 import { ETH_ADDRESS } from "@/constants";
 import { formatNumber, normalizeValue } from "@/util/index";
 import { useStore } from "@/store";
-import { useEnsoRouterData, useEnsoToken } from "./enso";
+import { useEnsoToken } from "./enso";
 import { NotifyType } from "@/types";
 
 enum TxState {
@@ -276,38 +276,14 @@ export const useApproveIfNecessary = (
 };
 
 export const useSendEnsoTransaction = (
-  amountIn: string,
-  tokenOut: Address,
-  tokenIn: Address,
-  slippage: number,
+  ensoTxData: RouteData["tx"],
+  params: Pick<QuoteParams, "tokenIn" | "tokenOut" | "amountIn">,
 ) => {
-  const { address } = useAccount();
-  const chainId = usePriorityChainId();
-  const preparedData: RouteParams = {
-    fromAddress: address,
-    receiver: address,
-    spender: address,
-    chainId,
-    amountIn,
-    slippage,
-    tokenIn,
-    tokenOut,
-    routingStrategy: "router",
-  };
+  const tokenData = useEnsoToken(params.tokenOut);
+  const tokenFromData = useEnsoToken(params.tokenIn);
 
-  const { data: ensoData, isFetching: isEnsoDataLoading } =
-    useEnsoRouterData(preparedData);
-  const tokenData = useEnsoToken(tokenOut);
-  const tokenFromData = useEnsoToken(tokenIn);
-
-  const sendTransaction = useExtendedSendTransaction(
-    `Purchase ${formatNumber(normalizeValue(amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
-    ensoData?.tx,
+  return useExtendedSendTransaction(
+    `Purchase ${formatNumber(normalizeValue(params.amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
+    ensoTxData,
   );
-
-  return {
-    sendTransaction,
-    ensoData,
-    isEnsoDataLoading,
-  };
 };

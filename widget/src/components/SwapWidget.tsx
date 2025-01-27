@@ -7,8 +7,8 @@ import { mainnet } from "viem/chains";
 import { usePrevious } from "@uidotdev/usehooks";
 import {
   useEnsoApprove,
+  useEnsoData,
   useEnsoPrice,
-  useEnsoQuote,
   useEnsoToken,
 } from "@/util/enso";
 import {
@@ -17,10 +17,9 @@ import {
   formatUSD,
   normalizeValue,
 } from "@/util";
-import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
+import { useApproveIfNecessary } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import {
-  DEFAULT_SLIPPAGE,
   LP_REDIRECT_TOKENS,
   MAINNET_ZAP_INPUT_TOKENS,
   PRICE_IMPACT_WARN_THRESHOLD,
@@ -110,7 +109,13 @@ const SwapWidget = ({
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
-  const { data: quoteData, isFetching: quoteLoading } = useEnsoQuote({
+  const {
+    quoteData,
+    quoteLoading,
+    routerData,
+    routerLoading,
+    sendTransaction,
+  } = useEnsoData({
     chainId,
     fromAddress: address,
     amountIn,
@@ -118,6 +123,7 @@ const SwapWidget = ({
     tokenOut,
     routingStrategy: "router",
   });
+
   const valueOut = normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
 
   const approveData = useEnsoApprove(tokenIn, amountIn);
@@ -126,11 +132,7 @@ const SwapWidget = ({
     approveData.data?.spender,
     amountIn,
   );
-  const {
-    sendTransaction: sendData,
-    isEnsoDataLoading,
-    ensoData,
-  } = useSendEnsoTransaction(amountIn, tokenOut, tokenIn, DEFAULT_SLIPPAGE);
+
   const approveNeeded = !!approve && +amountIn > 0 && !!tokenIn;
 
   const wrongChain = chainId && +wagmiChainId !== +chainId;
@@ -149,11 +151,11 @@ const SwapWidget = ({
         message: "Go direct to Uniswap interface",
         link: "https://app.uniswap.org/swap?outputCurrency=" + providedTokenOut,
       });
-    } else if (LP_REDIRECT_TOKENS[providedTokenIn]) {
+    } else if (LP_REDIRECT_TOKENS[providedTokenOut]) {
       setNotification({
         variant: NotifyType.Blocked,
         message: "Go direct to Uniswap interface",
-        link: LP_REDIRECT_TOKENS[providedTokenIn],
+        link: LP_REDIRECT_TOKENS[providedTokenOut],
       });
     }
   }, [providedTokenOut]);
@@ -181,7 +183,10 @@ const SwapWidget = ({
   const needToAcceptWarning = shouldWarnPriceImpact && !warningAccepted;
   const swapLimitExceeded = tokenInUsdPrice > SWAP_LIMITS[tokenOut];
   const swapDisabled =
-    !!approve || wrongChain || !(+ensoData?.amountOut > 0) || swapLimitExceeded;
+    !!approve ||
+    wrongChain ||
+    !(+routerData?.amountOut > 0) ||
+    swapLimitExceeded;
 
   const swapWarning = swapLimitExceeded
     ? `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}.  You can do multiple transactions of this size.`
@@ -315,9 +320,11 @@ const SwapWidget = ({
               flex={1}
               variant={"outline"}
               disabled={swapDisabled}
-              loading={sendData.isLoading || isEnsoDataLoading}
+              loading={sendTransaction.isLoading || routerLoading}
               onClick={
-                needToAcceptWarning ? showPriceImpactWarning : sendData.send
+                needToAcceptWarning
+                  ? showPriceImpactWarning
+                  : sendTransaction.send
               }
             >
               Swap
@@ -341,8 +348,8 @@ const SwapWidget = ({
             </Flex>
             {showRoute && (
               <RouteIndication
-                route={ensoData?.route}
-                loading={isEnsoDataLoading}
+                route={routerData?.route}
+                loading={routerLoading}
               />
             )}
           </Box>

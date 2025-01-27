@@ -5,6 +5,8 @@ import { useMemo } from "react";
 import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { isAddress } from "viem";
 import { Token, usePriorityChainId } from "@/util/common";
+import { useSendEnsoTransaction } from "@/util/wallet";
+import { ONEINCH_ONLY_TOKENS } from "@/constants";
 
 let ensoClient;
 
@@ -32,7 +34,39 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
-export const useEnsoRouterData = (params: RouteParams) =>
+export const useEnsoData = (params: QuoteParams) => {
+  if (
+    ONEINCH_ONLY_TOKENS.includes(params.tokenIn) ||
+    ONEINCH_ONLY_TOKENS.includes(params.tokenOut)
+  ) {
+    // @ts-ignore
+    params.ignoreAggregators =
+      "0x,paraswap,openocean,odos,kyberswap,native,barter";
+  }
+
+  const routerParams: RouteParams = {
+    ...params,
+    fromAddress: params.fromAddress,
+    receiver: params.fromAddress,
+    spender: params.fromAddress,
+  };
+
+  const { data: routerData, isLoading: routerLoading } =
+    useEnsoRouterData(routerParams);
+  const { data: quoteData, isLoading: quoteLoading } = useEnsoQuote(params);
+
+  const sendTransaction = useSendEnsoTransaction(routerData?.tx, params);
+
+  return {
+    routerData,
+    routerLoading,
+    quoteData,
+    quoteLoading,
+    sendTransaction,
+  };
+};
+
+const useEnsoRouterData = (params: RouteParams) =>
   useQuery({
     queryKey: [
       "enso-router",
@@ -52,7 +86,7 @@ export const useEnsoRouterData = (params: RouteParams) =>
     retry: 2,
   });
 
-export const useEnsoQuote = (params: QuoteParams) =>
+const useEnsoQuote = (params: QuoteParams) =>
   useQuery({
     queryKey: [
       "enso-quote",

@@ -46,9 +46,7 @@ const SwapInput = ({
     setTempInputValue(inputValue);
   }, [inputValue]);
 
-  const balanceValue =
-    normalizeValue(balance, tokenInInfo?.decimals)?.toString() ?? "0.0";
-
+  const balanceValue = normalizeValue(balance, tokenInInfo?.decimals ?? 18);
   const notEnoughBalance = +balanceValue < +inputValue && !disabled;
 
   return (
@@ -63,7 +61,6 @@ const SwapInput = ({
       >
         <Grid
           gridTemplateRows="0.5fr 2fr 0.5fr"
-          gridTemplateColumns="1fr 2fr"
           alignItems={"flex-start"}
           w={"100%"}
           pr={2}

@@ -109,11 +109,14 @@ export const SWAP_LIMITS: Record<Address, number> = {
 export const SWAP_REDIRECT_TOKENS: Address[] = [
   "0x09def5abc67e967d54e8233a4b5ebbc1b3fbe34b", // WABTC
 ];
-
 export const LP_REDIRECT_TOKENS: Record<Address, string> = {
   ["0x42a094364bbdca0efac8af2cf7d6b9ec885ee554"]:
     "https://app.uniswap.org/positions/create/v2?currencyA=0x09DEF5aBc67e967d54E8233A4b5EBBc1B3fbE34b&currencyB=0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599&chain=ethereum", // WABTC
 };
+export const ONEINCH_ONLY_TOKENS = [
+  "0xcf21354360fdae8edad02c0529e55cb3e71c36c9",
+  "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3",
+];
 
 export const PRICE_IMPACT_WARN_THRESHOLD = 300; // basis points
 export const DEFAULT_SLIPPAGE = 50; // 0.5%

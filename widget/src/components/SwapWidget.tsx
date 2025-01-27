@@ -21,9 +21,11 @@ import { useApproveIfNecessary, useSendEnsoTransaction } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import {
   DEFAULT_SLIPPAGE,
+  LP_REDIRECT_TOKENS,
   MAINNET_ZAP_INPUT_TOKENS,
   PRICE_IMPACT_WARN_THRESHOLD,
   SWAP_LIMITS,
+  SWAP_REDIRECT_TOKENS,
   USDC_ADDRESS,
 } from "@/constants";
 import { useStore } from "@/store";
@@ -139,6 +141,22 @@ const SwapWidget = ({
 
   const { data: inUsdPrice } = useEnsoPrice(tokenIn);
   const { data: outUsdPrice } = useEnsoPrice(tokenOut);
+
+  useEffect(() => {
+    if (SWAP_REDIRECT_TOKENS.includes(providedTokenOut)) {
+      setNotification({
+        variant: NotifyType.Blocked,
+        message: "Go direct to Uniswap interface",
+        link: "https://app.uniswap.org/swap?outputCurrency=" + providedTokenOut,
+      });
+    } else if (LP_REDIRECT_TOKENS[providedTokenIn]) {
+      setNotification({
+        variant: NotifyType.Blocked,
+        message: "Go direct to Uniswap interface",
+        link: LP_REDIRECT_TOKENS[providedTokenIn],
+      });
+    }
+  }, [providedTokenOut]);
 
   const tokenInUsdPrice = +(inUsdPrice?.price ?? 0) * +valueIn;
   const tokenOutUsdPrice =

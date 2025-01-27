@@ -49,6 +49,8 @@ export const TokenIndicator = ({ token }: { token?: Token }) => (
     ) : (
       <TokenIcon token={token} />
     )}
-    <Text>{token?.symbol}</Text>
+    <Text textOverflow={"ellipsis"} whiteSpace={"nowrap"} overflow={"hidden"}>
+      {token?.symbol}
+    </Text>
   </Flex>
 );

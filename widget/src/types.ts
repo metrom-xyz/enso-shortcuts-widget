@@ -14,4 +14,5 @@ export enum NotifyType {
   Info = "info",
   Loading = "loading",
   Warning = "warning",
+  Blocked = "blocked",
 }

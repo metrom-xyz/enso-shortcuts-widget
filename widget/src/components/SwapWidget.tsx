@@ -295,8 +295,7 @@ const SwapWidget = ({
         <Flex w={"full"} gap={4}>
           {wrongChain ? (
             <Button
-              bg="gray.solid"
-              _hover={{ bg: "blackAlpha.solid" }}
+              colorPalette={"black"}
               onClick={() => switchChain({ chainId })}
             >
               Switch to {getChainName(chainId)}
@@ -305,8 +304,8 @@ const SwapWidget = ({
             approveNeeded && (
               <Button
                 flex={1}
+                colorPalette={"black"}
                 loading={approve.isLoading}
-                variant={"subtle"}
                 onClick={approve.write}
               >
                 Approve
@@ -316,9 +315,8 @@ const SwapWidget = ({
 
           <Tooltip content={swapWarning} disabled={!swapWarning}>
             <Button
-              colorPalette={swapWarning ? "orange" : "gray"}
+              colorPalette={swapWarning ? "orange" : "black"}
               flex={1}
-              variant={"outline"}
               disabled={swapDisabled}
               loading={sendTransaction.isLoading || routerLoading}
               onClick={

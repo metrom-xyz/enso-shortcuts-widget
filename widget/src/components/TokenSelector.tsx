@@ -17,7 +17,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Token, useGeckoList } from "@/util/common";
-import { normalizeValue } from "@/util";
+import { formatNumber, normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
 import { ETH_ADDRESS } from "@/constants";
 import { TokenIcon, TokenIndicator } from "@/components/TokenIndicator";
@@ -34,10 +34,10 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
         textOverflow={"ellipsis"}
         whiteSpace={"nowrap"}
         overflow={"hidden"}
-        minWidth={"100px"}
-        title={token?.symbol}
+        maxWidth={"150px"}
+        title={token.name}
       >
-        {token?.symbol}
+        {token.name}
       </Text>
 
       <Text
@@ -45,21 +45,19 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
         textOverflow={"ellipsis"}
         whiteSpace={"nowrap"}
         overflow={"hidden"}
-        minWidth={"100px"}
-        title={token.name}
+        maxWidth={"150px"}
+        title={token.symbol}
       >
-        {token.name}
+        {`${
+          token.balance
+            ? formatNumber(normalizeValue(token.balance, token.decimals))
+            : ""
+        } ${token.symbol}`}
       </Text>
     </Flex>
 
     <Flex flexDirection={"column"} alignItems={"flex-end"}>
-      <Text fontSize={"md"}>
-        {token.balance
-          ? `${normalizeValue(token.balance, token.decimals)}`
-          : ""}
-      </Text>
-
-      <Text ml={2} color={"gray.400"}>
+      <Text ml={2} fontSize={"md"}>
         {token.costUsd ? `$${token.costUsd.toFixed(2)}` : ""}
       </Text>
     </Flex>
@@ -189,7 +187,12 @@ const TokenSelector = ({
         </SelectValueText>
       </SelectTrigger>
 
-      <SelectContent portalRef={portalRef} w={"100%"} minWidth={"300px"}>
+      <SelectContent
+        portalRef={portalRef}
+        w={"100%"}
+        minWidth={"300px"}
+        minHeight={"400px"}
+      >
         <Flex
           height={"100%"}
           flexDirection={"column"}
@@ -210,7 +213,7 @@ const TokenSelector = ({
           />
 
           <List
-            height={400}
+            height={350}
             itemCount={tokenOptions.items.length}
             itemSize={48}
             width={"100%"}

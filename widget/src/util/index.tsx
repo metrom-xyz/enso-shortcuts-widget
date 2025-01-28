@@ -20,8 +20,7 @@ export const shortenAddress = (address: Address) =>
   `${address.slice(0, 6)}...${address.slice(-4)}`;
 
 const formatter = Intl.NumberFormat("en", {
-  notation: "compact",
-  maximumFractionDigits: 2,
+  maximumFractionDigits: 4,
 });
 
 const preciseFormatter = Intl.NumberFormat("en", {

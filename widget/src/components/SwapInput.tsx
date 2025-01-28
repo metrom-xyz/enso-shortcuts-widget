@@ -122,6 +122,7 @@ const SwapInput = ({
               fontSize="sm"
               whiteSpace={"nowrap"}
               visibility={address ? "visible" : "hidden"}
+              maxW={"100px"}
               _hover={{ color: "gray.800" }}
               cursor={"pointer"}
               onClick={() => {

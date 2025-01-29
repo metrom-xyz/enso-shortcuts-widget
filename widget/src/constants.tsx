@@ -119,7 +119,7 @@ export const ONEINCH_ONLY_TOKENS = [
 ];
 
 export const PRICE_IMPACT_WARN_THRESHOLD = 300; // basis points
-export const DEFAULT_SLIPPAGE = 50; // 0.5%
+export const DEFAULT_SLIPPAGE = 25; // 0.25%
 
 export const MAINNET_ZAP_INPUT_TOKENS: Address[] = [
   "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH

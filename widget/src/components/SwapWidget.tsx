@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
-import { Box, Center, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
-import { TriangleAlert } from "lucide-react";
+import {
+  Box,
+  Center,
+  Flex,
+  Link,
+  Tabs,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { Settings, TriangleAlert } from "lucide-react";
 import { Address } from "viem";
 import { mainnet } from "viem/chains";
 import { usePrevious } from "@uidotdev/usehooks";
@@ -20,6 +28,7 @@ import {
 import { useApproveIfNecessary } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import {
+  DEFAULT_SLIPPAGE,
   LP_REDIRECT_TOKENS,
   MAINNET_ZAP_INPUT_TOKENS,
   PRICE_IMPACT_WARN_THRESHOLD,
@@ -34,6 +43,13 @@ import Notification from "@/components/Notification";
 import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
 import RouteIndication from "@/components/RouteIndication";
 import { Tooltip } from "@/components/ui/tooltip";
+import {
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverRoot,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { NotifyType, WidgetProps } from "@/types";
 
 const SwapWidget = ({
@@ -48,6 +64,7 @@ const SwapWidget = ({
   const [valueIn, setValueIn] = useState("");
   const [warningAccepted, setWarningAccepted] = useState(false);
   const [tokenOut, setTokenOut] = useState<Address>();
+  const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
 
   const chainId = usePriorityChainId();
   const wagmiChainId = useChainId();
@@ -116,14 +133,17 @@ const SwapWidget = ({
     routerData,
     routerLoading,
     sendTransaction,
-  } = useEnsoData({
-    chainId,
-    fromAddress: address,
-    amountIn,
-    tokenIn,
-    tokenOut,
-    routingStrategy: "router",
-  });
+  } = useEnsoData(
+    {
+      chainId,
+      fromAddress: address,
+      amountIn,
+      tokenIn,
+      tokenOut,
+      routingStrategy: "router",
+    },
+    slippage,
+  );
 
   const valueOut = normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
 
@@ -269,10 +289,76 @@ const SwapWidget = ({
             alignItems={"center"}
             h={"21px"}
           >
-            <Text color="gray.500" fontSize={"xs"}>
-              1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
-              {tokenOutInfo?.symbol}
-            </Text>
+            <Flex flexDirection={"column"} justify={"start"}>
+              <Text
+                color="gray.500"
+                fontSize={"xs"}
+                whiteSpace={"nowrap"}
+                w={"fit-content"}
+              >
+                1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
+                {tokenOutInfo?.symbol}
+              </Text>
+
+              <PopoverRoot>
+                <PopoverTrigger asChild>
+                  <Flex
+                    gap={1}
+                    alignItems={"center"}
+                    cursor={"pointer"}
+                    w={"fit-content"}
+                    _hover={{
+                      textDecoration: "underline",
+                    }}
+                  >
+                    <Box color="gray.500" fontSize={"xs"}>
+                      Slippage tolerance: {slippage / 100}%
+                    </Box>
+                    <Settings size={10} />
+                  </Flex>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverBody p={2}>
+                    <Tabs.Root
+                      fitted
+                      variant="subtle"
+                      value={slippage.toString()}
+                      onValueChange={(e) => setSlippage(+e.value)}
+                    >
+                      <Tabs.List>
+                        <Tabs.Trigger
+                          value="10"
+                          onClick={() => setSlippage(10)}
+                        >
+                          0.1%
+                        </Tabs.Trigger>
+                        <Tabs.Trigger
+                          value="25"
+                          onClick={() => setSlippage(25)}
+                        >
+                          0.25%
+                        </Tabs.Trigger>
+                        <Tabs.Trigger
+                          value="50"
+                          onClick={() => setSlippage(50)}
+                        >
+                          0.5%
+                        </Tabs.Trigger>
+                        <Tabs.Trigger
+                          value="100"
+                          onClick={() => setSlippage(100)}
+                        >
+                          1%
+                        </Tabs.Trigger>
+                        <Tabs.Indicator />
+                      </Tabs.List>
+                    </Tabs.Root>
+                  </PopoverBody>
+                </PopoverContent>
+              </PopoverRoot>
+            </Flex>
+
             {typeof quoteData?.priceImpact === "number" && (
               <Flex>
                 <Flex

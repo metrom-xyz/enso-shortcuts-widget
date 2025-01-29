@@ -34,7 +34,7 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
-export const useEnsoData = (params: QuoteParams) => {
+export const useEnsoData = (params: QuoteParams, slippage: number) => {
   if (
     ONEINCH_ONLY_TOKENS.includes(params.tokenIn) ||
     ONEINCH_ONLY_TOKENS.includes(params.tokenOut)
@@ -46,6 +46,7 @@ export const useEnsoData = (params: QuoteParams) => {
 
   const routerParams: RouteParams = {
     ...params,
+    slippage,
     fromAddress: params.fromAddress,
     receiver: params.fromAddress,
     spender: params.fromAddress,

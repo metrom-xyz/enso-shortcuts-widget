@@ -42,6 +42,7 @@ const SwapWidget = ({
   obligateSelection,
   enableShare,
   indicateRoute,
+  adaptive,
 }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
@@ -214,6 +215,7 @@ const SwapWidget = ({
       border="solid 1px"
       borderColor="gray.200"
       borderRadius="md"
+      width={adaptive ? { base: "100%", md: "450px" } : "100%"}
     >
       {/* Portal for notifications and swap popover */}
       <Flex

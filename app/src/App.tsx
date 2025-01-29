@@ -20,8 +20,6 @@ function App() {
 
     const props: ComponentProps<typeof SwapWidget> = {
       apiKey: EnsoApiKey,
-      enableShare: true,
-      indicateRoute: true,
     };
 
     if (chainIdParam) {
@@ -35,7 +33,14 @@ function App() {
 
   return (
     <Providers>
-      <div style={{ flexDirection: "column", display: "flex", height: "100%" }}>
+      <div
+        style={{
+          flexDirection: "column",
+          display: "flex",
+          height: "100%",
+          width: "100%",
+        }}
+      >
         <div
           style={{
             position: "absolute",
@@ -49,7 +54,7 @@ function App() {
           {/*
           TODO: Integration point, should integrate a widget here
           */}
-          <SwapWidget {...props} />
+          <SwapWidget {...props} enableShare indicateRoute adaptive />
         </div>
       </div>
     </Providers>

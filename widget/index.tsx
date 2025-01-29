@@ -28,6 +28,7 @@ export default ({
   enableShare,
   obligateSelection,
   indicateRoute,
+  adaptive,
 }: WidgetProps & {
   apiKey: string;
   themeConfig?: SystemConfig;
@@ -86,6 +87,7 @@ export default ({
                 tokenIn={tokenIn?.toLowerCase() as Address}
                 tokenOut={tokenOut?.toLowerCase() as Address}
                 enableShare={enableShare}
+                adaptive={adaptive}
               />
             </ChakraProvider>
           </CacheProvider>

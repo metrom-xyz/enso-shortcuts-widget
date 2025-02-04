@@ -1,4 +1,4 @@
-import React, { ComponentProps, useMemo } from "react";
+import React, { ComponentProps, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import Providers from "@/components/Providers";
 import { isAddress } from "viem";
@@ -30,6 +30,21 @@ function App() {
 
     return props;
   }, [location]);
+
+  useEffect(() => {
+    // Set the title of the page from the environment variable
+    if (import.meta.env.VITE_APP_TITLE) {
+      document.title = `ENSO | ${import.meta.env.VITE_APP_TITLE}`;
+    }
+
+    // Set the favicon of the page from the environment variable
+    if (import.meta.env.VITE_APP_LOGO_URL) {
+      const favicon = document.querySelector("link[rel='icon']");
+      if (favicon instanceof HTMLLinkElement) {
+        favicon.href = import.meta.env.VITE_APP_LOGO_URL;
+      }
+    }
+  }, []);
 
   return (
     <Providers>

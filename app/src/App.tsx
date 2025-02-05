@@ -5,6 +5,9 @@ import { isAddress } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import SwapWidget from "@ensofinance/shortcuts-widget";
 
+import logoUrl from "./logo_black_white.png";
+import wordmarkUrl from "./wordmark_black.png";
+
 import "@rainbow-me/rainbowkit/styles.css";
 import "./App.css";
 
@@ -52,25 +55,34 @@ function App() {
         style={{
           flexDirection: "column",
           display: "flex",
+          justifyContent: "center",
           height: "100%",
           width: "100%",
+          gap: "10px",
         }}
       >
         <div
           style={{
             position: "absolute",
             top: "1%",
-            right: "10%",
+            left: "0%",
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-around",
           }}
         >
+          <img src={logoUrl} alt={"Enso"} style={{ height: "50px" }} />
+
           <ConnectButton />
         </div>
-        <div>
-          {/*
-          TODO: Integration point, should integrate a widget here
-          */}
-          <SwapWidget {...props} enableShare indicateRoute adaptive />
-        </div>
+
+        <img
+          src={wordmarkUrl}
+          alt={"Enso"}
+          style={{ height: "50px", opacity: 0.5 }}
+        />
+
+        <SwapWidget {...props} enableShare indicateRoute adaptive />
       </div>
     </Providers>
   );

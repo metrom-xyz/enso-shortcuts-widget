@@ -12,7 +12,7 @@ import {
 } from "wagmi";
 import { Address, BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
-import { QuoteParams, RouteData } from "@ensofinance/sdk";
+import { RouteData, RouteParams } from "@ensofinance/sdk";
 import {
   useEtherscanUrl,
   usePriorityChainId,
@@ -277,7 +277,7 @@ export const useApproveIfNecessary = (
 
 export const useSendEnsoTransaction = (
   ensoTxData: RouteData["tx"],
-  params: Pick<QuoteParams, "tokenIn" | "tokenOut" | "amountIn">,
+  params: Pick<RouteParams, "tokenIn" | "tokenOut" | "amountIn">,
 ) => {
   const tokenData = useEnsoToken(params.tokenOut);
   const tokenFromData = useEnsoToken(params.tokenIn);

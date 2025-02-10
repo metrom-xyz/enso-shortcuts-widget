@@ -131,25 +131,17 @@ const SwapWidget = ({
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
-  const {
-    quoteData,
-    quoteLoading,
-    routerData,
-    routerLoading,
-    sendTransaction,
-  } = useEnsoData(
-    {
-      chainId,
-      fromAddress: address,
-      amountIn,
-      tokenIn,
-      tokenOut,
-      routingStrategy: "router",
-    },
+  const { routerData, routerLoading, sendTransaction } = useEnsoData(
+    amountIn,
+    tokenIn,
+    tokenOut,
     slippage,
   );
 
-  const valueOut = normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
+  const valueOut = normalizeValue(
+    routerData?.amountOut,
+    tokenOutInfo?.decimals,
+  );
 
   const approveData = useEnsoApprove(tokenIn, amountIn);
   const approve = useApproveIfNecessary(
@@ -188,7 +180,7 @@ const SwapWidget = ({
   const tokenInUsdPrice = +(inUsdPrice?.price ?? 0) * +valueIn;
   const tokenOutUsdPrice =
     +(outUsdPrice?.price ?? 0) *
-    +normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
+    +normalizeValue(routerData?.amountOut, tokenOutInfo?.decimals);
 
   const urlToCopy = useMemo(() => {
     const url = new URL(window.location.href);
@@ -202,8 +194,8 @@ const SwapWidget = ({
   }, [tokenIn, tokenOut, chainId]);
 
   const shouldWarnPriceImpact =
-    typeof quoteData?.priceImpact === "number" &&
-    quoteData?.priceImpact >= PRICE_IMPACT_WARN_THRESHOLD;
+    typeof routerData?.priceImpact === "number" &&
+    routerData?.priceImpact >= PRICE_IMPACT_WARN_THRESHOLD;
 
   const needToAcceptWarning = shouldWarnPriceImpact && !warningAccepted;
   const swapLimitExceeded = tokenInUsdPrice > SWAP_LIMITS[tokenOut];
@@ -217,7 +209,7 @@ const SwapWidget = ({
     ? `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}.  You can do multiple transactions of this size.`
     : "";
 
-  const formattedPriceImpact = (-(quoteData?.priceImpact / 100)).toFixed(2);
+  const formattedPriceImpact = (-(routerData?.priceImpact / 100)).toFixed(2);
   const priceImpactWarning = shouldWarnPriceImpact
     ? `High price impact (${formattedPriceImpact}%). Due to the amount of ${tokenOutInfo?.symbol} liquidity currently available, the more ${tokenInInfo?.symbol} you try to swap, the less ${tokenOutInfo?.symbol} you will receive.`
     : "";
@@ -278,7 +270,7 @@ const SwapWidget = ({
             disabled
             obligatedToken={providedTokenOut && obligateSelection}
             title={"You receive"}
-            loading={quoteLoading}
+            loading={routerLoading}
             portalRef={portalRef}
             tokenValue={tokenOut}
             tokenOnChange={setTokenOut}
@@ -363,7 +355,7 @@ const SwapWidget = ({
               </PopoverRoot>
             </Flex>
 
-            {typeof quoteData?.priceImpact === "number" && (
+            {typeof routerData?.priceImpact === "number" && (
               <Flex>
                 <Flex
                   color={shouldWarnPriceImpact ? "orange.400" : "gray.500"}

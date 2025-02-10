@@ -135,7 +135,7 @@ export const useEnsoToken = (address?: Address) => {
   const tokenFromList = useTokenFromList(address);
 
   const token: Token | null = useMemo(() => {
-    if (!data?.data?.length) {
+    if (!data?.data?.length || !data?.data[0]?.symbol) {
       return tokenFromList;
     }
     const ensoToken = data.data[0];
@@ -144,7 +144,7 @@ export const useEnsoToken = (address?: Address) => {
     if (!logoURI) {
       if (ensoToken.underlyingTokens?.length === 1)
         logoURI = ensoToken.underlyingTokens[0].logosUri[0];
-      else logoURI = tokenFromList.logoURI;
+      else logoURI = tokenFromList?.logoURI;
     }
 
     return {

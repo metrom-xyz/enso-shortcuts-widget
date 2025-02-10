@@ -14,7 +14,7 @@ const transformGeckoUrl = (originalUrl: string): string =>
 export const TokenIcon = ({ token }: { token: Token }) => (
   <Box borderRadius={"50%"} overflow={"hidden"} minW={"28px"} minH={"28px"}>
     <img
-      src={token?.logoURI ? transformGeckoUrl(token.logoURI) : MOCK_IMAGE_URL}
+      src={token?.logoURI ? transformGeckoUrl(token?.logoURI) : MOCK_IMAGE_URL}
       title={token?.symbol}
       alt={token?.symbol}
       width={"28px"}

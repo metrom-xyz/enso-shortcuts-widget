@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
-import { Address } from "viem";
+import { Address, zeroAddress } from "viem";
 import {
   CHAINS_ETHERSCAN,
   CHAINS_NATIVE_TOKENS,
+  ETH_ADDRESS,
   GECKO_CHAIN_NAMES,
   SupportedChainId,
 } from "@/constants";
@@ -28,7 +29,8 @@ const MOCK_ARRAY = [];
 const getGeckoList = (chainId: SupportedChainId) =>
   fetch(`https://tokens.coingecko.com/${GECKO_CHAIN_NAMES[chainId]}/all.json`)
     .then((res) => res.json())
-    .then((data) => data?.tokens);
+    .then((data) => data?.tokens)
+    .then((tokens) => [CHAINS_NATIVE_TOKENS[chainId], ...tokens]);
 
 const getOogaboogaList: () => Promise<Token[]> = () =>
   fetch(
@@ -39,7 +41,10 @@ const getOogaboogaList: () => Promise<Token[]> = () =>
       data.map((token) => ({
         ...token,
         logoURI: token.tokenURI,
-        address: token.address.toLowerCase(),
+        address:
+          token.address === zeroAddress
+            ? ETH_ADDRESS
+            : token.address.toLowerCase(),
       })),
     );
 
@@ -53,7 +58,7 @@ const getCurrentChainList = (chainId: SupportedChainId) => {
 
   switch (chainId) {
     case SupportedChainId.BERACHAIN:
-      getters = [getOogaboogaList(), getGeckoList(chainId)];
+      getters = [getOogaboogaList()];
       break;
     default:
       getters = [getGeckoList(chainId)];
@@ -89,11 +94,7 @@ export const useCurrentChainList = () => {
     enabled: !!chainId,
   });
 
-  if (data) {
-    return [CHAINS_NATIVE_TOKENS[chainId], ...data];
-  }
-
-  return MOCK_ARRAY;
+  return data ?? MOCK_ARRAY;
 };
 
 export const useOneInchTokenList = () => {

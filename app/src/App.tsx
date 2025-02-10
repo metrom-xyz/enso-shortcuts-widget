@@ -6,7 +6,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import SwapWidget from "@ensofinance/shortcuts-widget";
 
 import logoUrl from "./logo_black_white.png";
-import wordmarkUrl from "./wordmark_black.png";
 
 import "@rainbow-me/rainbowkit/styles.css";
 import "./App.css";
@@ -75,12 +74,6 @@ function App() {
 
           <ConnectButton />
         </div>
-
-        <img
-          src={wordmarkUrl}
-          alt={"Enso"}
-          style={{ height: "50px", opacity: 0.5 }}
-        />
 
         <SwapWidget {...props} enableShare indicateRoute adaptive />
       </div>

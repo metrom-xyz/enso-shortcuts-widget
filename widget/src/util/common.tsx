@@ -3,9 +3,8 @@ import { useChainId } from "wagmi";
 import { Address } from "viem";
 import {
   CHAINS_ETHERSCAN,
-  ETH_TOKEN,
+  CHAINS_NATIVE_TOKENS,
   GECKO_CHAIN_NAMES,
-  NATIVE_ETH_CHAINS,
   SupportedChainId,
 } from "@/constants";
 import tokenList from "../tokenList";
@@ -45,7 +44,7 @@ export const useGeckoList = () => {
   });
 
   if (data) {
-    return NATIVE_ETH_CHAINS.includes(chainId) ? [...data, ETH_TOKEN] : data;
+    return [CHAINS_NATIVE_TOKENS[chainId], ...data];
   }
 
   return [];

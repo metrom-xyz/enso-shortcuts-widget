@@ -29,12 +29,12 @@ import { useApproveIfNecessary } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import {
   DEFAULT_SLIPPAGE,
+  ETH_ADDRESS,
   LP_REDIRECT_TOKENS,
   MAINNET_ZAP_INPUT_TOKENS,
   PRICE_IMPACT_WARN_THRESHOLD,
   SWAP_LIMITS,
   SWAP_REDIRECT_TOKENS,
-  USDC_ADDRESS,
 } from "@/constants";
 import { useStore } from "@/store";
 import SwapInput from "@/components/SwapInput";
@@ -83,7 +83,7 @@ const SwapWidget = ({
 
   // set default token in
   useEffect(() => {
-    setTokenIn(USDC_ADDRESS[chainId]);
+    setTokenIn(ETH_ADDRESS);
     setTokenOut(undefined);
   }, [chainId]);
   // sets selected tokens if ones are provided
@@ -101,8 +101,12 @@ const SwapWidget = ({
       wagmiChainId !== chainId
     ) {
       setObligatedChainId(wagmiChainId);
-      setTokenIn(USDC_ADDRESS[wagmiChainId]);
+      setTokenIn(ETH_ADDRESS);
       setTokenOut(undefined);
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("chainId", wagmiChainId.toString());
+      window.history.replaceState({}, "", url.toString());
     }
   }, [wagmiChainId]);
   // sets query params for tokenIn, tokenOut, and chainId

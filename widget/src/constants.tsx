@@ -19,8 +19,47 @@ export const ETH_TOKEN: Token = {
   name: "Ethereum",
   symbol: "ETH",
   decimals: 18,
+  logoURI: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+};
+export const BNB_TOKEN: Token = {
+  address: ETH_ADDRESS,
+  name: "Binance Coin",
+  symbol: "BNB",
+  decimals: 18,
   logoURI:
-    "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
+    "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
+};
+export const AVAX_TOKEN: Token = {
+  address: ETH_ADDRESS,
+  name: "Avalanche",
+  symbol: "AVAX",
+  decimals: 18,
+  logoURI:
+    "https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png",
+};
+export const MATIC_TOKEN: Token = {
+  address: ETH_ADDRESS,
+  name: "Polygon",
+  symbol: "MATIC",
+  decimals: 18,
+  logoURI:
+    "https://assets.coingecko.com/coins/images/4713/large/matic___polygon.jpg",
+};
+const BERA_TOKEN: Token = {
+  address: ETH_ADDRESS,
+  name: "BeraChain",
+  symbol: "BERA",
+  decimals: 18,
+  logoURI:
+    "https://assets.coingecko.com/coins/images/25235/large/BERA.png?1738822008",
+};
+const DAI_TOKEN: Token = {
+  address: ETH_ADDRESS,
+  name: "Gnosis XDAI",
+  symbol: "XDAI",
+  decimals: 18,
+  logoURI:
+    "https://assets.coingecko.com/coins/images/11062/large/Identity-Primary-DarkBG.png",
 };
 
 export enum SupportedChainId {
@@ -37,6 +76,7 @@ export enum SupportedChainId {
   ZKSYNC = 324,
   GNOSIS = 100,
   AVALANCHE = 43114,
+  BERACHAIN = 80094,
   // ARBITRUM_RINKEBY = 421611,
   // OPTIMISM_GOERLI = 420,w
   // GOERLI = 5,
@@ -59,6 +99,7 @@ export const GECKO_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
   [SupportedChainId.ZKSYNC]: "zksync",
   [SupportedChainId.GNOSIS]: "xdai",
   [SupportedChainId.AVALANCHE]: "avalanche",
+  [SupportedChainId.BERACHAIN]: "berachain",
 };
 
 export const MOCK_IMAGE_URL =
@@ -78,6 +119,7 @@ export const CHAINS_ETHERSCAN: Record<SupportedChainId, string> = {
   [SupportedChainId.ZKSYNC]: "https://explorer.zksync.io/",
   [SupportedChainId.GNOSIS]: "https://gnosisscan.io/",
   [SupportedChainId.AVALANCHE]: "https://cchain.explorer.avax.network",
+  [SupportedChainId.BERACHAIN]: "https://berascan.com",
 };
 
 export const USDC_ADDRESS: Record<SupportedChainId, Address> = {
@@ -91,6 +133,7 @@ export const USDC_ADDRESS: Record<SupportedChainId, Address> = {
   [avalanche.id]: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
   [gnosis.id]: "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
   [bsc.id]: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+  [80094]: "0x549943e04f40284185054145c6e4e9568c1d3241",
 };
 
 export const NATIVE_ETH_CHAINS = [
@@ -101,6 +144,20 @@ export const NATIVE_ETH_CHAINS = [
   SupportedChainId.LINEA,
   SupportedChainId.ZKSYNC,
 ];
+
+export const CHAINS_NATIVE_TOKENS: Record<SupportedChainId, Token> = {
+  [SupportedChainId.MAINNET]: ETH_TOKEN,
+  [SupportedChainId.ARBITRUM_ONE]: ETH_TOKEN,
+  [SupportedChainId.OPTIMISM]: ETH_TOKEN,
+  [SupportedChainId.BASE]: ETH_TOKEN,
+  [SupportedChainId.LINEA]: ETH_TOKEN,
+  [SupportedChainId.ZKSYNC]: ETH_TOKEN,
+  [SupportedChainId.BSC]: BNB_TOKEN,
+  [SupportedChainId.AVALANCHE]: AVAX_TOKEN,
+  [SupportedChainId.POLYGON]: MATIC_TOKEN,
+  [SupportedChainId.BERACHAIN]: BERA_TOKEN,
+  [SupportedChainId.GNOSIS]: DAI_TOKEN,
+};
 
 export const SWAP_LIMITS: Record<Address, number> = {
   ["0x09def5abc67e967d54e8233a4b5ebbc1b3fbe34b"]: 100000, // WABTC limit
@@ -118,7 +175,7 @@ export const ONEINCH_ONLY_TOKENS = [
   "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3",
 ];
 
-export const PRICE_IMPACT_WARN_THRESHOLD = 300; // basis points
+export const PRICE_IMPACT_WARN_THRESHOLD = 100; // basis points
 export const DEFAULT_SLIPPAGE = 25; // 0.25%
 
 export const MAINNET_ZAP_INPUT_TOKENS: Address[] = [

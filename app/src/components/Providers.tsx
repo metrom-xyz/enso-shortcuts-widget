@@ -10,10 +10,16 @@ import {
   zksync,
   gnosis,
   polygon,
+  berachain,
 } from "viem/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import React from "react";
+
+const berachainWithIcon = {
+  ...berachain,
+  iconUrl: "https://assets.coingecko.com/coins/images/25235/large/BERA.png?1738822008",
+};
 
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
@@ -22,6 +28,7 @@ const config = getDefaultConfig({
     mainnet,
     base,
     arbitrum,
+    berachainWithIcon,
     zksync,
     optimism,
     bsc,

@@ -23,31 +23,77 @@ export const compareCaseInsensitive = (a: string, b: string) => {
   return !!(a && b && a?.toLowerCase() === b?.toLowerCase());
 };
 
-const getGeckoList = (chainName: string) =>
-  fetch(`https://tokens.coingecko.com/${chainName}/all.json`)
+const MOCK_ARRAY = [];
+
+const getGeckoList = (chainId: SupportedChainId) =>
+  fetch(`https://tokens.coingecko.com/${GECKO_CHAIN_NAMES[chainId]}/all.json`)
     .then((res) => res.json())
     .then((data) => data?.tokens);
+
+const getOogaboogaList: () => Promise<Token[]> = () =>
+  fetch(
+    "https://mainnet.internal.oogabooga.io/token-list/tokens?chainId=80094&client=SWAP",
+  )
+    .then((res) => res.json())
+    .then((data) =>
+      data.map((token) => ({
+        ...token,
+        logoURI: token.tokenURI,
+        address: token.address.toLowerCase(),
+      })),
+    );
 
 const getOneInchTokenList = (chainId: number) =>
   fetch("https://tokens.1inch.io/v1.2/" + chainId)
     .then((res) => res.json())
     .catch(() => tokenList[chainId]);
 
-export const useGeckoList = () => {
+const getCurrentChainList = (chainId: SupportedChainId) => {
+  let getters: Promise<Token[] | undefined>[] = [];
+
+  switch (chainId) {
+    case SupportedChainId.BERACHAIN:
+      getters = [getOogaboogaList(), getGeckoList(chainId)];
+      break;
+    default:
+      getters = [getGeckoList(chainId)];
+  }
+
+  return Promise.allSettled(getters).then((results) => {
+    const tokens = results
+      .filter(
+        (result): result is PromiseFulfilledResult<Token[]> =>
+          result.status === "fulfilled",
+      )
+      .flatMap((result) => result.value);
+    if (results.length === 1) return tokens;
+
+    return Object.values(
+      tokens.reduce(
+        (acc, token) => {
+          acc[token.address] = token;
+          return acc;
+        },
+        {} as Record<string, Token>,
+      ),
+    );
+  });
+};
+
+export const useCurrentChainList = () => {
   const chainId = usePriorityChainId();
-  const chainName = GECKO_CHAIN_NAMES[chainId];
 
   const { data } = useQuery<Token[] | undefined>({
-    queryKey: ["tokenList", chainName],
-    queryFn: () => getGeckoList(chainName),
-    enabled: !!chainName,
+    queryKey: ["tokenList", chainId],
+    queryFn: () => getCurrentChainList(chainId),
+    enabled: !!chainId,
   });
 
   if (data) {
     return [CHAINS_NATIVE_TOKENS[chainId], ...data];
   }
 
-  return [];
+  return MOCK_ARRAY;
 };
 
 export const useOneInchTokenList = () => {
@@ -61,11 +107,9 @@ export const useOneInchTokenList = () => {
 };
 
 export const useTokenFromList = (tokenAddress: Address) => {
-  const data = useGeckoList();
+  const data = useCurrentChainList();
 
-  return data?.find((token) =>
-    compareCaseInsensitive(token.address, tokenAddress),
-  );
+  return data?.find((token) => token.address == tokenAddress);
 };
 
 export const usePriorityChainId = () => {

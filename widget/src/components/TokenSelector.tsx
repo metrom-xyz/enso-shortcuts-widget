@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { Token, useGeckoList } from "@/util/common";
+import { Token, useCurrentChainList } from "@/util/common";
 import { formatNumber, normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
 import { ETH_ADDRESS } from "@/constants";
@@ -83,20 +83,20 @@ const TokenSelector = ({
   obligatedToken?: boolean;
   limitTokens?: Address[];
 }) => {
-  const geckoTokens = useGeckoList();
+  const currentChainTokenList = useCurrentChainList();
   const [searchText, setSearchText] = useState("");
   const { data: balances } = useEnsoBalances();
 
   const searchedToken = useEnsoToken(
-    geckoTokens.length &&
-      !hasCoincidence(geckoTokens, searchText as Address) &&
+    currentChainTokenList.length &&
+      !hasCoincidence(currentChainTokenList, searchText as Address) &&
       !limitTokens
       ? (searchText as Address)
       : undefined,
   );
   const valueToken = useEnsoToken(
-    geckoTokens.length &&
-      !hasCoincidence(geckoTokens, value) &&
+    currentChainTokenList.length &&
+      !hasCoincidence(currentChainTokenList, value) &&
       value !== searchedToken?.address
       ? value
       : undefined,
@@ -104,8 +104,8 @@ const TokenSelector = ({
 
   const tokenList = useMemo(() => {
     let tokens = limitTokens
-      ? geckoTokens.filter((token) => limitTokens.includes(token.address))
-      : geckoTokens;
+      ? currentChainTokenList.filter((token) => limitTokens.includes(token.address))
+      : currentChainTokenList;
 
     if (searchedToken) {
       tokens = [...tokens, searchedToken];
@@ -142,12 +142,11 @@ const TokenSelector = ({
 
     //sort by costUsd
     balancesWithTotals.sort((a, b) => {
-      // @ts-expect-error typing is not recognized
       return (b.costUsd ?? 0) - (a.costUsd ?? 0);
     });
 
     return balancesWithTotals;
-  }, [balances, geckoTokens, searchedToken]);
+  }, [balances, currentChainTokenList, searchedToken]);
 
   const tokenOptions = useMemo(() => {
     let items = tokenList;

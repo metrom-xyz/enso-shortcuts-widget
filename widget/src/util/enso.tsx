@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { isAddress } from "viem";
-import { Token, usePriorityChainId } from "@/util/common";
+import { Token, usePriorityChainId, useTokenFromList } from "@/util/common";
 import { useSendEnsoTransaction } from "@/util/wallet";
 import { ONEINCH_ONLY_TOKENS } from "@/constants";
 
@@ -129,16 +129,22 @@ const useEnsoTokenDetails = (address: Address) => {
   });
 };
 
+// fallback to normal token details
 export const useEnsoToken = (address?: Address) => {
   const { data } = useEnsoTokenDetails(address);
+  const tokenFromList = useTokenFromList(address);
 
   const token: Token | null = useMemo(() => {
-    if (!data?.data?.length) return null;
+    if (!data?.data?.length) {
+      return tokenFromList;
+    }
     const ensoToken = data.data[0];
     let logoURI = ensoToken.logosUri[0];
 
-    if (!logoURI && ensoToken.underlyingTokens?.length === 1) {
-      logoURI = ensoToken.underlyingTokens[0].logosUri[0];
+    if (!logoURI) {
+      if (ensoToken.underlyingTokens?.length === 1)
+        logoURI = ensoToken.underlyingTokens[0].logosUri[0];
+      else logoURI = tokenFromList.logoURI;
     }
 
     return {
@@ -155,7 +161,7 @@ export const useEnsoToken = (address?: Address) => {
         logoURI: token.logosUri[0],
       })),
     };
-  }, [data]);
+  }, [data, tokenFromList]);
 
   return token;
 };

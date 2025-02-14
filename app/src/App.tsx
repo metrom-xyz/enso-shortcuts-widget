@@ -8,7 +8,7 @@ import SwapWidget from "@ensofinance/shortcuts-widget";
 import logoUrl from "./logo_black_white.png";
 
 import "@rainbow-me/rainbowkit/styles.css";
-import "./App.css";
+// import "./App.css";
 
 const EnsoApiKey = import.meta.env.VITE_ENSO_API_KEY;
 
@@ -52,30 +52,26 @@ function App() {
     <Providers>
       <div
         style={{
-          flexDirection: "column",
           display: "flex",
-          justifyContent: "center",
-          height: "100%",
-          width: "100%",
-          gap: "10px",
+          justifyContent: "space-around",
+          margin: "5px",
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            top: "1%",
-            left: "0%",
-            display: "flex",
-            width: "100%",
-            justifyContent: "space-around",
-          }}
-        >
-          <img src={logoUrl} alt={"Enso"} style={{ height: "50px" }} />
+        <img src={logoUrl} alt={"Enso"} style={{ height: "50px" }} />
 
-          <ConnectButton />
-        </div>
-
+        <ConnectButton />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-around",
+          height: "100vh",
+        }}
+      >
         <SwapWidget {...props} enableShare indicateRoute adaptive />
+        <div />
       </div>
     </Providers>
   );

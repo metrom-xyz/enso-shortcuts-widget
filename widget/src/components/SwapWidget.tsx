@@ -69,7 +69,6 @@ const SwapWidget = ({
   const chainId = usePriorityChainId();
   const wagmiChainId = useChainId();
 
-  const { address } = useAccount();
   const { switchChain } = useSwitchChain();
   const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
     defaultOpen: true,

@@ -9,6 +9,10 @@ import {
 import { useMemo } from "react";
 import { Address, isAddress } from "viem";
 import { FixedSizeList as List } from "react-window";
+import { Token, useCurrentChainList } from "@/util/common";
+import { formatNumber, normalizeValue } from "@/util";
+import { useEnsoBalances, useEnsoToken } from "@/util/enso";
+import { ETH_ADDRESS } from "@/constants";
 import {
   SelectContent,
   SelectItem,
@@ -16,10 +20,6 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { Token, useCurrentChainList } from "@/util/common";
-import { formatNumber, normalizeValue } from "@/util";
-import { useEnsoBalances, useEnsoToken } from "@/util/enso";
-import { ETH_ADDRESS } from "@/constants";
 import { TokenIcon, TokenIndicator } from "@/components/TokenIndicator";
 
 type TokenWithBalance = Token & { balance?: string; costUsd?: number };
@@ -104,7 +104,9 @@ const TokenSelector = ({
 
   const tokenList = useMemo(() => {
     let tokens = limitTokens
-      ? currentChainTokenList.filter((token) => limitTokens.includes(token.address))
+      ? currentChainTokenList.filter((token) =>
+          limitTokens.includes(token.address),
+        )
       : currentChainTokenList;
 
     if (searchedToken) {

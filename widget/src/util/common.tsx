@@ -8,7 +8,6 @@ import {
   GECKO_CHAIN_NAMES,
   SupportedChainId,
 } from "@/constants";
-import tokenList from "../tokenList";
 import { useStore } from "@/store";
 
 export type Token = {
@@ -51,9 +50,30 @@ const getOogaboogaList: () => Promise<Token[]> = () =>
 const getOneInchTokenList = (chainId: number) =>
   fetch("https://tokens.1inch.io/v1.2/" + chainId)
     .then((res) => res.json())
-    .catch(() => tokenList[chainId]);
+    .then((data) => Object.values(data) as Token[]);
 
-const getCurrentChainList = (chainId: SupportedChainId) => {
+// .catch(() => tokenList[chainId]);
+
+const getChainSymbolSortPriority = (chainId: SupportedChainId) => {
+  const defaultPriority = {
+    [CHAINS_NATIVE_TOKENS[chainId].symbol]: 5,
+    USDC: 4,
+    DAI: 4,
+    USDT: 4,
+    WBTC: 4,
+    WETH: 3,
+    LINK: 3,
+    UNI: 3,
+    SUSHI: 3,
+    AAVE: 3,
+  };
+  switch (chainId) {
+    default:
+      return defaultPriority;
+  }
+};
+
+const getCurrentChainTokens = (chainId: SupportedChainId) => {
   let getters: Promise<Token[] | undefined>[] = [];
 
   switch (chainId) {
@@ -61,7 +81,8 @@ const getCurrentChainList = (chainId: SupportedChainId) => {
       getters = [getOogaboogaList()];
       break;
     default:
-      getters = [getGeckoList(chainId)];
+      // priority for oneInch tokens
+      getters = [getOneInchTokenList(chainId), getGeckoList(chainId)];
   }
 
   return Promise.allSettled(getters).then((results) => {
@@ -70,18 +91,36 @@ const getCurrentChainList = (chainId: SupportedChainId) => {
         (result): result is PromiseFulfilledResult<Token[]> =>
           result.status === "fulfilled",
       )
-      .flatMap((result) => result.value);
-    if (results.length === 1) return tokens;
+      .map((result) => result.value);
 
-    return Object.values(
-      tokens.reduce(
-        (acc, token) => {
-          acc[token.address] = token;
-          return acc;
-        },
-        {} as Record<string, Token>,
-      ),
-    );
+    const tokenList = tokens[0];
+
+    if (tokens.length > 1) {
+      const addedToken = new Set<string>(
+        tokens[0]?.map((t) => t.address) ?? [],
+      );
+      const tokenList = tokens[0];
+
+      for (let i = 1; i < tokens.length; i++) {
+        const newTokens = tokens[i]?.filter(
+          (token) => !addedToken.has(token.address),
+        );
+
+        if (newTokens) {
+          tokenList.push(...newTokens);
+          newTokens.forEach((t) => addedToken.add(t.address));
+        }
+      }
+    }
+
+    const priority = getChainSymbolSortPriority(chainId);
+
+    // sort by token symbol priority
+    const sortedTokenList = [...tokenList].sort((a, b) => {
+      return priority[b.symbol] ?? 0 - priority[a.symbol] ?? 0;
+    });
+
+    return sortedTokenList;
   });
 };
 
@@ -90,7 +129,7 @@ export const useCurrentChainList = () => {
 
   const { data } = useQuery<Token[] | undefined>({
     queryKey: ["tokenList", chainId],
-    queryFn: () => getCurrentChainList(chainId),
+    queryFn: () => getCurrentChainTokens(chainId),
     enabled: !!chainId,
   });
 
@@ -100,7 +139,7 @@ export const useCurrentChainList = () => {
 export const useOneInchTokenList = () => {
   const chainId = usePriorityChainId();
 
-  return useQuery<Record<string, Token> | undefined>({
+  return useQuery({
     queryKey: ["oneInchTokenList", chainId],
     queryFn: () => getOneInchTokenList(chainId),
     enabled: !!chainId,

@@ -1,7 +1,9 @@
-* {
-  margin: 0;
-}
-
-html, body, #root {
+html,
+body,
+#root,
+[data-rk]:not([role="dialog"]) {
   height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }

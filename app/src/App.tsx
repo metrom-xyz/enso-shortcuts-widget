@@ -52,25 +52,34 @@ function App() {
     <Providers>
       <div
         style={{
+          position: "fixed",
+          width: "100%",
+          height: "60px",
           display: "flex",
           justifyContent: "space-around",
-          margin: "5px",
+          alignItems: "center",
+          padding: "5px",
         }}
       >
         <img src={logoUrl} alt={"Enso"} style={{ height: "50px" }} />
 
-        <ConnectButton />
+        <div>
+          <ConnectButton />
+        </div>
       </div>
+
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-around",
-          height: "100vh",
+          height: "100%",
         }}
       >
-        <SwapWidget {...props} enableShare indicateRoute adaptive />
+        <div style={{ marginTop: "70px" }}>
+          <SwapWidget {...props} enableShare indicateRoute adaptive />
+        </div>
         <div />
       </div>
     </Providers>

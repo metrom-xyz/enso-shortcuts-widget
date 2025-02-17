@@ -44,14 +44,8 @@ import Notification from "@/components/Notification";
 import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
 import RouteIndication from "@/components/RouteIndication";
 import { Tooltip } from "@/components/ui/tooltip";
-import {
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverRoot,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { NotifyType, WidgetProps } from "@/types";
+import Slippage from "@/components/Slippage";
 
 const SwapWidget = ({
   tokenOut: providedTokenOut,
@@ -314,63 +308,7 @@ const SwapWidget = ({
                 {tokenOutInfo?.symbol}
               </Text>
 
-              <PopoverRoot>
-                <PopoverTrigger asChild>
-                  <Flex
-                    gap={1}
-                    alignItems={"center"}
-                    cursor={"pointer"}
-                    w={"fit-content"}
-                    _hover={{
-                      textDecoration: "underline",
-                    }}
-                  >
-                    <Box color="gray.500" fontSize={"xs"}>
-                      Slippage tolerance: {slippage / 100}%
-                    </Box>
-                    <Settings size={10} />
-                  </Flex>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <PopoverArrow />
-                  <PopoverBody p={2}>
-                    <Tabs.Root
-                      fitted
-                      variant="subtle"
-                      value={slippage.toString()}
-                      onValueChange={(e) => setSlippage(+e.value)}
-                    >
-                      <Tabs.List>
-                        <Tabs.Trigger
-                          value="10"
-                          onClick={() => setSlippage(10)}
-                        >
-                          0.1%
-                        </Tabs.Trigger>
-                        <Tabs.Trigger
-                          value="25"
-                          onClick={() => setSlippage(25)}
-                        >
-                          0.25%
-                        </Tabs.Trigger>
-                        <Tabs.Trigger
-                          value="50"
-                          onClick={() => setSlippage(50)}
-                        >
-                          0.5%
-                        </Tabs.Trigger>
-                        <Tabs.Trigger
-                          value="100"
-                          onClick={() => setSlippage(100)}
-                        >
-                          1%
-                        </Tabs.Trigger>
-                        <Tabs.Indicator />
-                      </Tabs.List>
-                    </Tabs.Root>
-                  </PopoverBody>
-                </PopoverContent>
-              </PopoverRoot>
+              <Slippage slippage={slippage} setSlippage={setSlippage} />
             </Flex>
 
             {typeof routerData?.priceImpact === "number" && (

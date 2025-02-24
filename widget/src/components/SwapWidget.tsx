@@ -6,7 +6,6 @@ import {
   Flex,
   IconButton,
   Link,
-  Tabs,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -44,8 +43,8 @@ import Notification from "@/components/Notification";
 import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
 import RouteIndication from "@/components/RouteIndication";
 import { Tooltip } from "@/components/ui/tooltip";
-import { NotifyType, WidgetProps } from "@/types";
 import Slippage from "@/components/Slippage";
+import { NotifyType, ObligatedToken, WidgetProps } from "@/types";
 
 const SwapWidget = ({
   tokenOut: providedTokenOut,
@@ -54,12 +53,16 @@ const SwapWidget = ({
   enableShare,
   indicateRoute,
   adaptive,
+  rotateObligated,
 }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
   const [warningAccepted, setWarningAccepted] = useState(false);
   const [tokenOut, setTokenOut] = useState<Address>();
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
+  const [obligatedToken, setObligatedToken] = useState(
+    obligateSelection && (rotateObligated ?? ObligatedToken.TokenOut),
+  );
 
   const chainId = usePriorityChainId();
   const wagmiChainId = useChainId();
@@ -218,6 +221,10 @@ const SwapWidget = ({
 
   const limitInputTokens =
     chainId === mainnet.id && tokenOutInfo?.symbol === "UNI-V2";
+  const displayTokenRotation =
+    !obligateSelection ||
+    rotateObligated ||
+    typeof rotateObligated === "number";
 
   return (
     <Box
@@ -250,7 +257,7 @@ const SwapWidget = ({
         <SwapInput
           title={"You pay"}
           limitTokens={limitInputTokens && MAINNET_ZAP_INPUT_TOKENS}
-          obligatedToken={providedTokenIn && obligateSelection}
+          obligatedToken={obligatedToken === ObligatedToken.TokenIn}
           portalRef={portalRef}
           tokenValue={tokenIn}
           tokenOnChange={setTokenIn}
@@ -259,7 +266,7 @@ const SwapWidget = ({
           usdValue={tokenInUsdPrice}
         />
 
-        {!obligateSelection && (
+        {displayTokenRotation && (
           <Flex justifyContent="center" alignItems="center">
             <IconButton
               borderRadius={"full"}
@@ -271,6 +278,13 @@ const SwapWidget = ({
               variant="subtle"
               onClick={() => {
                 const tempTokenIn = tokenIn;
+
+                if (obligateSelection)
+                  setObligatedToken((val) =>
+                    val === ObligatedToken.TokenIn
+                      ? ObligatedToken.TokenOut
+                      : ObligatedToken.TokenIn,
+                  );
 
                 setTokenIn(tokenOut);
                 setTokenOut(tempTokenIn);
@@ -284,7 +298,7 @@ const SwapWidget = ({
 
         <SwapInput
           disabled
-          obligatedToken={providedTokenOut && obligateSelection}
+          obligatedToken={obligatedToken === ObligatedToken.TokenOut}
           title={"You receive"}
           loading={routerLoading}
           portalRef={portalRef}

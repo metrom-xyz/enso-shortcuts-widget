@@ -7,6 +7,7 @@ export type WidgetProps = {
   obligateSelection?: boolean;
   enableShare?: boolean;
   indicateRoute?: boolean;
+  rotateObligated?: boolean | ObligatedToken;
 };
 
 export enum NotifyType {
@@ -16,4 +17,9 @@ export enum NotifyType {
   Loading = "loading",
   Warning = "warning",
   Blocked = "blocked",
+}
+
+export enum ObligatedToken {
+  TokenIn,
+  TokenOut,
 }

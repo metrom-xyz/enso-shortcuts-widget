@@ -37,11 +37,11 @@ import React from 'react';
 import SwapWidget from '@ensofinance/shortcuts-widget';
 
 const App = () => {
-  return (
-    <div>
-      <SwapWidget apiKey={"YOUR_API_KEY"} />
+    return (
+        <div>
+            <SwapWidget apiKey={"YOUR_API_KEY"} />
     </div>
-  );
+);
 };
 
 export default App;
@@ -60,7 +60,8 @@ The `SwapWidget` component accepts the following props:
 - `themeConfig` (SystemConfig): Optional theme configuration
 - `enableShare` (boolean): Enable route sharing functionality (copy with button)
 - `obligateSelection` (boolean): Obligate token selection
-- `indicateRoute` (boolean): Indicate the route of the swap
+- `rotateObligated` (boolean | 0 | 1): For use with `obligateSelection`, displays arrow to rotate the obligated token
+- `indicateRoute` (boolean): Displays shortcut execution route
 
 ## License
 

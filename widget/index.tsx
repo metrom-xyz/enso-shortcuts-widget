@@ -35,6 +35,7 @@ export default ({
   obligateSelection,
   indicateRoute,
   adaptive,
+  rotateObligated,
 }: WidgetProps & {
   apiKey: string;
   themeConfig?: SystemConfig;
@@ -101,6 +102,7 @@ export default ({
           <CacheProvider value={cache}>
             <ChakraProvider value={system}>
               <SwapWidget
+                rotateObligated={rotateObligated}
                 indicateRoute={indicateRoute}
                 obligateSelection={obligateSelection}
                 tokenIn={tokenIn?.toLowerCase() as Address}

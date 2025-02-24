@@ -49,7 +49,7 @@ const Slippage = ({
           gap={1}
           alignItems={"center"}
           cursor={"pointer"}
-          w={"fit-content"}
+          w={"170px"}
           _hover={{
             textDecoration: "underline",
           }}
@@ -73,16 +73,12 @@ const Slippage = ({
               <Box
                 key={value}
                 onClick={() => setDefaultSlippage(value)}
-                style={{
-                  flex: 1,
-                  padding: "4px 8px",
-                  border: "1px solid #E2E8F0",
-                  backgroundColor:
-                    slippage === value ? "#EDF2F7" : "transparent",
-                  borderRadius: "4px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
+                padding={2}
+                flex={1}
+                border="1px solid #E2E8F0"
+                backgroundColor={slippage === value ? "#EDF2F7" : "transparent"}
+                borderRadius={"md"}
+                cursor={"pointer"}
               >
                 {label}
               </Box>

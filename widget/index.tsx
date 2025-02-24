@@ -7,6 +7,7 @@ import {
   EnvironmentProvider,
 } from "@chakra-ui/react";
 import { Address } from "viem";
+import posthog from "posthog-js";
 import root from "react-shadow/emotion";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
@@ -16,6 +17,11 @@ import { setApiKey } from "@/util/enso";
 import { WidgetProps } from "@/types";
 
 export { type SystemConfig };
+
+posthog.init("phc_w7nnXuFCFpuhrXLAAHrOrlr7Z0AAFHE79JybZ4bUabk", {
+  api_host: "https://eu.i.posthog.com",
+  person_profiles: "always", // or 'always' to create profiles for anonymous users as well
+});
 
 const varRoot = ":host";
 

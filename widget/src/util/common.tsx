@@ -149,7 +149,7 @@ export const useOneInchTokenList = () => {
 export const useTokenFromList = (tokenAddress: Address) => {
   const data = useCurrentChainList();
 
-  return data?.find((token) => token.address == tokenAddress);
+  return data?.find?.((token) => token.address == tokenAddress);
 };
 
 export const usePriorityChainId = () => {

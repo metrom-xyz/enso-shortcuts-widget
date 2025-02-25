@@ -11,6 +11,7 @@ import {
   gnosis,
   polygon,
   berachain,
+  sonic,
 } from "viem/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
@@ -18,7 +19,13 @@ import React from "react";
 
 const berachainWithIcon = {
   ...berachain,
-  iconUrl: "https://assets.coingecko.com/coins/images/25235/large/BERA.png?1738822008",
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/25235/large/BERA.png?1738822008",
+};
+const sonicWithIcon = {
+  ...sonic,
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/38108/standard/200x200_Sonic_Logo.png",
 };
 
 const config = getDefaultConfig({
@@ -29,6 +36,7 @@ const config = getDefaultConfig({
     base,
     arbitrum,
     berachainWithIcon,
+    sonicWithIcon,
     zksync,
     optimism,
     bsc,

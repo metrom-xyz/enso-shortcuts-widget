@@ -63,9 +63,7 @@ function App() {
       >
         <img src={logoUrl} alt={"Enso"} style={{ height: "50px" }} />
 
-        <div>
-          <ConnectButton />
-        </div>
+        <ConnectButton />
       </div>
 
       <div

@@ -61,6 +61,14 @@ const DAI_TOKEN: Token = {
   logoURI:
     "https://assets.coingecko.com/coins/images/11062/large/Identity-Primary-DarkBG.png",
 };
+const SONIC_TOKEN: Token = {
+  address: ETH_ADDRESS,
+  name: "Sonic",
+  symbol: "S",
+  decimals: 18,
+  logoURI:
+    "https://assets.coingecko.com/coins/images/38108/standard/200x200_Sonic_Logo.png",
+};
 
 export enum SupportedChainId {
   MAINNET = 1,
@@ -77,6 +85,7 @@ export enum SupportedChainId {
   GNOSIS = 100,
   AVALANCHE = 43114,
   BERACHAIN = 80094,
+  SONIC = 146,
   // ARBITRUM_RINKEBY = 421611,
   // OPTIMISM_GOERLI = 420,w
   // GOERLI = 5,
@@ -100,6 +109,7 @@ export const GECKO_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
   [SupportedChainId.GNOSIS]: "xdai",
   [SupportedChainId.AVALANCHE]: "avalanche",
   [SupportedChainId.BERACHAIN]: "berachain",
+  [SupportedChainId.SONIC]: "sonic",
 };
 
 export const MOCK_IMAGE_URL =
@@ -120,6 +130,7 @@ export const CHAINS_ETHERSCAN: Record<SupportedChainId, string> = {
   [SupportedChainId.GNOSIS]: "https://gnosisscan.io/",
   [SupportedChainId.AVALANCHE]: "https://cchain.explorer.avax.network",
   [SupportedChainId.BERACHAIN]: "https://berascan.com",
+  [SupportedChainId.SONIC]: "https://sonicscan.io",
 };
 
 export const USDC_ADDRESS: Record<SupportedChainId, Address> = {
@@ -133,7 +144,8 @@ export const USDC_ADDRESS: Record<SupportedChainId, Address> = {
   [avalanche.id]: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
   [gnosis.id]: "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
   [bsc.id]: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-  [80094]: "0x549943e04f40284185054145c6e4e9568c1d3241",
+  [SupportedChainId.BERACHAIN]: "0x549943e04f40284185054145c6e4e9568c1d3241",
+  [SupportedChainId.SONIC]: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
 };
 
 export const NATIVE_ETH_CHAINS = [
@@ -157,6 +169,7 @@ export const CHAINS_NATIVE_TOKENS: Record<SupportedChainId, Token> = {
   [SupportedChainId.POLYGON]: MATIC_TOKEN,
   [SupportedChainId.BERACHAIN]: BERA_TOKEN,
   [SupportedChainId.GNOSIS]: DAI_TOKEN,
+  [SupportedChainId.SONIC]: SONIC_TOKEN,
 };
 
 export const SWAP_LIMITS: Record<Address, number> = {

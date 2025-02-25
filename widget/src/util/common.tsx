@@ -46,6 +46,21 @@ const getOogaboogaList: () => Promise<Token[]> = () =>
             : token.address.toLowerCase(),
       })),
     );
+//
+// const getShadowList: (chainId: number) => Promise<Token[]> = () =>
+//   fetch(
+//     `https://raw.githubusercontent.com/Shadow-Exchange/shadow-assets/main/blockchains/sonic/tokenlist.json`,
+//   )
+//     .then((res) => res.json())
+//     .then((data) =>
+//       data.tokens[0]
+//         .map((token: any) => ({
+//           ...token,
+//           address: token.address?.toLowerCase(),
+//           logoURI: `https://raw.githubusercontent.com/Shadow-Exchange/shadow-assets/main/blockchains/sonic/assets/${token.address}/logo.png`,
+//         }))
+//         .filter(({ address }) => address),
+//     );
 
 const getOneInchTokenList = (chainId: number) =>
   fetch("https://tokens.1inch.io/v1.2/" + chainId)
@@ -66,6 +81,7 @@ const getChainSymbolSortPriority = (chainId: SupportedChainId) => {
     UNI: 3,
     SUSHI: 3,
     AAVE: 3,
+    USDCE: 2,
   };
   switch (chainId) {
     default:
@@ -73,12 +89,29 @@ const getChainSymbolSortPriority = (chainId: SupportedChainId) => {
   }
 };
 
+const sonicAdditionalTokens = // TODO: remove after it comes in list for sonic
+  new Promise<Token[]>((resolve) =>
+    resolve([
+      {
+        address: "0x6047828dc181963ba44974801ff68e538da5eaf9",
+        name: "Tether USD",
+        symbol: "USDT",
+        decimals: 6,
+        logoURI:
+          "https://assets.coingecko.com/coins/images/325/large/Tether.png",
+      },
+    ]),
+  );
+
 const getCurrentChainTokens = (chainId: SupportedChainId) => {
   let getters: Promise<Token[] | undefined>[] = [];
 
   switch (chainId) {
     case SupportedChainId.BERACHAIN:
       getters = [getOogaboogaList()];
+      break;
+    case SupportedChainId.SONIC:
+      getters = [getGeckoList(chainId), sonicAdditionalTokens];
       break;
     default:
       // priority for oneInch tokens

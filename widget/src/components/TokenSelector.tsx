@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Center,
   createListCollection,
@@ -92,6 +92,10 @@ const TokenSelector = ({
   const [selectionChainId, setSelectionChainId] = useState(chainId);
   const { data: balances } = useEnsoBalances(selectionChainId);
   const currentChainTokenList = useCurrentChainList(selectionChainId);
+
+  useEffect(() => {
+    setSelectionChainId(chainId);
+  }, [chainId]);
 
   const searchedToken = useEnsoToken(
     currentChainTokenList.length &&
@@ -199,7 +203,7 @@ const TokenSelector = ({
       collection={tokenOptions}
       value={selectValue}
       onValueChange={onValueChange}
-      size="sm"
+      size="md"
       w={"fit-content"}
       onOpenChange={onOpenChange}
       background={"gray.100"}

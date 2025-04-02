@@ -76,25 +76,25 @@ const SwapWidget = ({
   const setNotification = useStore((state) => state.setNotification);
   const setObligatedChainId = useStore((state) => state.setObligatedChainId);
 
-  const prevWagmiChainId = usePrevious(wagmiChainId);
+  // const prevWagmiChainId = usePrevious(wagmiChainId);
   const tokenInInfo = useEnsoToken(tokenIn);
   const tokenOutInfo = useEnsoToken(tokenOut, outChainId);
 
   const setFromChainId = useCallback(
     (newChainId: number) => {
+      setObligatedChainId(newChainId);
       if (chainId === wagmiChainId) {
         switchChain({ chainId: newChainId });
       }
-      setObligatedChainId(newChainId);
     },
-    [wagmiChainId, setObligatedChainId, setOutChainId]
+    [wagmiChainId]
   );
 
   // set default token in
-  useEffect(() => {
-    setTokenIn(ETH_ADDRESS);
-    if (!outChainId) setTokenOut(undefined);
-  }, [chainId]);
+  // useEffect(() => {
+  //   setTokenIn(ETH_ADDRESS);
+  //   if (!outChainId) setTokenOut(undefined);
+  // }, [chainId]);
   // sets selected tokens if ones are provided
   useEffect(() => {
     if (providedTokenOut) setTokenOut(providedTokenOut);
@@ -102,22 +102,22 @@ const SwapWidget = ({
   }, [providedTokenOut, providedTokenIn]);
 
   // reset tokens if chain changes not to target
-  useEffect(() => {
-    if (
-      enableShare &&
-      prevWagmiChainId &&
-      prevWagmiChainId !== wagmiChainId &&
-      wagmiChainId !== chainId
-    ) {
-      setObligatedChainId(wagmiChainId);
-      setTokenIn(ETH_ADDRESS);
-      setTokenOut(undefined);
+  // useEffect(() => {
+  //   if (
+  //     enableShare &&
+  //     prevWagmiChainId &&
+  //     prevWagmiChainId !== wagmiChainId &&
+  //     wagmiChainId !== chainId
+  //   ) {
+  //     setObligatedChainId(wagmiChainId);
+  //     setTokenIn(ETH_ADDRESS);
+  //     setTokenOut(undefined);
 
-      const url = new URL(window.location.href);
-      url.searchParams.set("chainId", wagmiChainId.toString());
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, [wagmiChainId]);
+  //     const url = new URL(window.location.href);
+  //     url.searchParams.set("chainId", wagmiChainId.toString());
+  //     window.history.replaceState({}, "", url.toString());
+  //   }
+  // }, [wagmiChainId]);
   // sets query params for tokenIn, tokenOut, and chainId
   useEffect(() => {
     if (!enableShare) return;
@@ -135,7 +135,7 @@ const SwapWidget = ({
 
     url.searchParams.set("chainId", chainId.toString());
     window.history.replaceState({}, "", url.toString());
-  }, [tokenIn, tokenOut]);
+  }, [tokenIn, tokenOut, chainId, outChainId]);
 
   // reset warning if token changes
   useEffect(() => {
@@ -302,6 +302,10 @@ const SwapWidget = ({
                       : ObligatedToken.TokenIn
                   );
 
+                const tempChainId = chainId;
+                debugger;
+                setObligatedChainId(outChainId);
+                setOutChainId(tempChainId);
                 setTokenIn(tokenOut);
                 setTokenOut(tempTokenIn);
                 setValueIn(valueOut);

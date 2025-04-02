@@ -19,6 +19,7 @@ function App() {
     const tokenInParam = searchParams.get("tokenIn");
     const tokenOutParam = searchParams.get("tokenOut");
     const chainIdParam = searchParams.get("chainId");
+    const outChainIdParam = searchParams.get("outChainId");
 
     const props: ComponentProps<typeof SwapWidget> = {
       apiKey: EnsoApiKey,
@@ -27,7 +28,10 @@ function App() {
     if (chainIdParam) {
       props.chainId = parseInt(chainIdParam);
       if (isAddress(tokenInParam)) props.tokenIn = tokenInParam;
-      if (isAddress(tokenOutParam)) props.tokenOut = tokenOutParam;
+      if (isAddress(tokenOutParam)) {
+        props.tokenOut = tokenOutParam;
+        props.outChainId = parseInt(outChainIdParam);
+      }
     }
 
     return props;
@@ -76,7 +80,7 @@ function App() {
         }}
       >
         <div style={{ marginTop: "70px" }}>
-          <SwapWidget {...props} enableShare indicateRoute adaptive />
+          <SwapWidget {...props} enableShare adaptive />
         </div>
         <div />
       </div>

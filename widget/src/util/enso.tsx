@@ -51,6 +51,12 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
+const oftAddress = {
+  1: "0x77b2043768d28E9C9aB44E1aBfC95944bcE57931",
+  42161: "0xA45B5130f36CDcA45667738e2a258AB09f4A5f7F",
+  10: "0xe8CDF27AcD73a434D661C84887215F7598e7d0d3",
+};
+
 const useBridgeBundle = (
   {
     tokenIn,
@@ -67,7 +73,7 @@ const useBridgeBundle = (
     chainId: SupportedChainId;
     destinationChainId: number;
   },
-  enabled = false,
+  enabled = false
 ) => {
   console.log(
     tokenIn,
@@ -76,18 +82,18 @@ const useBridgeBundle = (
     receiver,
     chainId,
     destinationChainId,
-    enabled,
+    enabled
   );
   const bundleActions: BundleAction[] = [
     {
       protocol: "stargate",
       action: BundleActionType.Bridge,
       args: {
-        primaryAddress: "0xA45B5130f36CDcA45667738e2a258AB09f4A5f7F",
+        primaryAddress: oftAddress[chainId],
         destinationChainId,
         tokenIn: ETH_ADDRESS,
         amountIn,
-        receiver: "0x9c4f884235e43A5E33aA5065F8D6A1b7bF45128a",
+        receiver,
         callback: [
           {
             protocol: "enso",
@@ -102,7 +108,7 @@ const useBridgeBundle = (
                 action: "transfer",
                 args: {
                   token: ETH_ADDRESS,
-                  amountIn: {
+                  amount: {
                     useOutputOfCallAt: 0,
                   },
                 },
@@ -142,7 +148,7 @@ const useBridgeBundle = (
   const { data, isLoading } = useBundleData(
     { chainId, fromAddress: receiver, spender: receiver },
     bundleActions,
-    enabled,
+    enabled
   );
 
   const bundleData = {
@@ -182,7 +188,7 @@ const useEnsoRouterData = (params: RouteParams, enabled = true) =>
 export const useBundleData = (
   bundleParams: BundleParams,
   bundleActions: BundleAction[],
-  enabled = true,
+  enabled = true
 ) => {
   const chainId = usePriorityChainId();
 
@@ -193,8 +199,8 @@ export const useBundleData = (
       enabled &&
       bundleActions.length > 0 &&
       isAddress(bundleParams.fromAddress) &&
-        // @ts-ignore
-        +(bundleActions[0]?.args?.amountIn as string) > 0,
+      // @ts-ignore
+      +(bundleActions[0]?.args?.amountIn as string) > 0,
   });
 };
 
@@ -202,7 +208,7 @@ export const useEnsoData = (
   amountIn: string,
   tokenIn: Address,
   tokenOut: Address,
-  slippage: number,
+  slippage: number
 ) => {
   const { address } = useAccount();
   const chainId = usePriorityChainId();
@@ -219,7 +225,6 @@ export const useEnsoData = (
     chainId,
   };
 
-  console.log(routerParams);
   if (
     ONEINCH_ONLY_TOKENS.includes(tokenIn) ||
     ONEINCH_ONLY_TOKENS.includes(tokenOut)
@@ -232,7 +237,7 @@ export const useEnsoData = (
 
   const { data: routerData, isLoading: routerLoading } = useEnsoRouterData(
     routerParams,
-    routeOrBundle,
+    routeOrBundle
   );
 
   const { data: bundleData, isLoading: bundleLoading } = useBridgeBundle(
@@ -244,7 +249,7 @@ export const useEnsoData = (
       chainId,
       destinationChainId: outChainId,
     },
-    !routeOrBundle,
+    !routeOrBundle
   );
 
   const data = routeOrBundle ? routerData : bundleData;
@@ -273,7 +278,7 @@ export const useEnsoBalances = (priorityChainId?: SupportedChainId) => {
 
 const useEnsoTokenDetails = (
   address: Address,
-  priorityChainId?: SupportedChainId,
+  priorityChainId?: SupportedChainId
 ) => {
   const chainId = usePriorityChainId(priorityChainId);
 
@@ -288,7 +293,7 @@ const useEnsoTokenDetails = (
 // fallback to normal token details
 export const useEnsoToken = (
   address?: Address,
-  priorityChainId?: SupportedChainId,
+  priorityChainId?: SupportedChainId
 ) => {
   const { data } = useEnsoTokenDetails(address, priorityChainId);
   const tokenFromList = useTokenFromList(address, priorityChainId);
@@ -327,7 +332,7 @@ export const useEnsoToken = (
 
 export const useEnsoPrice = (
   address: Address,
-  priorityChainId?: SupportedChainId,
+  priorityChainId?: SupportedChainId
 ) => {
   const chainId = usePriorityChainId(priorityChainId);
 

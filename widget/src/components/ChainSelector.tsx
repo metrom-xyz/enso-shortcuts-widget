@@ -88,6 +88,7 @@ const ChainSelector = ({
       borderRadius={"lg"}
       background={"gray.100"}
       _hover={{ background: "gray.200" }}
+      transition="all 0.2s ease-in-out"
       disabled={disabled}
       collection={chainOptions}
       value={[value?.toString()]}
@@ -96,9 +97,8 @@ const ChainSelector = ({
       }
       size="md"
       w={"fit-content"}
-      transition="all 0.2s ease-in-out"
     >
-      <SelectTrigger noIndicator={disabled} borderRadius="md">
+      <SelectTrigger noIndicator={disabled}>
         <SelectValueText>
           {(items) =>
             items[0] ? (

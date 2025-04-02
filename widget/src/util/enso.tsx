@@ -104,10 +104,11 @@ const useBridgeBundle = (
           },
           ETH_ADDRESS === tokenOut
             ? {
-                protocol: "enso",
+                protocol: "erc20",
                 action: "transfer",
                 args: {
                   token: ETH_ADDRESS,
+                  receiver,
                   amount: {
                     useOutputOfCallAt: 0,
                   },

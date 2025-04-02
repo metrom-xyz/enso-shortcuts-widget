@@ -4,7 +4,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // @ts-expect-error  env is accessible
   const env = loadEnv(mode, process.cwd(), "");
 
   return {

@@ -2,17 +2,34 @@ import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
+import {
+  EnsoClient,
+  RouteParams,
+  BundleAction,
+  BundleParams,
+  BundleActionType,
+} from "@ensofinance/sdk";
 import { isAddress } from "viem";
-import { Token, usePriorityChainId, useTokenFromList } from "@/util/common";
+import {
+  Token,
+  usePriorityChainId,
+  useTokenFromList,
+  useOutChainId,
+} from "@/util/common";
 import { useSendEnsoTransaction } from "@/util/wallet";
-import { ONEINCH_ONLY_TOKENS } from "@/constants";
+import {
+  ONEINCH_ONLY_TOKENS,
+  SupportedChainId,
+  ETH_ADDRESS,
+} from "@/constants";
 
 let ensoClient;
 
 export const setApiKey = (apiKey: string) => {
   ensoClient = new EnsoClient({
     // baseURL: "http://localhost:3000/api/v1",
+    baseURL: "https://shortcuts-backend-dynamic-int.herokuapp.com/api/v1",
+    // baseURL: "https://shortcuts-backend-dynamic-dev.herokuapp.com/api/v1",
     apiKey,
   });
 };
@@ -34,47 +51,114 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
-export const useEnsoData = (
-  amountIn: string,
-  tokenIn: Address,
-  tokenOut: Address,
-  slippage: number,
-) => {
-  const { address } = useAccount();
-  const chainId = usePriorityChainId();
-  const routerParams: RouteParams = {
-    amountIn,
+const useBridgeBundle = (
+  {
     tokenIn,
     tokenOut,
-    slippage,
-    fromAddress: address,
-    receiver: address,
-    spender: address,
-    routingStrategy: "router",
+    amountIn,
+    receiver,
     chainId,
-  };
-  if (
-    ONEINCH_ONLY_TOKENS.includes(tokenIn) ||
-    ONEINCH_ONLY_TOKENS.includes(tokenOut)
-  ) {
+    destinationChainId,
+  }: {
+    tokenIn: Address;
+    tokenOut: Address;
+    amountIn: string;
+    receiver: Address;
+    chainId: SupportedChainId;
+    destinationChainId: number;
+  },
+  enabled = false,
+) => {
+  console.log(
+    tokenIn,
+    tokenOut,
+    amountIn,
+    receiver,
+    chainId,
+    destinationChainId,
+    enabled,
+  );
+  const bundleActions: BundleAction[] = [
+    {
+      protocol: "stargate",
+      action: BundleActionType.Bridge,
+      args: {
+        primaryAddress: "0xA45B5130f36CDcA45667738e2a258AB09f4A5f7F",
+        destinationChainId,
+        tokenIn: ETH_ADDRESS,
+        amountIn,
+        receiver: "0x9c4f884235e43A5E33aA5065F8D6A1b7bF45128a",
+        callback: [
+          {
+            protocol: "enso",
+            action: "balance",
+            args: {
+              token: ETH_ADDRESS,
+            },
+          },
+          ETH_ADDRESS === tokenOut
+            ? {
+                protocol: "enso",
+                action: "transfer",
+                args: {
+                  token: ETH_ADDRESS,
+                  amountIn: {
+                    useOutputOfCallAt: 0,
+                  },
+                },
+              }
+            : {
+                protocol: "enso",
+                action: "route",
+                args: {
+                  tokenIn: ETH_ADDRESS,
+                  tokenOut,
+                  amountIn: {
+                    useOutputOfCallAt: 0,
+                  },
+                },
+              },
+        ],
+      },
+    },
+  ];
+
+  if (tokenIn !== ETH_ADDRESS) {
     // @ts-ignore
-    routerParams.ignoreAggregators =
-      "0x,paraswap,openocean,odos,kyberswap,native,barter";
+    bundleActions[0].args.amountIn = {
+      useOutputOfCallAt: 0,
+    };
+    bundleActions.unshift({
+      protocol: "enso",
+      action: BundleActionType.Route,
+      args: {
+        tokenIn,
+        amountIn,
+        tokenOut: ETH_ADDRESS,
+      },
+    });
   }
 
-  const { data: routerData, isLoading: routerLoading } =
-    useEnsoRouterData(routerParams);
+  const { data, isLoading } = useBundleData(
+    { chainId, fromAddress: receiver, spender: receiver },
+    bundleActions,
+    enabled,
+  );
 
-  const sendTransaction = useSendEnsoTransaction(routerData?.tx, routerParams);
+  const bundleData = {
+    tx: data?.tx,
+    route: data?.route || [],
+    amountOut: data?.amountsOut?.[tokenOut] || "0",
+    gas: data?.gas || "0",
+  };
 
   return {
-    routerData,
-    routerLoading,
-    sendTransaction,
+    data: bundleData,
+    isLoading,
   };
 };
 
-const useEnsoRouterData = (params: RouteParams) =>
+const useEnsoRouterData = (params: RouteParams, enabled = true) =>
   useQuery({
     queryKey: [
       "enso-router",
@@ -86,6 +170,7 @@ const useEnsoRouterData = (params: RouteParams) =>
     ],
     queryFn: () => ensoClient.getRouterData(params),
     enabled:
+      enabled &&
       +params.amountIn > 0 &&
       isAddress(params.fromAddress) &&
       isAddress(params.tokenIn) &&
@@ -94,28 +179,89 @@ const useEnsoRouterData = (params: RouteParams) =>
     retry: 2,
   });
 
-const useEnsoQuote = (params: QuoteParams) =>
-  useQuery({
-    queryKey: [
-      "enso-quote",
-      params.chainId,
-      params.fromAddress,
-      params.tokenIn,
-      params.tokenOut,
-      params.amountIn,
-    ],
-    queryFn: () => ensoClient.getQuoteData(params),
-    enabled:
-      +params.amountIn > 0 &&
-      isAddress(params.tokenIn) &&
-      isAddress(params.tokenOut) &&
-      params.tokenIn !== params.tokenOut,
-    retry: 2,
-  });
+export const useBundleData = (
+  bundleParams: BundleParams,
+  bundleActions: BundleAction[],
+  enabled = true,
+) => {
+  const chainId = usePriorityChainId();
 
-export const useEnsoBalances = () => {
+  return useQuery({
+    queryKey: ["enso-bundle", chainId, bundleParams, bundleActions],
+    queryFn: () => ensoClient.getBundleData(bundleParams, bundleActions),
+    enabled:
+      enabled &&
+      bundleActions.length > 0 &&
+      isAddress(bundleParams.fromAddress) &&
+        // @ts-ignore
+        +(bundleActions[0]?.args?.amountIn as string) > 0,
+  });
+};
+
+export const useEnsoData = (
+  amountIn: string,
+  tokenIn: Address,
+  tokenOut: Address,
+  slippage: number,
+) => {
   const { address } = useAccount();
   const chainId = usePriorityChainId();
+  const outChainId = useOutChainId();
+  const routerParams: RouteParams = {
+    amountIn,
+    tokenIn,
+    tokenOut,
+    slippage,
+    fromAddress: address,
+    receiver: address,
+    spender: address,
+    routingStrategy: "router",
+    chainId,
+  };
+
+  console.log(routerParams);
+  if (
+    ONEINCH_ONLY_TOKENS.includes(tokenIn) ||
+    ONEINCH_ONLY_TOKENS.includes(tokenOut)
+  ) {
+    // @ts-ignore
+    routerParams.ignoreAggregators =
+      "0x,paraswap,openocean,odos,kyberswap,native,barter";
+  }
+  let routeOrBundle = outChainId === chainId;
+
+  const { data: routerData, isLoading: routerLoading } = useEnsoRouterData(
+    routerParams,
+    routeOrBundle,
+  );
+
+  const { data: bundleData, isLoading: bundleLoading } = useBridgeBundle(
+    {
+      tokenIn,
+      tokenOut,
+      amountIn,
+      receiver: address,
+      chainId,
+      destinationChainId: outChainId,
+    },
+    !routeOrBundle,
+  );
+
+  const data = routeOrBundle ? routerData : bundleData;
+  const isLoading = routeOrBundle ? routerLoading : bundleLoading;
+
+  const sendTransaction = useSendEnsoTransaction(data?.tx, routerParams);
+
+  return {
+    data,
+    isLoading,
+    sendTransaction,
+  };
+};
+
+export const useEnsoBalances = (priorityChainId?: SupportedChainId) => {
+  const { address } = useAccount();
+  const chainId = usePriorityChainId(priorityChainId);
 
   return useQuery({
     queryKey: ["enso-balances", chainId, address],
@@ -125,8 +271,11 @@ export const useEnsoBalances = () => {
   });
 };
 
-const useEnsoTokenDetails = (address: Address) => {
-  const chainId = usePriorityChainId();
+const useEnsoTokenDetails = (
+  address: Address,
+  priorityChainId?: SupportedChainId,
+) => {
+  const chainId = usePriorityChainId(priorityChainId);
 
   return useQuery({
     queryKey: ["enso-token-details", address, chainId],
@@ -137,9 +286,12 @@ const useEnsoTokenDetails = (address: Address) => {
 };
 
 // fallback to normal token details
-export const useEnsoToken = (address?: Address) => {
-  const { data } = useEnsoTokenDetails(address);
-  const tokenFromList = useTokenFromList(address);
+export const useEnsoToken = (
+  address?: Address,
+  priorityChainId?: SupportedChainId,
+) => {
+  const { data } = useEnsoTokenDetails(address, priorityChainId);
+  const tokenFromList = useTokenFromList(address, priorityChainId);
 
   const token: Token | null = useMemo(() => {
     if (!data?.data?.length || !data?.data[0]?.symbol) {
@@ -173,8 +325,11 @@ export const useEnsoToken = (address?: Address) => {
   return token;
 };
 
-export const useEnsoPrice = (address: Address) => {
-  const chainId = usePriorityChainId();
+export const useEnsoPrice = (
+  address: Address,
+  priorityChainId?: SupportedChainId,
+) => {
+  const chainId = usePriorityChainId(priorityChainId);
 
   return useQuery({
     queryKey: ["enso-token-price", address, chainId],

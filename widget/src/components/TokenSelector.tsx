@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Center,
   createListCollection,
@@ -12,7 +12,7 @@ import { FixedSizeList as List } from "react-window";
 import { Token, useCurrentChainList } from "@/util/common";
 import { formatNumber, normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
-import { ETH_ADDRESS } from "@/constants";
+import { ETH_ADDRESS, SupportedChainId } from "@/constants";
 import {
   SelectContent,
   SelectItem,
@@ -21,6 +21,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { TokenIcon, TokenIndicator } from "@/components/TokenIndicator";
+import ChainSelector from "./ChainSelector";
 
 type TokenWithBalance = Token & { balance?: string; costUsd?: number };
 
@@ -67,7 +68,7 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
 const hasCoincidence = (tokens: Token[], address: Address) =>
   tokens.some(
     (token) =>
-      token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase(),
+      token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase()
   );
 
 const TokenSelector = ({
@@ -76,16 +77,21 @@ const TokenSelector = ({
   portalRef,
   obligatedToken,
   limitTokens,
+  chainId,
+  setChainId,
 }: {
+  setChainId?: (chainId: SupportedChainId) => void;
+  chainId?: SupportedChainId;
   value: Address;
   onChange: (value: string) => void;
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
   limitTokens?: Address[];
 }) => {
-  const currentChainTokenList = useCurrentChainList();
   const [searchText, setSearchText] = useState("");
-  const { data: balances } = useEnsoBalances();
+  const [selectionChainId, setSelectionChainId] = useState(chainId);
+  const { data: balances } = useEnsoBalances(selectionChainId);
+  const currentChainTokenList = useCurrentChainList(selectionChainId);
 
   const searchedToken = useEnsoToken(
     currentChainTokenList.length &&
@@ -93,6 +99,7 @@ const TokenSelector = ({
       !limitTokens
       ? (searchText as Address)
       : undefined,
+    selectionChainId
   );
   const valueToken = useEnsoToken(
     currentChainTokenList.length &&
@@ -100,12 +107,13 @@ const TokenSelector = ({
       value !== searchedToken?.address
       ? value
       : undefined,
+    selectionChainId
   );
 
   const tokenList = useMemo(() => {
     let tokens = limitTokens
       ? currentChainTokenList.filter((token) =>
-          limitTokens.includes(token.address),
+          limitTokens.includes(token.address)
         )
       : currentChainTokenList;
 
@@ -122,7 +130,7 @@ const TokenSelector = ({
       // debank return ''arb" and "zksync" native token names instead of token address
       if (token.address === ETH_ADDRESS) {
         balanceValue = balances?.find?.(
-          ({ token }) => token && !isAddress(token),
+          ({ token }) => token && !isAddress(token)
         );
       }
 
@@ -158,8 +166,8 @@ const TokenSelector = ({
 
       items = tokenList.filter((token) =>
         [token.symbol, token.name, token.address].some((val) =>
-          val.toLocaleLowerCase().includes(search),
-        ),
+          val.toLocaleLowerCase().includes(search)
+        )
       );
     }
 
@@ -170,32 +178,56 @@ const TokenSelector = ({
     });
   }, [tokenList, searchText]);
 
+  const onValueChange = useCallback(
+    ({ value }: { value: string[] }) => {
+      onChange(value[0] as string);
+      setChainId(selectionChainId);
+    },
+    [onChange, selectionChainId]
+  );
+  const selectValue = useMemo(() => [value], [value]);
+  const onOpenChange = useCallback(
+    ({ open }: { open: boolean }) => {
+      open || obligatedToken || searchedToken || setSearchText("");
+    },
+    [obligatedToken, searchedToken, setSearchText]
+  );
+
   return (
     <SelectRoot
       disabled={!!obligatedToken}
       collection={tokenOptions}
-      value={[value]}
-      onValueChange={({ value }) => onChange(value[0] as string)}
+      value={selectValue}
+      onValueChange={onValueChange}
       size="sm"
-      minWidth="120px"
-      onOpenChange={({ open }) =>
-        open || obligatedToken || searchedToken || setSearchText("")
-      }
+      w={"fit-content"}
+      onOpenChange={onOpenChange}
+      background={"gray.100"}
+      _hover={{ background: "gray.200" }}
+      borderRadius={"xl"}
+      transition="all 0.2s ease-in-out"
     >
-      <SelectTrigger
-        noIndicator={!!obligatedToken}
-        borderRadius={"md"}
-        _hover={{ background: "gray.100" }}
-      >
-        <SelectValueText placeholder="Select token">
-          {(tokens: Token[]) =>
-            tokens[0] ? (
-              <TokenIndicator token={tokens[0] || undefined} />
-            ) : (
-              "Select token"
-            )
-          }
-        </SelectValueText>
+      <SelectTrigger w={"fit-content"} maxWidth={"100%"} noIndicator>
+        {value ? (
+          <SelectValueText
+            placeholder="Select token"
+            width={"fit-content"}
+            maxWidth={"100%"}
+          >
+            {(tokens: Token[]) =>
+              tokens[0] ? (
+                <TokenIndicator
+                  chainId={selectionChainId}
+                  token={tokens[0] || undefined}
+                />
+              ) : (
+                <Text whiteSpace={"nowrap"}>Select token</Text>
+              )
+            }
+          </SelectValueText>
+        ) : (
+          <Text whiteSpace={"nowrap"}>Select Token</Text>
+        )}
       </SelectTrigger>
 
       <SelectContent
@@ -208,11 +240,16 @@ const TokenSelector = ({
           height={"100%"}
           flexDirection={"column"}
           gap={2}
-          p={1}
+          p={2}
           width={"100%"}
         >
           <Center>
-            <Text fontSize={"lg"}>Select a token</Text>
+            <ChainSelector
+              value={selectionChainId}
+              onChange={(chainId) => {
+                setSelectionChainId(chainId);
+              }}
+            />
           </Center>
 
           <Input

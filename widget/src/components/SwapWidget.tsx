@@ -9,7 +9,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ArrowDown, Settings, TriangleAlert } from "lucide-react";
+import { ArrowDown, TriangleAlert } from "lucide-react";
 import { Address } from "viem";
 import { mainnet } from "viem/chains";
 import { usePrevious } from "@uidotdev/usehooks";
@@ -61,8 +61,10 @@ const SwapWidget = ({
   const [tokenOut, setTokenOut] = useState<Address>();
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
   const [obligatedToken, setObligatedToken] = useState(
-    obligateSelection && (rotateObligated ?? ObligatedToken.TokenOut),
+    obligateSelection && (rotateObligated ?? ObligatedToken.TokenOut)
   );
+  const setOutChainId = useStore((state) => state.setTokenOutChainId);
+  const outChainId = useStore((state) => state.tokenOutChainId);
 
   const chainId = usePriorityChainId();
   const wagmiChainId = useChainId();
@@ -76,12 +78,22 @@ const SwapWidget = ({
 
   const prevWagmiChainId = usePrevious(wagmiChainId);
   const tokenInInfo = useEnsoToken(tokenIn);
-  const tokenOutInfo = useEnsoToken(tokenOut);
+  const tokenOutInfo = useEnsoToken(tokenOut, outChainId);
+
+  const setFromChainId = useCallback(
+    (newChainId: number) => {
+      if (chainId === wagmiChainId) {
+        switchChain({ chainId: newChainId });
+      }
+      setObligatedChainId(newChainId);
+    },
+    [wagmiChainId, setObligatedChainId, setOutChainId]
+  );
 
   // set default token in
   useEffect(() => {
     setTokenIn(ETH_ADDRESS);
-    setTokenOut(undefined);
+    if (!outChainId) setTokenOut(undefined);
   }, [chainId]);
   // sets selected tokens if ones are provided
   useEffect(() => {
@@ -111,12 +123,16 @@ const SwapWidget = ({
     if (!enableShare) return;
 
     const url = new URL(window.location.href);
-    tokenIn
-      ? url.searchParams.set("tokenIn", tokenIn)
-      : url.searchParams.delete("tokenIn");
-    tokenOut
-      ? url.searchParams.set("tokenOut", tokenOut)
-      : url.searchParams.delete("tokenOut");
+    if (tokenIn) url.searchParams.set("tokenIn", tokenIn);
+    else url.searchParams.delete("tokenIn");
+    if (tokenOut) {
+      url.searchParams.set("tokenOut", tokenOut);
+      outChainId && url.searchParams.set("outChainId", outChainId.toString());
+    } else {
+      url.searchParams.delete("tokenOut");
+      url.searchParams.delete("outChainId");
+    }
+
     url.searchParams.set("chainId", chainId.toString());
     window.history.replaceState({}, "", url.toString());
   }, [tokenIn, tokenOut]);
@@ -128,26 +144,25 @@ const SwapWidget = ({
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
-  const { routerData, routerLoading, sendTransaction } = useEnsoData(
-    amountIn,
-    tokenIn,
-    tokenOut,
-    slippage,
-  );
+  const {
+    data: routerData,
+    isLoading: routerLoading,
+    sendTransaction,
+  } = useEnsoData(amountIn, tokenIn, tokenOut, slippage);
 
   const valueOut = normalizeValue(
     routerData?.amountOut,
-    tokenOutInfo?.decimals,
+    tokenOutInfo?.decimals
   );
 
   const approveData = useEnsoApprove(tokenIn, amountIn);
   const approve = useApproveIfNecessary(
     tokenIn,
     approveData.data?.spender,
-    amountIn,
+    amountIn
   );
 
-  const approveNeeded = !!approve && +amountIn > 0 && !!tokenIn;
+  const approveNeeded = Boolean(approve && tokenIn) && +amountIn > 0;
 
   const wrongChain = chainId && +wagmiChainId !== +chainId;
 
@@ -156,7 +171,7 @@ const SwapWidget = ({
   const exchangeRate = +valueOut / +valueIn;
 
   const { data: inUsdPrice } = useEnsoPrice(tokenIn);
-  const { data: outUsdPrice } = useEnsoPrice(tokenOut);
+  const { data: outUsdPrice } = useEnsoPrice(tokenOut, outChainId);
 
   useEffect(() => {
     if (SWAP_REDIRECT_TOKENS.includes(providedTokenOut)) {
@@ -255,7 +270,8 @@ const SwapWidget = ({
 
       <Flex flexDirection={"column"} p={3} overflow={"hidden"} gap={1}>
         <SwapInput
-          title={"You pay"}
+          chainId={chainId}
+          setChainId={setFromChainId}
           limitTokens={limitInputTokens && MAINNET_ZAP_INPUT_TOKENS}
           obligatedToken={obligatedToken === ObligatedToken.TokenIn}
           portalRef={portalRef}
@@ -283,7 +299,7 @@ const SwapWidget = ({
                   setObligatedToken((val) =>
                     val === ObligatedToken.TokenIn
                       ? ObligatedToken.TokenOut
-                      : ObligatedToken.TokenIn,
+                      : ObligatedToken.TokenIn
                   );
 
                 setTokenIn(tokenOut);
@@ -298,8 +314,9 @@ const SwapWidget = ({
 
         <SwapInput
           disabled
+          chainId={outChainId}
+          setChainId={setOutChainId}
           obligatedToken={obligatedToken === ObligatedToken.TokenOut}
-          title={"You receive"}
           loading={routerLoading}
           portalRef={portalRef}
           tokenValue={tokenOut}
@@ -379,7 +396,7 @@ const SwapWidget = ({
                   : sendTransaction.send
               }
             >
-              Swap
+              Bridge
             </Button>
           </Tooltip>
         </Flex>

@@ -53,6 +53,9 @@ importers:
       '@eslint/js':
         specifier: ^9.17.0
         version: 9.17.0
+      '@types/node':
+        specifier: ^22.13.17
+        version: 22.13.17
       '@types/react':
         specifier: ^18.3.18
         version: 18.3.18
@@ -61,7 +64,7 @@ importers:
         version: 18.3.5(@types/react@18.3.18)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.3.4(vite@6.0.7)
+        version: 4.3.4(vite@6.0.7(@types/node@22.13.17))
       eslint:
         specifier: ^9.17.0
         version: 9.17.0
@@ -85,10 +88,10 @@ importers:
         version: 8.19.1(eslint@9.17.0)(typescript@5.6.3)
       vite:
         specifier: ^6.0.5
-        version: 6.0.7
+        version: 6.0.7(@types/node@22.13.17)
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.6.3)(vite@6.0.7)
+        version: 5.1.4(typescript@5.6.3)(vite@6.0.7(@types/node@22.13.17))
 
   widget:
     dependencies:
@@ -102,8 +105,8 @@ importers:
         specifier: ^11.14.0
         version: 11.14.0(@types/react@18.3.18)(react@18.3.1)
       '@ensofinance/sdk':
-        specifier: ^1.0.7
-        version: 1.0.7
+        specifier: ^1.0.15
+        version: 1.0.15
       '@tanstack/react-query':
         specifier: ^5.62.10
         version: 5.62.16(react@18.3.1)
@@ -158,7 +161,7 @@ importers:
         version: 18.3.5(@types/react@18.3.18)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.3.4(vite@6.0.7)
+        version: 4.3.4(vite@6.0.7(@types/node@22.13.17))
       eslint:
         specifier: ^9.17.0
         version: 9.17.0
@@ -182,16 +185,16 @@ importers:
         version: 8.19.1(eslint@9.17.0)(typescript@5.6.3)
       vite:
         specifier: ^6.0.5
-        version: 6.0.7
+        version: 6.0.7(@types/node@22.13.17)
       vite-plugin-dts:
         specifier: ^4.4.0
-        version: 4.4.0(rollup@4.30.1)(typescript@5.6.3)(vite@6.0.7)
+        version: 4.4.0(@types/node@22.13.17)(rollup@4.30.1)(typescript@5.6.3)(vite@6.0.7(@types/node@22.13.17))
       vite-plugin-lib-inject-css:
         specifier: ^2.2.1
-        version: 2.2.1(vite@6.0.7)
+        version: 2.2.1(vite@6.0.7(@types/node@22.13.17))
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.6.3)(vite@6.0.7)
+        version: 5.1.4(typescript@5.6.3)(vite@6.0.7(@types/node@22.13.17))
 
 packages:
 
@@ -415,11 +418,8 @@ packages:
   '@ensofinance/sdk@1.0.1':
     resolution: {integrity: sha512-pJmggn/tk7MluvysYCMXcUbzuECDSWXHaeX67tLi5aN7252yC3zQXAby7FVAh7tM7bupq7JGEpuk1fAV/EyWbw==}
 
-  '@ensofinance/sdk@1.0.6':
-    resolution: {integrity: sha512-xSINKZl1cmcfoUBYw8Zx8zzxUJLqG3GD3NUILNAQasjmx2nTRW4yN0ksh4HaSr0ROhPxy6kSrfHPKCRsEB3+tw==}
-
-  '@ensofinance/sdk@1.0.7':
-    resolution: {integrity: sha512-BNphPW8Ur710KmXSzyqq5JRpy3BPJAjQxsS9PkUAxx0/700hgCV81ImkZ7J5119bXKsi1qah6N/Os4h33FBXYg==}
+  '@ensofinance/sdk@1.0.15':
+    resolution: {integrity: sha512-2J7kPcHc749xZPL1cTCs7v2ByJNZAcpfxvoUfyzee9iI7/UtATUAtlB7LnOWJFRa6xAf5ZditsGX4yXGrjU2lA==}
 
   '@esbuild/aix-ppc64@0.24.2':
     resolution: {integrity: sha512-thpVCb/rhxE/BnMLQ7GReQLLN8q9qbHmI55F4489/ByVg2aQaQ6kbcLb6FHkocZzQhxc4gx0sCk0tJkKBFzDhA==}
@@ -1088,6 +1088,9 @@ packages:
 
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
+
+  '@types/node@22.13.17':
+    resolution: {integrity: sha512-nAJuQXoyPj04uLgu+obZcSmsfOenUg6DxPKogeUy6yNCFwWaj5sBF8/G/pNo8EtBJjAfSVgfIlugR/BCOleO+g==}
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -3086,6 +3089,9 @@ packages:
   uncrypto@0.1.3:
     resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
 
+  undici-types@6.20.0:
+    resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
+
   unenv@1.10.0:
     resolution: {integrity: sha512-wY5bskBQFL9n3Eca5XnhH6KbUo/tfvkwm9OpcdCvLaeA7piBNbavbOKJySEwQ1V0RH6HvNlSAFRTpvTqgKRQXQ==}
 
@@ -3773,20 +3779,15 @@ snapshots:
 
   '@ensofinance/sdk@1.0.1':
     dependencies:
-      '@ensofinance/sdk': 1.0.6
+      '@ensofinance/sdk': 1.0.15
       axios: 1.7.9
     transitivePeerDependencies:
       - debug
 
-  '@ensofinance/sdk@1.0.6':
+  '@ensofinance/sdk@1.0.15':
     dependencies:
       axios: 1.7.9
-    transitivePeerDependencies:
-      - debug
-
-  '@ensofinance/sdk@1.0.7':
-    dependencies:
-      axios: 1.7.9
+      prettier: 3.4.2
     transitivePeerDependencies:
       - debug
 
@@ -4137,23 +4138,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@microsoft/api-extractor-model@7.30.1':
+  '@microsoft/api-extractor-model@7.30.1(@types/node@22.13.17)':
     dependencies:
       '@microsoft/tsdoc': 0.15.1
       '@microsoft/tsdoc-config': 0.17.1
-      '@rushstack/node-core-library': 5.10.1
+      '@rushstack/node-core-library': 5.10.1(@types/node@22.13.17)
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor@7.48.1':
+  '@microsoft/api-extractor@7.48.1(@types/node@22.13.17)':
     dependencies:
-      '@microsoft/api-extractor-model': 7.30.1
+      '@microsoft/api-extractor-model': 7.30.1(@types/node@22.13.17)
       '@microsoft/tsdoc': 0.15.1
       '@microsoft/tsdoc-config': 0.17.1
-      '@rushstack/node-core-library': 5.10.1
+      '@rushstack/node-core-library': 5.10.1(@types/node@22.13.17)
       '@rushstack/rig-package': 0.5.3
-      '@rushstack/terminal': 0.14.4
-      '@rushstack/ts-command-line': 4.23.2
+      '@rushstack/terminal': 0.14.4(@types/node@22.13.17)
+      '@rushstack/ts-command-line': 4.23.2(@types/node@22.13.17)
       lodash: 4.17.21
       minimatch: 3.0.8
       resolve: 1.22.10
@@ -4334,7 +4335,7 @@ snapshots:
     dependencies:
       rrweb-snapshot: 2.0.0-alpha.18
 
-  '@rushstack/node-core-library@5.10.1':
+  '@rushstack/node-core-library@5.10.1(@types/node@22.13.17)':
     dependencies:
       ajv: 8.13.0
       ajv-draft-04: 1.0.0(ajv@8.13.0)
@@ -4344,20 +4345,24 @@ snapshots:
       jju: 1.4.0
       resolve: 1.22.10
       semver: 7.5.4
+    optionalDependencies:
+      '@types/node': 22.13.17
 
   '@rushstack/rig-package@0.5.3':
     dependencies:
       resolve: 1.22.10
       strip-json-comments: 3.1.1
 
-  '@rushstack/terminal@0.14.4':
+  '@rushstack/terminal@0.14.4(@types/node@22.13.17)':
     dependencies:
-      '@rushstack/node-core-library': 5.10.1
+      '@rushstack/node-core-library': 5.10.1(@types/node@22.13.17)
       supports-color: 8.1.1
+    optionalDependencies:
+      '@types/node': 22.13.17
 
-  '@rushstack/ts-command-line@4.23.2':
+  '@rushstack/ts-command-line@4.23.2(@types/node@22.13.17)':
     dependencies:
-      '@rushstack/terminal': 0.14.4
+      '@rushstack/terminal': 0.14.4(@types/node@22.13.17)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -4540,6 +4545,10 @@ snapshots:
 
   '@types/ms@0.7.34': {}
 
+  '@types/node@22.13.17':
+    dependencies:
+      undici-types: 6.20.0
+
   '@types/parse-json@4.0.2': {}
 
   '@types/prop-types@15.7.14': {}
@@ -4664,14 +4673,14 @@ snapshots:
     dependencies:
       '@vanilla-extract/css': 1.15.5(babel-plugin-macros@3.1.0)
 
-  '@vitejs/plugin-react@4.3.4(vite@6.0.7)':
+  '@vitejs/plugin-react@4.3.4(vite@6.0.7(@types/node@22.13.17))':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.26.0)
       '@babel/plugin-transform-react-jsx-source': 7.25.9(@babel/core@7.26.0)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 6.0.7
+      vite: 6.0.7(@types/node@22.13.17)
     transitivePeerDependencies:
       - supports-color
 
@@ -7166,6 +7175,8 @@ snapshots:
 
   uncrypto@0.1.3: {}
 
+  undici-types@6.20.0: {}
+
   unenv@1.10.0:
     dependencies:
       consola: 3.3.3
@@ -7268,9 +7279,9 @@ snapshots:
       - utf-8-validate
       - zod
 
-  vite-plugin-dts@4.4.0(rollup@4.30.1)(typescript@5.6.3)(vite@6.0.7):
+  vite-plugin-dts@4.4.0(@types/node@22.13.17)(rollup@4.30.1)(typescript@5.6.3)(vite@6.0.7(@types/node@22.13.17)):
     dependencies:
-      '@microsoft/api-extractor': 7.48.1
+      '@microsoft/api-extractor': 7.48.1(@types/node@22.13.17)
       '@rollup/pluginutils': 5.1.4(rollup@4.30.1)
       '@volar/typescript': 2.4.11
       '@vue/language-core': 2.1.10(typescript@5.6.3)
@@ -7281,36 +7292,37 @@ snapshots:
       magic-string: 0.30.17
       typescript: 5.6.3
     optionalDependencies:
-      vite: 6.0.7
+      vite: 6.0.7(@types/node@22.13.17)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
       - supports-color
 
-  vite-plugin-lib-inject-css@2.2.1(vite@6.0.7):
+  vite-plugin-lib-inject-css@2.2.1(vite@6.0.7(@types/node@22.13.17)):
     dependencies:
       '@ast-grep/napi': 0.32.3
       magic-string: 0.30.17
       picocolors: 1.1.1
-      vite: 6.0.7
+      vite: 6.0.7(@types/node@22.13.17)
 
-  vite-tsconfig-paths@5.1.4(typescript@5.6.3)(vite@6.0.7):
+  vite-tsconfig-paths@5.1.4(typescript@5.6.3)(vite@6.0.7(@types/node@22.13.17)):
     dependencies:
       debug: 4.4.0
       globrex: 0.1.2
       tsconfck: 3.1.4(typescript@5.6.3)
     optionalDependencies:
-      vite: 6.0.7
+      vite: 6.0.7(@types/node@22.13.17)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  vite@6.0.7:
+  vite@6.0.7(@types/node@22.13.17):
     dependencies:
       esbuild: 0.24.2
       postcss: 8.4.49
       rollup: 4.30.1
     optionalDependencies:
+      '@types/node': 22.13.17
       fsevents: 2.3.3
 
   vscode-uri@3.0.8: {}

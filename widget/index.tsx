@@ -30,6 +30,7 @@ export default ({
   tokenOut,
   tokenIn,
   chainId,
+  outChainId,
   themeConfig,
   enableShare,
   obligateSelection,
@@ -40,10 +41,11 @@ export default ({
   apiKey: string;
   themeConfig?: SystemConfig;
   chainId?: number;
+  outChainId?: number;
 }) => {
   const [shadow, setShadow] = useState<HTMLElement | null>(null);
   const [cache, setCache] = useState<ReturnType<typeof createCache> | null>(
-    null,
+    null
   );
 
   useEffect(() => {
@@ -55,7 +57,8 @@ export default ({
     setCache(emotionCache);
   }, [shadow, cache]);
 
-  const { setObligatedChainId } = useStore();
+  const setObligatedChainId = useStore((state) => state.setObligatedChainId);
+  const setTokenOutChainId = useStore((state) => state.setTokenOutChainId);
 
   const system = useMemo(
     () =>
@@ -76,12 +79,13 @@ export default ({
           [varRoot]: defaultConfig.globalCss?.html ?? {},
         },
       }),
-    [themeConfig],
+    [themeConfig]
   );
 
   useEffect(() => {
     setObligatedChainId(chainId);
-  }, [chainId]);
+    outChainId && setTokenOutChainId(outChainId);
+  }, []);
 
   // initialize client with key before it is used
   useEffect(() => {

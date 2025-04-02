@@ -112,6 +112,21 @@ export const GECKO_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
   [SupportedChainId.SONIC]: "sonic",
 };
 
+export const STARGATE_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
+  [SupportedChainId.MAINNET]: "ethereum",
+  [SupportedChainId.BASE]: "base",
+  [SupportedChainId.POLYGON]: "polygon",
+  [SupportedChainId.BSC]: "bsc",
+  [SupportedChainId.LINEA]: "linea",
+  [SupportedChainId.ZKSYNC]: "zksync",
+  [SupportedChainId.GNOSIS]: "gnosis",
+  [SupportedChainId.AVALANCHE]: "avalanche",
+  [SupportedChainId.BERACHAIN]: "bera",
+  [SupportedChainId.SONIC]: "sonic",
+  [SupportedChainId.ARBITRUM_ONE]: "arbitrum",
+  [SupportedChainId.OPTIMISM]: "optimism",
+};
+
 export const MOCK_IMAGE_URL =
   "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png";
 
@@ -208,3 +223,30 @@ export const MAINNET_ZAP_INPUT_TOKENS: Address[] = [
   "0x4c9edd5852cd905f086c759e8383e09bff1e68b3", // USDe
   ETH_ADDRESS,
 ];
+
+export const CHAINS_ICON_URL: Record<SupportedChainId, string> = {
+  [SupportedChainId.MAINNET]:
+    "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+  [SupportedChainId.ARBITRUM_ONE]:
+    "https://assets.coingecko.com/asset_platforms/images/33/large/AO_logomark.png",
+  [SupportedChainId.OPTIMISM]:
+    "https://assets.coingecko.com/asset_platforms/images/34/large/Optimism_logo.png",
+  [SupportedChainId.POLYGON]:
+    "https://assets.coingecko.com/asset_platforms/images/35/large/polygon-pos.png",
+  [SupportedChainId.BSC]:
+    "https://assets.coingecko.com/asset_platforms/images/36/large/binance-smart-chain.png",
+  [SupportedChainId.BASE]:
+    "https://assets.coingecko.com/asset_platforms/images/37/large/base.png",
+  [SupportedChainId.LINEA]:
+    "https://assets.coingecko.com/asset_platforms/images/38/large/linea.png",
+  [SupportedChainId.ZKSYNC]:
+    "https://assets.coingecko.com/asset_platforms/images/39/large/zksync.png",
+  [SupportedChainId.GNOSIS]:
+    "https://assets.coingecko.com/asset_platforms/images/40/large/xdai.png",
+  [SupportedChainId.AVALANCHE]:
+    "https://assets.coingecko.com/asset_platforms/images/41/large/avalanche-2.png",
+  [SupportedChainId.BERACHAIN]:
+    "https://assets.coingecko.com/asset_platforms/images/42/large/berachain.png",
+  [SupportedChainId.SONIC]:
+    "https://assets.coingecko.com/asset_platforms/images/43/large/sonic.png",
+};

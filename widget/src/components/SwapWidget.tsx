@@ -99,6 +99,7 @@ const SwapWidget = ({
   useEffect(() => {
     if (providedTokenOut) setTokenOut(providedTokenOut);
     if (providedTokenIn) setTokenIn(providedTokenIn);
+    else setTokenIn(ETH_ADDRESS);
   }, [providedTokenOut, providedTokenIn]);
 
   // reset tokens if chain changes not to target
@@ -125,6 +126,7 @@ const SwapWidget = ({
     const url = new URL(window.location.href);
     if (tokenIn) url.searchParams.set("tokenIn", tokenIn);
     else url.searchParams.delete("tokenIn");
+
     if (tokenOut) {
       url.searchParams.set("tokenOut", tokenOut);
       outChainId && url.searchParams.set("outChainId", outChainId.toString());
@@ -134,6 +136,8 @@ const SwapWidget = ({
     }
 
     url.searchParams.set("chainId", chainId.toString());
+    if (obligateSelection)
+      url.searchParams.set("obligated", obligateSelection.toString());
     window.history.replaceState({}, "", url.toString());
   }, [tokenIn, tokenOut, chainId, outChainId]);
 
@@ -400,7 +404,7 @@ const SwapWidget = ({
                   : sendTransaction.send
               }
             >
-              Bridge
+              {chainId === outChainId ? "Swap" : "Bridge"}
             </Button>
           </Tooltip>
         </Flex>

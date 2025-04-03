@@ -97,6 +97,7 @@ const ChainSelector = ({
       }
       size="md"
       w={"fit-content"}
+      minWidth={"180px"}
     >
       <SelectTrigger noIndicator={disabled}>
         <SelectValueText>
@@ -113,7 +114,12 @@ const ChainSelector = ({
         <Select.Content>
           {chainOptions.items.map((item) => {
             return (
-              <SelectItem key={item.id.toString()} item={item}>
+              <SelectItem
+                key={item.id.toString()}
+                item={item}
+                _hover={{ background: "gray.100" }}
+                cursor={"pointer"}
+              >
                 <ChainIndicator chain={item} />
               </SelectItem>
             );

@@ -20,6 +20,7 @@ function App() {
     const tokenOutParam = searchParams.get("tokenOut");
     const chainIdParam = searchParams.get("chainId");
     const outChainIdParam = searchParams.get("outChainId");
+    const obligated = Boolean(searchParams.get("obligated"));
 
     const props: ComponentProps<typeof SwapWidget> = {
       apiKey: EnsoApiKey,
@@ -31,6 +32,7 @@ function App() {
       if (isAddress(tokenOutParam)) {
         props.tokenOut = tokenOutParam;
         props.outChainId = parseInt(outChainIdParam);
+        if (obligated) props.obligateSelection = obligated;
       }
     }
 

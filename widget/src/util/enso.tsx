@@ -117,6 +117,7 @@ const useBridgeBundle = (
             : {
                 protocol: "enso",
                 action: "route",
+                slippage: "100",
                 args: {
                   tokenIn: ETH_ADDRESS,
                   tokenOut,
@@ -143,7 +144,7 @@ const useBridgeBundle = (
         amountIn,
         tokenOut: ETH_ADDRESS,
       },
-    });
+    } as BundleAction);
   }
 
   const { data, isLoading } = useBundleData(

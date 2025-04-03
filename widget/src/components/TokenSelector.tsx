@@ -192,7 +192,8 @@ const TokenSelector = ({
   const selectValue = useMemo(() => [value], [value]);
   const onOpenChange = useCallback(
     ({ open }: { open: boolean }) => {
-      open || obligatedToken || searchedToken || setSearchText("");
+      if (open || obligatedToken || searchedToken) setSearchText("");
+      setSelectionChainId(chainId);
     },
     [obligatedToken, searchedToken, setSearchText]
   );
@@ -207,7 +208,7 @@ const TokenSelector = ({
       w={"fit-content"}
       onOpenChange={onOpenChange}
       background={"gray.100"}
-      _hover={{ background: "gray.200" }}
+      _hover={obligatedToken ? undefined : { background: "gray.200" }}
       borderRadius={"xl"}
       transition="all 0.2s ease-in-out"
     >

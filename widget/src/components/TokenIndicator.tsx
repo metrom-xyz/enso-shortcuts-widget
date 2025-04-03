@@ -5,6 +5,7 @@ import {
   SupportedChainId,
   STARGATE_CHAIN_NAMES,
 } from "@/constants";
+import { formatNumber } from "@/util";
 
 const GECKO_HOSTNAME = "coingecko";
 
@@ -96,5 +97,33 @@ export const TokenIndicator = ({
       <TokenIcon token={token} chainId={chainId} />
     )}
     <Text>{token?.symbol}</Text>
+    {token.type === "defi" && (
+      <Flex direction="column" ml={2} gap={0.5}>
+        {token.apy && (
+          <Box
+            bg="green.400"
+            color="white"
+            px={1}
+            borderRadius="sm"
+            fontSize="xs"
+            fontWeight="medium"
+          >
+            {token.apy.toFixed(2)}% APY
+          </Box>
+        )}
+        {token.tvl && (
+          <Box
+            bg="blue.400"
+            color="white"
+            px={1}
+            borderRadius="sm"
+            fontSize="xs"
+            fontWeight="medium"
+          >
+            ${formatNumber(token.tvl)}
+          </Box>
+        )}
+      </Flex>
+    )}
   </Flex>
 );

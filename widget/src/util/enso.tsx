@@ -319,6 +319,9 @@ export const useEnsoToken = (
       name: ensoToken.name,
       decimals: ensoToken.decimals,
       logoURI,
+      type: ensoToken.type,
+      apy: ensoToken.apy,
+      tvl: ensoToken.tvl,
       underlyingTokens: ensoToken.underlyingTokens?.map((token) => ({
         address: token.address.toLowerCase(),
         symbol: token.symbol,

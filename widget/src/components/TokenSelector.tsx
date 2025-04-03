@@ -23,7 +23,13 @@ import {
 import { TokenIcon, TokenIndicator } from "@/components/TokenIndicator";
 import ChainSelector from "./ChainSelector";
 
-type TokenWithBalance = Token & { balance?: string; costUsd?: number };
+type TokenWithBalance = Token & {
+  balance?: string;
+  costUsd?: number;
+  apy?: number;
+  tvl?: number;
+  type: string;
+};
 
 const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
   <Flex align="center" w={"full"}>
@@ -66,7 +72,7 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
 );
 
 const hasCoincidence = (tokens: Token[], address: Address) =>
-  tokens.some(
+  tokens.findIndex(
     (token) =>
       token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase()
   );
@@ -99,20 +105,13 @@ const TokenSelector = ({
 
   const searchedToken = useEnsoToken(
     currentChainTokenList.length &&
-      !hasCoincidence(currentChainTokenList, searchText as Address) &&
+      hasCoincidence(currentChainTokenList, searchText as Address) === -1 &&
       !limitTokens
       ? (searchText as Address)
       : undefined,
     selectionChainId
   );
-  const valueToken = useEnsoToken(
-    currentChainTokenList.length &&
-      !hasCoincidence(currentChainTokenList, value) &&
-      value !== searchedToken?.address
-      ? value
-      : undefined,
-    selectionChainId
-  );
+  const valueToken = useEnsoToken(value, selectionChainId);
 
   const tokenList = useMemo(() => {
     let tokens = limitTokens
@@ -125,7 +124,8 @@ const TokenSelector = ({
       tokens = [...tokens, searchedToken];
     }
     if (valueToken) {
-      tokens = [...tokens, valueToken];
+      tokens.splice(hasCoincidence(tokens, valueToken.address), 1);
+      tokens.unshift(valueToken);
     }
 
     const balancesWithTotals = tokens?.map((token) => {
@@ -160,7 +160,7 @@ const TokenSelector = ({
     });
 
     return balancesWithTotals;
-  }, [balances, currentChainTokenList, searchedToken]);
+  }, [balances, currentChainTokenList, searchedToken, valueToken]);
 
   const tokenOptions = useMemo(() => {
     let items = tokenList;
@@ -212,7 +212,17 @@ const TokenSelector = ({
       borderRadius={"xl"}
       transition="all 0.2s ease-in-out"
     >
-      <SelectTrigger w={"fit-content"} maxWidth={"100%"} noIndicator>
+      <SelectTrigger
+        w={"fit-content"}
+        maxWidth={"100%"}
+        noIndicator
+        opacity={1}
+        css={{
+          "& > button": {
+            opacity: "1 !important",
+          },
+        }}
+      >
         {value ? (
           <SelectValueText
             placeholder="Select token"

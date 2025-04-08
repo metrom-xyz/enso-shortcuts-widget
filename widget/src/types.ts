@@ -8,6 +8,7 @@ export type WidgetProps = {
   enableShare?: boolean;
   indicateRoute?: boolean;
   rotateObligated?: boolean | ObligatedToken;
+  outProtocol?: string;
 };
 
 export enum NotifyType {

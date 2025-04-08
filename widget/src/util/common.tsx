@@ -163,13 +163,11 @@ const getCurrentChainTokens = (chainId: SupportedChainId) => {
 export const useCurrentChainList = (priorityChainId?: SupportedChainId) => {
   const chainId = usePriorityChainId(priorityChainId);
 
-  const { data } = useQuery<Token[] | undefined>({
+  return useQuery<Token[] | undefined>({
     queryKey: ["tokenList", chainId],
     queryFn: () => getCurrentChainTokens(chainId),
     enabled: !!chainId,
   });
-
-  return data ?? MOCK_ARRAY;
 };
 
 export const useOneInchTokenList = () => {
@@ -186,7 +184,7 @@ export const useTokenFromList = (
   tokenAddress: Address,
   priorityChainId?: SupportedChainId
 ) => {
-  const data = useCurrentChainList(priorityChainId);
+  const { data } = useCurrentChainList(priorityChainId);
 
   return data?.find?.((token) => token.address == tokenAddress);
 };

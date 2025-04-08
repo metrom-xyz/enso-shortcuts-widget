@@ -6,7 +6,7 @@ import { CloseButton } from "./close-button";
 import * as React from "react";
 
 interface SelectTriggerProps extends ChakraSelect.ControlProps {
-  clearable?: boolean;
+  clearable?: React.ReactNode | boolean;
   noIndicator?: boolean;
 }
 
@@ -21,7 +21,8 @@ export const SelectTrigger = React.forwardRef<
         {children}
       </ChakraSelect.Trigger>
       <ChakraSelect.IndicatorGroup>
-        {clearable && <SelectClearTrigger />}
+        {clearable &&
+          (typeof clearable === "boolean" ? <SelectClearTrigger /> : clearable)}
         {noIndicator || <ChakraSelect.Indicator />}
       </ChakraSelect.IndicatorGroup>
     </ChakraSelect.Control>

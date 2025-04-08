@@ -10,12 +10,7 @@ import {
   BundleActionType,
 } from "@ensofinance/sdk";
 import { isAddress } from "viem";
-import {
-  Token,
-  usePriorityChainId,
-  useTokenFromList,
-  useOutChainId,
-} from "@/util/common";
+import { Token, usePriorityChainId, useOutChainId } from "@/util/common";
 import { useSendEnsoTransaction } from "@/util/wallet";
 import {
   ONEINCH_ONLY_TOKENS,
@@ -23,7 +18,7 @@ import {
   ETH_ADDRESS,
 } from "@/constants";
 
-let ensoClient;
+let ensoClient: EnsoClient | null = null;
 
 export const setApiKey = (apiKey: string) => {
   ensoClient = new EnsoClient({
@@ -75,15 +70,6 @@ const useBridgeBundle = (
   },
   enabled = false
 ) => {
-  console.log(
-    tokenIn,
-    tokenOut,
-    amountIn,
-    receiver,
-    chainId,
-    destinationChainId,
-    enabled
-  );
   const bundleActions: BundleAction[] = [
     {
       protocol: "stargate",
@@ -155,7 +141,7 @@ const useBridgeBundle = (
 
   const bundleData = {
     tx: data?.tx,
-    route: data?.route || [],
+    route: [],
     amountOut: data?.amountsOut?.[tokenOut] || "0",
     gas: data?.gas || "0",
   };
@@ -278,59 +264,82 @@ export const useEnsoBalances = (priorityChainId?: SupportedChainId) => {
   });
 };
 
-const useEnsoTokenDetails = (
-  address: Address,
-  priorityChainId?: SupportedChainId
-) => {
+const useEnsoTokenDetails = ({
+  address,
+  priorityChainId,
+  project,
+  protocolSlug,
+  enabled = true,
+}: {
+  address: Address;
+  priorityChainId?: SupportedChainId;
+  project?: string;
+  protocolSlug?: string;
+  enabled?: boolean;
+}) => {
   const chainId = usePriorityChainId(priorityChainId);
 
   return useQuery({
-    queryKey: ["enso-token-details", address, chainId],
+    queryKey: ["enso-token-details", address, chainId, protocolSlug, project],
     queryFn: () =>
-      ensoClient.getTokenData({ address, chainId, includeMetadata: true }),
-    enabled: isAddress(address),
+      ensoClient.getTokenData({
+        project,
+        protocolSlug,
+        address,
+        chainId,
+        includeMetadata: true,
+      }),
+    enabled,
   });
 };
 
 // fallback to normal token details
-export const useEnsoToken = (
-  address?: Address,
-  priorityChainId?: SupportedChainId
-) => {
-  const { data } = useEnsoTokenDetails(address, priorityChainId);
-  const tokenFromList = useTokenFromList(address, priorityChainId);
+export const useEnsoToken = ({
+  address,
+  priorityChainId,
+  project,
+  protocolSlug,
+  enabled,
+}: {
+  address?: Address;
+  priorityChainId?: SupportedChainId;
+  protocolSlug?: string;
+  project?: string;
+  enabled?: boolean;
+}) => {
+  const { data } = useEnsoTokenDetails({
+    address,
+    priorityChainId,
+    project,
+    protocolSlug,
+    enabled,
+  });
+  // const tokenFromList = useTokenFromList(address, priorityChainId);
 
-  const token: Token | null = useMemo(() => {
+  const token: Token[] = useMemo(() => {
     if (!data?.data?.length || !data?.data[0]?.symbol) {
-      return tokenFromList;
+      return [];
     }
     const ensoToken = data.data[0];
     let logoURI = ensoToken.logosUri[0];
 
-    if (!logoURI) {
-      if (ensoToken.underlyingTokens?.length === 1)
-        logoURI = ensoToken.underlyingTokens[0].logosUri[0];
-      else logoURI = tokenFromList?.logoURI;
-    }
+    // if (!logoURI) {
+    //   if (ensoToken.underlyingTokens?.length === 1)
+    //     logoURI = ensoToken.underlyingTokens[0].logosUri[0];
+    //   else logoURI = tokenFromList?.logoURI;
+    // }
 
-    return {
-      address: ensoToken.address.toLowerCase(),
-      symbol: ensoToken.symbol,
-      name: ensoToken.name,
-      decimals: ensoToken.decimals,
-      logoURI,
-      type: ensoToken.type,
-      apy: ensoToken.apy,
-      tvl: ensoToken.tvl,
-      underlyingTokens: ensoToken.underlyingTokens?.map((token) => ({
-        address: token.address.toLowerCase(),
-        symbol: token.symbol,
-        name: token.name,
-        decimals: token.decimals,
-        logoURI: token.logosUri[0],
+    return data?.data?.map((token) => ({
+      ...token,
+      address: token?.address.toLowerCase() as Address,
+      logoURI: token?.logosUri[0],
+      underlyingTokens: token?.underlyingTokens?.map((token) => ({
+        ...token,
+        address: token?.address.toLowerCase() as Address,
+        logoURI: token?.logosUri[0],
       })),
-    };
-  }, [data, tokenFromList]);
+    }));
+  }, [data]);
 
   return token;
 };
@@ -346,4 +355,19 @@ export const useEnsoPrice = (
     queryFn: () => ensoClient.getPriceData({ address, chainId }),
     enabled: chainId && isAddress(address),
   });
+};
+
+export const useEnsoProtocols = () => {
+  return useQuery({
+    queryKey: ["enso-protocols"],
+    queryFn: () => ensoClient.getProtocolData(),
+  });
+};
+
+export const useChainProtocols = (chainId: SupportedChainId) => {
+  const { data } = useEnsoProtocols();
+
+  return data?.filter((protocol) =>
+    protocol.chains.some((chain) => chain.id === chainId)
+  );
 };

@@ -129,7 +129,7 @@ export const useApprove = (token: Address, target: Address, amount: string) => {
 
 export const useExtendedContractWrite = (
   title: string,
-  writeContractVariables: UseSimulateContractParameters,
+  writeContractVariables: UseSimulateContractParameters
 ) => {
   const contractWrite = useWatchWriteTransactionHash(title);
   const { setNotification } = useStore();
@@ -140,14 +140,13 @@ export const useExtendedContractWrite = (
       writeContractVariables.abi &&
       writeContractVariables.functionName
     ) {
-      console.log("writeContractVariables", writeContractVariables);
       // @ts-ignore
       contractWrite.writeContract(writeContractVariables, {
         onError: (error: BaseError) => {
-          setNotification({
-            message: error?.shortMessage || error.message,
-            variant: NotifyType.Error,
-          });
+          // setNotification({
+          //   message: error?.shortMessage || error.message,
+          //   variant: NotifyType.Error,
+          // });
           console.error(error);
         },
       });
@@ -164,7 +163,7 @@ const useWatchTransactionHash = <
   T extends UseSendTransactionReturnType | UseWriteContractReturnType,
 >(
   description: string,
-  usedWriteContract: T,
+  usedWriteContract: T
 ) => {
   // const addRecentTransaction = useAddRecentTransaction();
 
@@ -185,25 +184,25 @@ const useWatchTransactionHash = <
   // toast error if tx failed to be mined and success if it is having confirmation
   useEffect(() => {
     if (waitForTransaction.error) {
-      setNotification({
-        message: waitForTransaction.error.message,
-        variant: NotifyType.Error,
-        link,
-      });
+      // setNotification({
+      //   message: waitForTransaction.error.message,
+      //   variant: NotifyType.Error,
+      //   link,
+      // });
     } else if (waitForTransaction.data) {
       // reset tx hash to eliminate recurring notifications
       reset();
-      setNotification({
-        message: description,
-        variant: NotifyType.Success,
-        link,
-      });
+      // setNotification({
+      //   message: description,
+      //   variant: NotifyType.Success,
+      //   link,
+      // });
     } else if (waitForTransaction.isLoading) {
-      setNotification({
-        message: description,
-        variant: NotifyType.Loading,
-        link,
-      });
+      // setNotification({
+      //   message: description,
+      //   variant: NotifyType.Loading,
+      //   link,
+      // });
     }
   }, [
     waitForTransaction.data,
@@ -234,7 +233,7 @@ const useWatchWriteTransactionHash = (description: string) => {
 
 export const useExtendedSendTransaction = (
   title: string,
-  args: UseSimulateContractParameters,
+  args: UseSimulateContractParameters
 ) => {
   const sendTransaction = useWatchSendTransactionHash(title);
   const { setNotification } = useStore();
@@ -242,11 +241,11 @@ export const useExtendedSendTransaction = (
   const send = useCallback(() => {
     sendTransaction.sendTransaction(args, {
       onError: (error) => {
-        setNotification({
-          // @ts-ignore
-          message: error?.cause?.shortMessage,
-          variant: NotifyType.Error,
-        });
+        // setNotification({
+        //   // @ts-ignore
+        //   message: error?.cause?.shortMessage,
+        //   variant: NotifyType.Error,
+        // });
         console.error(error);
       },
     });
@@ -261,13 +260,13 @@ export const useExtendedSendTransaction = (
 export const useApproveIfNecessary = (
   tokenIn: Address,
   target: Address,
-  amount: string,
+  amount: string
 ) => {
   const allowance = useAllowance(tokenIn, target);
   const approveData = useApprove(tokenIn, target, amount);
   const writeApprove = useExtendedContractWrite(
     approveData.title,
-    approveData.args,
+    approveData.args
   );
 
   if (tokenIn === ETH_ADDRESS) return undefined;
@@ -277,13 +276,13 @@ export const useApproveIfNecessary = (
 
 export const useSendEnsoTransaction = (
   ensoTxData: RouteData["tx"],
-  params: Pick<RouteParams, "tokenIn" | "tokenOut" | "amountIn">,
+  params: Pick<RouteParams, "tokenIn" | "tokenOut" | "amountIn">
 ) => {
-  const tokenData = useEnsoToken(params.tokenOut);
-  const tokenFromData = useEnsoToken(params.tokenIn);
+  const [tokenData] = useEnsoToken({ address: params.tokenOut });
+  const [tokenFromData] = useEnsoToken({ address: params.tokenIn });
 
   return useExtendedSendTransaction(
     `Purchase ${formatNumber(normalizeValue(params.amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
-    ensoTxData,
+    ensoTxData
   );
 };

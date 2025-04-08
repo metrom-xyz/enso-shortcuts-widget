@@ -5,7 +5,7 @@ import {
   SupportedChainId,
   STARGATE_CHAIN_NAMES,
 } from "@/constants";
-import { formatNumber } from "@/util";
+import { formatCompactUsd, formatNumber } from "@/util";
 
 const GECKO_HOSTNAME = "coingecko";
 
@@ -71,7 +71,7 @@ export const TokenIndicator = ({
   chainId?: SupportedChainId;
   pr?: number;
 }) => (
-  <Flex align="center" gap={2} {...rest}>
+  <Flex align="center" gap={2} {...rest} justifyContent={"space-between"}>
     {token?.symbol === "UNI-V2" && token.underlyingTokens ? (
       <Box position="relative" width={"28px"} height={"28px"}>
         <Box
@@ -83,6 +83,7 @@ export const TokenIndicator = ({
         >
           <TokenIcon token={token.underlyingTokens[0]} chainId={chainId} />
         </Box>
+
         <Box
           position="absolute"
           width="100%"
@@ -96,31 +97,34 @@ export const TokenIndicator = ({
     ) : (
       <TokenIcon token={token} chainId={chainId} />
     )}
-    <Text>{token?.symbol}</Text>
+
+    <Flex flexDirection={"column"} maxW={"100px"}>
+      <Text whiteSpace={"nowrap"} textOverflow={"ellipsis"} overflow={"hidden"}>
+        {chainId ? token?.symbol : token?.name}
+      </Text>
+      {token.underlyingTokens?.length > 0 && (
+        <Text fontSize={"xs"} color={"gray.500"}>
+          {token.underlyingTokens.map((token) => token.symbol).join("/")}
+        </Text>
+      )}
+    </Flex>
+
     {token.type === "defi" && (
-      <Flex direction="column" ml={2} gap={0.5}>
+      <Flex direction="column" ml={2}>
         {token.apy && (
-          <Box
-            bg="green.400"
-            color="white"
-            px={1}
-            borderRadius="sm"
-            fontSize="xs"
-            fontWeight="medium"
-          >
-            {token.apy.toFixed(2)}% APY
+          <Box fontSize="xs" fontWeight="medium" whiteSpace="nowrap">
+            APY{" "}
+            <Text as="span" fontWeight="bold">
+              {token.apy.toFixed(2)}%
+            </Text>
           </Box>
         )}
         {token.tvl && (
-          <Box
-            bg="blue.400"
-            color="white"
-            px={1}
-            borderRadius="sm"
-            fontSize="xs"
-            fontWeight="medium"
-          >
-            ${formatNumber(token.tvl)}
+          <Box fontSize="xs" fontWeight="medium" whiteSpace="nowrap">
+            TVL{" "}
+            <Text as="span" fontWeight="bold">
+              {formatCompactUsd(token.tvl)}
+            </Text>
           </Box>
         )}
       </Flex>

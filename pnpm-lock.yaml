@@ -105,8 +105,8 @@ importers:
         specifier: ^11.14.0
         version: 11.14.0(@types/react@18.3.18)(react@18.3.1)
       '@ensofinance/sdk':
-        specifier: ^1.0.15
-        version: 1.0.15
+        specifier: ^1.0.17
+        version: 1.0.17
       '@tanstack/react-query':
         specifier: ^5.62.10
         version: 5.62.16(react@18.3.1)
@@ -420,6 +420,9 @@ packages:
 
   '@ensofinance/sdk@1.0.15':
     resolution: {integrity: sha512-2J7kPcHc749xZPL1cTCs7v2ByJNZAcpfxvoUfyzee9iI7/UtATUAtlB7LnOWJFRa6xAf5ZditsGX4yXGrjU2lA==}
+
+  '@ensofinance/sdk@1.0.17':
+    resolution: {integrity: sha512-DSurnwEhvb5DpB11hHJUl5lFKCdHSwP4xrT+Js0BW7PBR8FPeFOLtR1SGw8QwltBUcSsarzqFm/KGngELgXRrQ==}
 
   '@esbuild/aix-ppc64@0.24.2':
     resolution: {integrity: sha512-thpVCb/rhxE/BnMLQ7GReQLLN8q9qbHmI55F4489/ByVg2aQaQ6kbcLb6FHkocZzQhxc4gx0sCk0tJkKBFzDhA==}
@@ -3785,6 +3788,13 @@ snapshots:
       - debug
 
   '@ensofinance/sdk@1.0.15':
+    dependencies:
+      axios: 1.7.9
+      prettier: 3.4.2
+    transitivePeerDependencies:
+      - debug
+
+  '@ensofinance/sdk@1.0.17':
     dependencies:
       axios: 1.7.9
       prettier: 3.4.2

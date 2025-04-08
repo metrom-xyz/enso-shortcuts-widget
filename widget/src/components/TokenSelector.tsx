@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  Center,
-  createListCollection,
-  Flex,
-  Input,
-  Text,
-} from "@chakra-ui/react";
+import { createListCollection, Flex, Input, Text } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { Address, isAddress } from "viem";
 import { FixedSizeList as List } from "react-window";
@@ -20,8 +14,9 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { TokenIcon, TokenIndicator } from "@/components/TokenIndicator";
+import { TokenIndicator } from "@/components/TokenIndicator";
 import ChainSelector from "./ChainSelector";
+import ProtocolSelector from "./ProtocolSelector";
 
 type TokenWithBalance = Token & {
   balance?: string;
@@ -32,21 +27,10 @@ type TokenWithBalance = Token & {
 };
 
 const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
-  <Flex align="center" w={"full"}>
-    <TokenIcon token={token} />
+  <Flex align="center" w={"full"} justifyContent={"space-between"}>
+    <TokenIndicator token={token} />
 
-    <Flex ml={2} flexDirection={"column"} w={"full"}>
-      <Text
-        fontSize={"md"}
-        textOverflow={"ellipsis"}
-        whiteSpace={"nowrap"}
-        overflow={"hidden"}
-        maxWidth={"150px"}
-        title={token.name}
-      >
-        {token.name}
-      </Text>
-
+    <Flex flexDirection={"column"} alignItems={"flex-end"}>
       <Text
         color={"gray.400"}
         textOverflow={"ellipsis"}
@@ -61,9 +45,7 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
             : ""
         } ${token.symbol}`}
       </Text>
-    </Flex>
 
-    <Flex flexDirection={"column"} alignItems={"flex-end"}>
       <Text ml={2} fontSize={"md"}>
         {token.costUsd ? `$${token.costUsd.toFixed(2)}` : ""}
       </Text>
@@ -85,6 +67,7 @@ const TokenSelector = ({
   limitTokens,
   chainId,
   setChainId,
+  protocol,
 }: {
   setChainId?: (chainId: SupportedChainId) => void;
   chainId?: SupportedChainId;
@@ -93,38 +76,58 @@ const TokenSelector = ({
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
   limitTokens?: Address[];
+  protocol?: string;
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectionChainId, setSelectionChainId] = useState(chainId);
+  const [selectedProtocol, setSelectedProtocol] = useState(protocol);
   const { data: balances } = useEnsoBalances(selectionChainId);
-  const currentChainTokenList = useCurrentChainList(selectionChainId);
+  const { data: currentChainTokenList } = useCurrentChainList(selectionChainId);
+  const protocolTokens = useEnsoToken({
+    priorityChainId: selectionChainId,
+    protocolSlug: selectedProtocol,
+    enabled: !!selectedProtocol,
+  });
+
+  console.log(protocol);
 
   useEffect(() => {
     setSelectionChainId(chainId);
   }, [chainId]);
 
-  const searchedToken = useEnsoToken(
-    currentChainTokenList.length &&
-      hasCoincidence(currentChainTokenList, searchText as Address) === -1 &&
-      !limitTokens
+  const currentTokenList = selectedProtocol
+    ? protocolTokens
+    : currentChainTokenList;
+
+  const searchAddress =
+    currentTokenList?.length &&
+    hasCoincidence(currentTokenList, searchText as Address) === -1 &&
+    !limitTokens
       ? (searchText as Address)
-      : undefined,
-    selectionChainId
-  );
-  const valueToken = useEnsoToken(value, selectionChainId);
+      : undefined;
+  const [searchedToken] = useEnsoToken({
+    address: searchAddress,
+    priorityChainId: selectionChainId,
+    enabled: isAddress(searchAddress),
+  });
+  const [valueToken] = useEnsoToken({
+    address: value,
+    priorityChainId: selectionChainId,
+    enabled: isAddress(value),
+  });
 
   const tokenList = useMemo(() => {
-    let tokens = limitTokens
-      ? currentChainTokenList.filter((token) =>
-          limitTokens.includes(token.address)
-        )
-      : currentChainTokenList;
+    let tokens = currentTokenList ? currentTokenList.slice() : [];
+
+    if (limitTokens) {
+      tokens = tokens.filter((token) => limitTokens.includes(token.address));
+    }
 
     if (searchedToken) {
       tokens = [...tokens, searchedToken];
     }
     if (valueToken) {
-      tokens.splice(hasCoincidence(tokens, valueToken.address), 1);
+      tokens.splice(hasCoincidence(tokens, valueToken?.address), 1);
       tokens.unshift(valueToken);
     }
 
@@ -155,12 +158,12 @@ const TokenSelector = ({
     });
 
     //sort by costUsd
-    balancesWithTotals.sort((a, b) => {
+    balancesWithTotals.sort((a: TokenWithBalance, b: TokenWithBalance) => {
       return (b.costUsd ?? 0) - (a.costUsd ?? 0);
     });
 
     return balancesWithTotals;
-  }, [balances, currentChainTokenList, searchedToken, valueToken]);
+  }, [balances, currentTokenList, searchedToken, valueToken]);
 
   const tokenOptions = useMemo(() => {
     let items = tokenList;
@@ -258,14 +261,24 @@ const TokenSelector = ({
           p={2}
           width={"100%"}
         >
-          <Center>
+          <Flex justifyContent={"space-between"} gap={2}>
             <ChainSelector
+              disabled={!!protocol}
               value={selectionChainId}
-              onChange={(chainId) => {
-                setSelectionChainId(chainId);
-              }}
+              onChange={useCallback(
+                (chainId) => {
+                  setSelectionChainId(chainId);
+                },
+                [setSelectionChainId]
+              )}
             />
-          </Center>
+            <ProtocolSelector
+              disabled={!!protocol}
+              value={selectedProtocol}
+              onChange={setSelectedProtocol}
+              chainId={selectionChainId}
+            />
+          </Flex>
 
           <Input
             autoFocus
@@ -292,7 +305,7 @@ const TokenSelector = ({
                   borderRadius={"md"}
                   _hover={{ background: "gray.100" }}
                 >
-                  <DetailedTokenIndicator token={token} />
+                  <DetailedTokenIndicator token={token as TokenWithBalance} />
                 </SelectItem>
               );
             }}

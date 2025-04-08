@@ -40,3 +40,16 @@ export const formatNumber = (value: number | string, precise?: boolean) => {
 export const formatUSD = (value: number | string) => {
   return usdFormatter.format(+value);
 };
+
+export const formatCompactUsd = (value: number | string) => {
+  const num = typeof value === "string" ? parseFloat(value) : value;
+
+  if (isNaN(num)) return "0";
+
+  const formatter = Intl.NumberFormat("en", {
+    notation: "compact",
+    maximumFractionDigits: 2,
+  });
+
+  return formatter.format(num);
+};

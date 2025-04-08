@@ -20,6 +20,7 @@ function App() {
     const tokenOutParam = searchParams.get("tokenOut");
     const chainIdParam = searchParams.get("chainId");
     const outChainIdParam = searchParams.get("outChainId");
+    const outProtocolParam = searchParams.get("outProtocol");
     const obligated = Boolean(searchParams.get("obligated"));
 
     const props: ComponentProps<typeof SwapWidget> = {
@@ -29,10 +30,12 @@ function App() {
     if (chainIdParam) {
       props.chainId = parseInt(chainIdParam);
       if (isAddress(tokenInParam)) props.tokenIn = tokenInParam;
-      if (isAddress(tokenOutParam)) {
-        props.tokenOut = tokenOutParam;
-        props.outChainId = parseInt(outChainIdParam);
-        if (obligated) props.obligateSelection = obligated;
+      if (obligated) props.obligateSelection = obligated;
+
+      if (isAddress(tokenOutParam) || outProtocolParam) {
+        isAddress(tokenOutParam) && (props.tokenOut = tokenOutParam);
+        outProtocolParam && (props.outProtocol = outProtocolParam);
+        outChainIdParam && (props.outChainId = parseInt(outChainIdParam));
       }
     }
 

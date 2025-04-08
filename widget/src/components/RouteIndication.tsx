@@ -1,6 +1,6 @@
 import { Box, Text, Flex, Skeleton } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronsRight } from "lucide-react";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 import { RouteData } from "@ensofinance/sdk";
 import { capitalize, Token, useTokenFromList } from "@/util/common";
 import { useEnsoToken } from "@/util/enso";
@@ -8,7 +8,7 @@ import { TokenIcon } from "@/components/TokenIndicator";
 
 const TokenBadge = ({ address }: { address: Address }) => {
   const token = useTokenFromList(address);
-  const ensoToken = useEnsoToken(address);
+  const [ensoToken] = useEnsoToken({ address, enabled: !!isAddress(address) });
   const symbol = ensoToken?.symbol ?? token?.symbol;
   const logoURI = token?.logoURI ?? ensoToken?.logoURI;
 
@@ -79,14 +79,14 @@ const RouteIndication = ({
                 ) : (
                   <RouteSegment step={step} />
                 )}
-              </Box>,
+              </Box>
             );
 
             if (route.length - 1 !== currentIndex) {
               acc.push(
                 <Box color={"gray.400"}>
                   <ChevronsRight />
-                </Box>,
+                </Box>
               );
             }
 

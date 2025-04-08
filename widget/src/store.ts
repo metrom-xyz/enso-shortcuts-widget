@@ -13,6 +13,7 @@ type Store = {
 
   tokenOutChainId?: number | undefined;
   setTokenOutChainId: (chainId: number) => void;
+
   tokenOutAddress?: string | undefined;
   setTokenOutAddress: (address: string) => void;
 
@@ -25,8 +26,9 @@ export const useStore = create<Store>((set) => ({
   obligatedChainId: undefined,
   setObligatedChainId: (chainId: number) => set({ obligatedChainId: chainId }),
 
-  tokenOutChainId: 1,
+  tokenOutChainId: undefined,
   setTokenOutChainId: (chainId: number) => set({ tokenOutChainId: chainId }),
+
   tokenOutAddress: undefined,
   setTokenOutAddress: (address: string) => set({ tokenOutAddress: address }),
 

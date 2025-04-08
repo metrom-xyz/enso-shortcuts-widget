@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { ArrowDown, TriangleAlert } from "lucide-react";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
 import { usePrevious } from "@uidotdev/usehooks";
 import {
@@ -54,6 +54,7 @@ const SwapWidget = ({
   indicateRoute,
   adaptive,
   rotateObligated,
+  outProtocol,
 }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
@@ -63,11 +64,11 @@ const SwapWidget = ({
   const [obligatedToken, setObligatedToken] = useState(
     obligateSelection && (rotateObligated ?? ObligatedToken.TokenOut)
   );
-  const setOutChainId = useStore((state) => state.setTokenOutChainId);
-  const outChainId = useStore((state) => state.tokenOutChainId);
 
   const chainId = usePriorityChainId();
   const wagmiChainId = useChainId();
+  const setOutChainId = useStore((state) => state.setTokenOutChainId);
+  const outChainId = useStore((state) => state.tokenOutChainId) ?? chainId;
 
   const { switchChain } = useSwitchChain();
   const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
@@ -77,8 +78,15 @@ const SwapWidget = ({
   const setObligatedChainId = useStore((state) => state.setObligatedChainId);
 
   // const prevWagmiChainId = usePrevious(wagmiChainId);
-  const tokenInInfo = useEnsoToken(tokenIn);
-  const tokenOutInfo = useEnsoToken(tokenOut, outChainId);
+  const [tokenInInfo] = useEnsoToken({
+    address: tokenIn,
+    enabled: isAddress(tokenIn),
+  });
+  const [tokenOutInfo] = useEnsoToken({
+    address: tokenOut,
+    priorityChainId: outChainId,
+    enabled: isAddress(tokenOut),
+  });
 
   const setFromChainId = useCallback(
     (newChainId: number) => {
@@ -127,12 +135,14 @@ const SwapWidget = ({
     if (tokenIn) url.searchParams.set("tokenIn", tokenIn);
     else url.searchParams.delete("tokenIn");
 
-    if (tokenOut) {
-      url.searchParams.set("tokenOut", tokenOut);
+    if (tokenOut || outProtocol) {
+      tokenOut && url.searchParams.set("tokenOut", tokenOut);
+      outProtocol && url.searchParams.set("outProtocol", outProtocol);
       outChainId && url.searchParams.set("outChainId", outChainId.toString());
     } else {
       url.searchParams.delete("tokenOut");
       url.searchParams.delete("outChainId");
+      url.searchParams.delete("outProtocol");
     }
 
     url.searchParams.set("chainId", chainId.toString());
@@ -155,7 +165,7 @@ const SwapWidget = ({
   } = useEnsoData(amountIn, tokenIn, tokenOut, slippage);
 
   const valueOut = normalizeValue(
-    routerData?.amountOut,
+    routerData?.amountOut.toString(),
     tokenOutInfo?.decimals
   );
 
@@ -196,7 +206,7 @@ const SwapWidget = ({
   const tokenInUsdPrice = +(inUsdPrice?.price ?? 0) * +valueIn;
   const tokenOutUsdPrice =
     +(outUsdPrice?.price ?? 0) *
-    +normalizeValue(routerData?.amountOut, tokenOutInfo?.decimals);
+    +normalizeValue(routerData?.amountOut?.toString(), tokenOutInfo?.decimals);
 
   const urlToCopy = useMemo(() => {
     const url = new URL(window.location.href);
@@ -209,9 +219,11 @@ const SwapWidget = ({
     return url.toString();
   }, [tokenIn, tokenOut, chainId]);
 
+  const priceImpactValue = (routerData as any)?.priceImpact;
+
   const shouldWarnPriceImpact =
-    typeof routerData?.priceImpact === "number" &&
-    routerData?.priceImpact >= PRICE_IMPACT_WARN_THRESHOLD;
+    typeof priceImpactValue === "number" &&
+    priceImpactValue >= PRICE_IMPACT_WARN_THRESHOLD;
 
   const needToAcceptWarning = shouldWarnPriceImpact && !warningAccepted;
   const swapLimitExceeded = tokenInUsdPrice > SWAP_LIMITS[tokenOut];
@@ -225,7 +237,9 @@ const SwapWidget = ({
     ? `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}.  You can do multiple transactions of this size.`
     : "";
 
-  const formattedPriceImpact = (-(routerData?.priceImpact / 100)).toFixed(2);
+  const formattedPriceImpact = priceImpactValue
+    ? (-priceImpactValue / 100).toFixed(2)
+    : "0.00";
   const priceImpactWarning = shouldWarnPriceImpact
     ? `High price impact (${formattedPriceImpact}%). Due to the amount of ${tokenOutInfo?.symbol} liquidity currently available, the more ${tokenInInfo?.symbol} you try to swap, the less ${tokenOutInfo?.symbol} you will receive.`
     : "";
@@ -307,7 +321,7 @@ const SwapWidget = ({
                   );
 
                 const tempChainId = chainId;
-                debugger;
+
                 setObligatedChainId(outChainId);
                 setOutChainId(tempChainId);
                 setTokenIn(tokenOut);
@@ -322,6 +336,7 @@ const SwapWidget = ({
 
         <SwapInput
           disabled
+          protocol={outProtocol}
           chainId={outChainId}
           setChainId={setOutChainId}
           obligatedToken={obligatedToken === ObligatedToken.TokenOut}
@@ -350,7 +365,7 @@ const SwapWidget = ({
               <Slippage slippage={slippage} setSlippage={setSlippage} />
             </Flex>
 
-            {typeof routerData?.priceImpact === "number" && (
+            {typeof priceImpactValue === "number" && (
               <Flex>
                 <Flex
                   color={shouldWarnPriceImpact ? "orange.400" : "gray.500"}
@@ -374,7 +389,7 @@ const SwapWidget = ({
         <Flex w={"full"} gap={4}>
           {wrongChain ? (
             <Button
-              colorPalette={"black"}
+              colorPalette={"blue"}
               onClick={() => switchChain({ chainId })}
             >
               Switch to {getChainName(chainId)}
@@ -382,8 +397,8 @@ const SwapWidget = ({
           ) : (
             approveNeeded && (
               <Button
+                colorPalette={"blue"}
                 flex={1}
-                colorPalette={"black"}
                 loading={approve.isLoading}
                 onClick={approve.write}
               >
@@ -394,7 +409,7 @@ const SwapWidget = ({
 
           <Tooltip content={swapWarning} disabled={!swapWarning}>
             <Button
-              colorPalette={swapWarning ? "orange" : "black"}
+              colorPalette={swapWarning ? "orange" : "blue"}
               flex={1}
               disabled={swapDisabled}
               loading={sendTransaction.isLoading || routerLoading}
@@ -445,6 +460,10 @@ const SwapWidget = ({
               Powered by{" "}
               <Link target={"_blank"} href={"https://www.enso.build/"}>
                 Enso
+              </Link>{" "}
+              and{" "}
+              <Link target={"_blank"} href={"https://stargate.finance/"}>
+                Stargate
               </Link>
             </Text>
           </Center>

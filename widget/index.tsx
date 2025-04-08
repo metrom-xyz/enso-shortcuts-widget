@@ -37,11 +37,13 @@ export default ({
   indicateRoute,
   adaptive,
   rotateObligated,
+  outProtocol,
 }: WidgetProps & {
   apiKey: string;
   themeConfig?: SystemConfig;
   chainId?: number;
   outChainId?: number;
+  outProtocol?: string;
 }) => {
   const [shadow, setShadow] = useState<HTMLElement | null>(null);
   const [cache, setCache] = useState<ReturnType<typeof createCache> | null>(
@@ -106,6 +108,7 @@ export default ({
           <CacheProvider value={cache}>
             <ChakraProvider value={system}>
               <SwapWidget
+                outProtocol={outProtocol}
                 rotateObligated={rotateObligated}
                 indicateRoute={indicateRoute}
                 obligateSelection={obligateSelection}

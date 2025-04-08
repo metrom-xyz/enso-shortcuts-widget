@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Box, chakra, Flex, Skeleton, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 import TokenSelector from "@/components/TokenSelector";
 import { formatNumber, formatUSD, normalizeValue } from "@/util";
 import { useTokenBalance } from "@/util/wallet";
@@ -22,6 +22,7 @@ const SwapInput = ({
   portalRef,
   obligatedToken,
   limitTokens,
+  protocol,
 }: {
   chainId?: SupportedChainId;
   setChainId?: (chainId: SupportedChainId) => void;
@@ -36,11 +37,15 @@ const SwapInput = ({
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
   limitTokens?: Address[];
+  protocol?: string;
 }) => {
   const { address } = useAccount();
   const balance = useTokenBalance(tokenValue);
-  const tokenInInfo = useEnsoToken(tokenValue);
-  const [tempInputValue, setTempInputValue] = useState<string>("");
+  const [tokenInInfo] = useEnsoToken({
+    address: tokenValue,
+    enabled: !!isAddress(address),
+  });
+  const [tempInputValue, setTempInputValue] = useState("");
   const debouncedValue = useDebounce(tempInputValue, 400);
 
   useEffect(() => {
@@ -51,8 +56,6 @@ const SwapInput = ({
   }, [inputValue]);
 
   const balanceValue = normalizeValue(balance, tokenInInfo?.decimals ?? 18);
-  const notEnoughBalance = +balanceValue < +inputValue && !disabled;
-  console.log(chainId, setChainId);
 
   return (
     <Flex align="space-between" bg={!disabled ? "gray.50" : undefined}>
@@ -60,6 +63,7 @@ const SwapInput = ({
         <Box w={"full"}>
           <Flex w={"full"}>
             <TokenSelector
+              protocol={protocol}
               setChainId={setChainId}
               chainId={chainId}
               limitTokens={limitTokens}

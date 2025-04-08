@@ -44,6 +44,7 @@ const SwapInput = ({
   const [tokenInInfo] = useEnsoToken({
     address: tokenValue,
     enabled: !!isAddress(address),
+    priorityChainId: chainId,
   });
   const [tempInputValue, setTempInputValue] = useState("");
   const debouncedValue = useDebounce(tempInputValue, 400);
@@ -56,11 +57,17 @@ const SwapInput = ({
   }, [inputValue]);
 
   const balanceValue = normalizeValue(balance, tokenInInfo?.decimals ?? 18);
+  console.log(tokenInInfo);
 
   return (
     <Flex align="space-between" bg={!disabled ? "gray.50" : undefined}>
       <Flex bg={"gray.50"} borderRadius="md" p={2} align="center" w={"full"}>
         <Box w={"full"}>
+          <Flex w={"full"}>
+            <Text fontSize="sm" color="gray.600" height="20px">
+              {tokenInInfo?.name || " "}
+            </Text>
+          </Flex>
           <Flex w={"full"}>
             <TokenSelector
               protocol={protocol}

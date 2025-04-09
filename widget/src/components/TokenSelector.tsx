@@ -89,8 +89,6 @@ const TokenSelector = ({
     enabled: !!selectedProtocol,
   });
 
-  console.log(protocol);
-
   useEffect(() => {
     setSelectionChainId(chainId);
   }, [chainId]);

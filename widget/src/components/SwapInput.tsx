@@ -57,7 +57,6 @@ const SwapInput = ({
   }, [inputValue]);
 
   const balanceValue = normalizeValue(balance, tokenInInfo?.decimals ?? 18);
-  console.log(tokenInInfo);
 
   return (
     <Flex align="space-between" bg={!disabled ? "gray.50" : undefined}>

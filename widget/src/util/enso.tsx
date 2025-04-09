@@ -15,7 +15,8 @@ import { useSendEnsoTransaction } from "@/util/wallet";
 import {
   ONEINCH_ONLY_TOKENS,
   SupportedChainId,
-  ETH_ADDRESS,
+  STARGATE_CHAIN_NAMES,
+  NATIVE_ETH_CHAINS,
 } from "@/constants";
 
 let ensoClient: EnsoClient | null = null;
@@ -46,11 +47,36 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
-const oftAddress = {
-  1: "0x77b2043768d28E9C9aB44E1aBfC95944bcE57931",
-  42161: "0xA45B5130f36CDcA45667738e2a258AB09f4A5f7F",
-  10: "0xe8CDF27AcD73a434D661C84887215F7598e7d0d3",
-  8453: "0xdc181Bd607330aeeBEF6ea62e03e5e1Fb4B6F7C7",
+const useStargatePools = () =>
+  useQuery<
+    {
+      address: Address;
+      chainKey: string;
+      token: { address: Address; symbol: string };
+    }[]
+  >({
+    queryKey: ["stargate-pools"],
+    queryFn: () =>
+      fetch("https://mainnet.stargate-api.com/v1/metadata?version=v2")
+        .then((res) => res.json())
+        .then(({ data }) => data.v2),
+  });
+
+const useStargateTokens = (chainId: SupportedChainId, tokenSymbol: string) => {
+  const { data: stargatePools } = useStargatePools();
+  const foundOccurrency = stargatePools?.find(
+    (pool) =>
+      pool.chainKey === STARGATE_CHAIN_NAMES[chainId] &&
+      pool.token.symbol.includes(tokenSymbol)
+  );
+
+  let underyingToken = foundOccurrency?.token.address.toLowerCase();
+
+  if (underyingToken === "0x0000000000000000000000000000000000000000") {
+    underyingToken = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+  }
+
+  return [foundOccurrency?.address.toLowerCase() as Address, underyingToken];
 };
 
 const useBridgeBundle = (
@@ -67,18 +93,35 @@ const useBridgeBundle = (
     amountIn: string;
     receiver: Address;
     chainId: SupportedChainId;
-    destinationChainId: number;
+    destinationChainId: SupportedChainId;
   },
   enabled = false
 ) => {
+  const tokenNameToBridge =
+    NATIVE_ETH_CHAINS.includes(chainId) &&
+    NATIVE_ETH_CHAINS.includes(destinationChainId)
+      ? "ETH"
+      : "USDC";
+  const [sourcePool, sourceToken] = useStargateTokens(
+    chainId,
+    tokenNameToBridge
+  );
+  const [destinationPool, destinationToken] = useStargateTokens(
+    destinationChainId,
+    tokenNameToBridge
+  );
+  console.log(sourcePool, sourceToken, destinationPool, destinationToken);
+
   const bundleActions: BundleAction[] = [
     {
       protocol: "stargate",
       action: BundleActionType.Bridge,
       args: {
-        primaryAddress: oftAddress[chainId],
+        // @ts-ignore
+        primaryAddress: sourcePool,
         destinationChainId,
-        tokenIn: ETH_ADDRESS,
+        // @ts-ignore
+        tokenIn: sourceToken,
         amountIn,
         receiver,
         callback: [
@@ -86,15 +129,15 @@ const useBridgeBundle = (
             protocol: "enso",
             action: "balance",
             args: {
-              token: ETH_ADDRESS,
+              token: destinationToken,
             },
           },
-          ETH_ADDRESS === tokenOut
+          destinationToken === tokenOut
             ? {
                 protocol: "erc20",
                 action: "transfer",
                 args: {
-                  token: ETH_ADDRESS,
+                  token: destinationToken,
                   receiver,
                   amount: {
                     useOutputOfCallAt: 0,
@@ -106,7 +149,7 @@ const useBridgeBundle = (
                 action: "route",
                 slippage: "100",
                 args: {
-                  tokenIn: ETH_ADDRESS,
+                  tokenIn: destinationToken,
                   tokenOut,
                   amountIn: {
                     useOutputOfCallAt: 0,
@@ -118,7 +161,7 @@ const useBridgeBundle = (
     },
   ];
 
-  if (tokenIn !== ETH_ADDRESS) {
+  if (tokenIn !== sourceToken) {
     // @ts-ignore
     bundleActions[0].args.amountIn = {
       useOutputOfCallAt: 0,
@@ -129,7 +172,7 @@ const useBridgeBundle = (
       args: {
         tokenIn,
         amountIn,
-        tokenOut: ETH_ADDRESS,
+        tokenOut: sourceToken,
       },
     } as BundleAction);
   }

@@ -187,6 +187,7 @@ const TokenSelector = ({
     ({ value }: { value: string[] }) => {
       onChange(value[0] as string);
       setChainId(selectionChainId);
+      setSelectionChainId(selectionChainId);
     },
     [onChange, selectionChainId]
   );
@@ -196,7 +197,7 @@ const TokenSelector = ({
       if (open || obligatedToken || searchedToken) setSearchText("");
       setSelectionChainId(chainId);
     },
-    [obligatedToken, searchedToken, setSearchText]
+    [obligatedToken, searchedToken, setSearchText, chainId]
   );
 
   return (

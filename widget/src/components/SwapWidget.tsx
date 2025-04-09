@@ -12,7 +12,6 @@ import {
 import { ArrowDown, TriangleAlert } from "lucide-react";
 import { Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
-import { usePrevious } from "@uidotdev/usehooks";
 import {
   useEnsoApprove,
   useEnsoData,

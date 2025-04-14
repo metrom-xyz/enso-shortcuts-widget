@@ -38,14 +38,14 @@ const config = getDefaultConfig({
     arbitrum,
     berachainWithIcon,
     sonicWithIcon,
-    zksync,
+    unichain,
     optimism,
     bsc,
+    zksync,
     avalanche,
     gnosis,
     polygon,
     linea,
-    unichain
   ],
 });
 const queryClient = new QueryClient();

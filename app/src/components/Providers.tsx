@@ -12,6 +12,7 @@ import {
   polygon,
   berachain,
   sonic,
+  unichain
 } from "viem/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
@@ -44,6 +45,7 @@ const config = getDefaultConfig({
     gnosis,
     polygon,
     linea,
+    unichain
   ],
 });
 const queryClient = new QueryClient();

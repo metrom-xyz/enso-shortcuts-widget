@@ -56,7 +56,7 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
 const hasCoincidence = (tokens: Token[], address: Address) =>
   tokens.findIndex(
     (token) =>
-      token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase()
+      token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase(),
   );
 
 const TokenSelector = ({
@@ -135,7 +135,7 @@ const TokenSelector = ({
       // debank return ''arb" and "zksync" native token names instead of token address
       if (token.address === ETH_ADDRESS) {
         balanceValue = balances?.find?.(
-          ({ token }) => token && !isAddress(token)
+          ({ token }) => token && !isAddress(token),
         );
       }
 
@@ -171,8 +171,8 @@ const TokenSelector = ({
 
       items = tokenList.filter((token) =>
         [token.symbol, token.name, token.address].some((val) =>
-          val.toLocaleLowerCase().includes(search)
-        )
+          val?.toLocaleLowerCase().includes(search),
+        ),
       );
     }
 
@@ -189,7 +189,7 @@ const TokenSelector = ({
       setChainId(selectionChainId);
       setSelectionChainId(selectionChainId);
     },
-    [onChange, selectionChainId]
+    [onChange, selectionChainId],
   );
   const selectValue = useMemo(() => [value], [value]);
   const onOpenChange = useCallback(
@@ -197,7 +197,7 @@ const TokenSelector = ({
       if (open || obligatedToken || searchedToken) setSearchText("");
       setSelectionChainId(chainId);
     },
-    [obligatedToken, searchedToken, setSearchText, chainId]
+    [obligatedToken, searchedToken, setSearchText, chainId],
   );
 
   return (
@@ -268,7 +268,7 @@ const TokenSelector = ({
                 (chainId) => {
                   setSelectionChainId(chainId);
                 },
-                [setSelectionChainId]
+                [setSelectionChainId],
               )}
             />
             <ProtocolSelector

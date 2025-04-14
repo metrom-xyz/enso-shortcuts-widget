@@ -86,6 +86,7 @@ export enum SupportedChainId {
   AVALANCHE = 43114,
   BERACHAIN = 80094,
   SONIC = 146,
+  UNICHAIN = 130,
   // ARBITRUM_RINKEBY = 421611,
   // OPTIMISM_GOERLI = 420,w
   // GOERLI = 5,
@@ -110,6 +111,7 @@ export const GECKO_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
   [SupportedChainId.AVALANCHE]: "avalanche",
   [SupportedChainId.BERACHAIN]: "berachain",
   [SupportedChainId.SONIC]: "sonic",
+  [SupportedChainId.UNICHAIN]: "unichain",
 };
 
 export const STARGATE_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
@@ -125,6 +127,7 @@ export const STARGATE_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
   [SupportedChainId.SONIC]: "sonic",
   [SupportedChainId.ARBITRUM_ONE]: "arbitrum",
   [SupportedChainId.OPTIMISM]: "optimism",
+  [SupportedChainId.UNICHAIN]: "unichain",
 };
 
 export const MOCK_IMAGE_URL =
@@ -146,6 +149,7 @@ export const CHAINS_ETHERSCAN: Record<SupportedChainId, string> = {
   [SupportedChainId.AVALANCHE]: "https://cchain.explorer.avax.network",
   [SupportedChainId.BERACHAIN]: "https://berascan.com",
   [SupportedChainId.SONIC]: "https://sonicscan.io",
+  [SupportedChainId.UNICHAIN]: "https://uniscan.xyz",
 };
 
 export const USDC_ADDRESS: Record<SupportedChainId, Address> = {
@@ -161,6 +165,7 @@ export const USDC_ADDRESS: Record<SupportedChainId, Address> = {
   [bsc.id]: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
   [SupportedChainId.BERACHAIN]: "0x549943e04f40284185054145c6e4e9568c1d3241",
   [SupportedChainId.SONIC]: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+  [SupportedChainId.UNICHAIN]: "0x2086f755A6d9254045C257ea3d382ef854849B0f",
 };
 
 export const NATIVE_ETH_CHAINS = [
@@ -170,6 +175,7 @@ export const NATIVE_ETH_CHAINS = [
   SupportedChainId.BASE,
   SupportedChainId.LINEA,
   SupportedChainId.ZKSYNC,
+  SupportedChainId.UNICHAIN,
 ];
 
 export const CHAINS_NATIVE_TOKENS: Record<SupportedChainId, Token> = {
@@ -185,6 +191,7 @@ export const CHAINS_NATIVE_TOKENS: Record<SupportedChainId, Token> = {
   [SupportedChainId.BERACHAIN]: BERA_TOKEN,
   [SupportedChainId.GNOSIS]: DAI_TOKEN,
   [SupportedChainId.SONIC]: SONIC_TOKEN,
+  [SupportedChainId.UNICHAIN]: ETH_TOKEN,
 };
 
 export const SWAP_LIMITS: Record<Address, number> = {
@@ -249,4 +256,6 @@ export const CHAINS_ICON_URL: Record<SupportedChainId, string> = {
     "https://assets.coingecko.com/asset_platforms/images/42/large/berachain.png",
   [SupportedChainId.SONIC]:
     "https://assets.coingecko.com/asset_platforms/images/43/large/sonic.png",
+  [SupportedChainId.UNICHAIN]:
+  "https://assets.coingecko.com/asset_platforms/images/22206/large/unichain.png"
 };

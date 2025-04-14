@@ -67,7 +67,7 @@ const useStargateTokens = (chainId: SupportedChainId, tokenSymbol: string) => {
   const foundOccurrency = stargatePools?.find(
     (pool) =>
       pool.chainKey === STARGATE_CHAIN_NAMES[chainId] &&
-      pool.token.symbol.includes(tokenSymbol)
+      pool.token.symbol.includes(tokenSymbol),
   );
 
   let underyingToken = foundOccurrency?.token.address.toLowerCase();
@@ -95,22 +95,22 @@ const useBridgeBundle = (
     chainId: SupportedChainId;
     destinationChainId: SupportedChainId;
   },
-  enabled = false
+  enabled = false,
 ) => {
   const tokenNameToBridge =
     NATIVE_ETH_CHAINS.includes(chainId) &&
     NATIVE_ETH_CHAINS.includes(destinationChainId)
       ? "ETH"
       : "USDC";
+
   const [sourcePool, sourceToken] = useStargateTokens(
     chainId,
-    tokenNameToBridge
+    tokenNameToBridge,
   );
   const [destinationPool, destinationToken] = useStargateTokens(
     destinationChainId,
-    tokenNameToBridge
+    tokenNameToBridge,
   );
-  console.log(sourcePool, sourceToken, destinationPool, destinationToken);
 
   const bundleActions: BundleAction[] = [
     {
@@ -180,7 +180,7 @@ const useBridgeBundle = (
   const { data, isLoading } = useBundleData(
     { chainId, fromAddress: receiver, spender: receiver },
     bundleActions,
-    enabled
+    enabled,
   );
 
   const bundleData = {
@@ -220,7 +220,7 @@ const useEnsoRouterData = (params: RouteParams, enabled = true) =>
 export const useBundleData = (
   bundleParams: BundleParams,
   bundleActions: BundleAction[],
-  enabled = true
+  enabled = true,
 ) => {
   const chainId = usePriorityChainId();
 
@@ -240,7 +240,7 @@ export const useEnsoData = (
   amountIn: string,
   tokenIn: Address,
   tokenOut: Address,
-  slippage: number
+  slippage: number,
 ) => {
   const { address } = useAccount();
   const chainId = usePriorityChainId();
@@ -269,7 +269,7 @@ export const useEnsoData = (
 
   const { data: routerData, isLoading: routerLoading } = useEnsoRouterData(
     routerParams,
-    routeOrBundle
+    routeOrBundle,
   );
 
   const { data: bundleData, isLoading: bundleLoading } = useBridgeBundle(
@@ -281,7 +281,7 @@ export const useEnsoData = (
       chainId,
       destinationChainId: outChainId,
     },
-    !routeOrBundle
+    !routeOrBundle,
   );
 
   const data = routeOrBundle ? routerData : bundleData;
@@ -361,7 +361,7 @@ export const useEnsoToken = ({
   // const tokenFromList = useTokenFromList(address, priorityChainId);
 
   const token: Token[] = useMemo(() => {
-    if (!data?.data?.length || !data?.data[0]?.symbol) {
+    if (!data?.data?.length || !data?.data[0]?.decimals) {
       return [];
     }
     const ensoToken = data.data[0];
@@ -390,7 +390,7 @@ export const useEnsoToken = ({
 
 export const useEnsoPrice = (
   address: Address,
-  priorityChainId?: SupportedChainId
+  priorityChainId?: SupportedChainId,
 ) => {
   const chainId = usePriorityChainId(priorityChainId);
 
@@ -412,6 +412,6 @@ export const useChainProtocols = (chainId: SupportedChainId) => {
   const { data } = useEnsoProtocols();
 
   return data?.filter((protocol) =>
-    protocol.chains.some((chain) => chain.id === chainId)
+    protocol.chains.some((chain) => chain.id === chainId),
   );
 };

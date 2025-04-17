@@ -36,7 +36,7 @@ const getGeckoList = (chainId: SupportedChainId) =>
 
 const getOogaboogaList: () => Promise<Token[]> = () =>
   fetch(
-    "https://mainnet.internal.oogabooga.io/token-list/tokens?chainId=80094&client=SWAP"
+    "https://mainnet.internal.oogabooga.io/token-list/tokens?chainId=80094&client=SWAP",
   )
     .then((res) => res.json())
     .then((data) =>
@@ -47,7 +47,7 @@ const getOogaboogaList: () => Promise<Token[]> = () =>
           token.address === zeroAddress
             ? ETH_ADDRESS
             : token.address.toLowerCase(),
-      }))
+      })),
     );
 //
 // const getShadowList: (chainId: number) => Promise<Token[]> = () =>
@@ -103,7 +103,7 @@ const sonicAdditionalTokens = // TODO: remove after it comes in list for sonic
         logoURI:
           "https://assets.coingecko.com/coins/images/325/large/Tether.png",
       },
-    ])
+    ]),
   );
 
 const getCurrentChainTokens = (chainId: SupportedChainId) => {
@@ -116,6 +116,9 @@ const getCurrentChainTokens = (chainId: SupportedChainId) => {
     case SupportedChainId.SONIC:
       getters = [getGeckoList(chainId), sonicAdditionalTokens];
       break;
+    case SupportedChainId.UNICHAIN:
+      getters = [getGeckoList(chainId)];
+      break;
     default:
       // priority for oneInch tokens
       getters = [getOneInchTokenList(chainId), getGeckoList(chainId)];
@@ -125,7 +128,7 @@ const getCurrentChainTokens = (chainId: SupportedChainId) => {
     const tokens = results
       .filter(
         (result): result is PromiseFulfilledResult<Token[]> =>
-          result.status === "fulfilled"
+          result.status === "fulfilled",
       )
       .map((result) => result.value);
 
@@ -133,13 +136,13 @@ const getCurrentChainTokens = (chainId: SupportedChainId) => {
 
     if (tokens.length > 1) {
       const addedToken = new Set<string>(
-        tokens[0]?.map((t) => t.address) ?? []
+        tokens[0]?.map((t) => t.address) ?? [],
       );
       const tokenList = tokens[0];
 
       for (let i = 1; i < tokens.length; i++) {
         const newTokens = tokens[i]?.filter(
-          (token) => !addedToken.has(token.address)
+          (token) => !addedToken.has(token.address),
         );
 
         if (newTokens) {
@@ -182,7 +185,7 @@ export const useOneInchTokenList = () => {
 
 export const useTokenFromList = (
   tokenAddress: Address,
-  priorityChainId?: SupportedChainId
+  priorityChainId?: SupportedChainId,
 ) => {
   const { data } = useCurrentChainList(priorityChainId);
 
@@ -205,7 +208,7 @@ export const usePriorityChainId = (priorityChainId?: SupportedChainId) => {
 
 export const useEtherscanUrl = (
   address: string,
-  type: "/address" | "/tx" = "/tx"
+  type: "/address" | "/tx" = "/tx",
 ) => {
   const chainId = usePriorityChainId();
   const chainPrefix = CHAINS_ETHERSCAN[chainId];

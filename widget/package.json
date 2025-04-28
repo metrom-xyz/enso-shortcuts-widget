@@ -20,7 +20,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.2.3",
+    "@chakra-ui/react": "^3.16.1",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@ensofinance/sdk": "^1.0.17",

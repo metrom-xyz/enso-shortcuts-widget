@@ -65,7 +65,7 @@ const RouteIndication = ({
         <Flex
           border={"solid 1px"}
           borderColor="gray.200"
-          borderRadius="md"
+          borderRadius="xl"
           p={1}
           alignItems={"center"}
         >

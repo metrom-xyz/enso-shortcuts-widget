@@ -13,6 +13,7 @@ import {
 } from "viem/chains";
 import { Token } from "@/util/common";
 
+export const VITALIK_ADDRESS = "0xd8da6bf26964af9d7eed9e03e53415d37aa96045";
 export const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export const ETH_TOKEN: Token = {
   address: ETH_ADDRESS,
@@ -257,5 +258,5 @@ export const CHAINS_ICON_URL: Record<SupportedChainId, string> = {
   [SupportedChainId.SONIC]:
     "https://assets.coingecko.com/asset_platforms/images/43/large/sonic.png",
   [SupportedChainId.UNICHAIN]:
-  "https://assets.coingecko.com/asset_platforms/images/22206/large/unichain.png"
+    "https://assets.coingecko.com/asset_platforms/images/22206/large/unichain.png",
 };

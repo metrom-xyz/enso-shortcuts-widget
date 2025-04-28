@@ -17,6 +17,7 @@ import {
   SupportedChainId,
   STARGATE_CHAIN_NAMES,
   NATIVE_ETH_CHAINS,
+  VITALIK_ADDRESS,
 } from "@/constants";
 
 let ensoClient: EnsoClient | null = null;
@@ -67,7 +68,7 @@ const useStargateTokens = (chainId: SupportedChainId, tokenSymbol: string) => {
   const foundOccurrency = stargatePools?.find(
     (pool) =>
       pool.chainKey === STARGATE_CHAIN_NAMES[chainId] &&
-      pool.token.symbol.includes(tokenSymbol),
+      pool.token.symbol.includes(tokenSymbol)
   );
 
   let underyingToken = foundOccurrency?.token.address.toLowerCase();
@@ -95,7 +96,7 @@ const useBridgeBundle = (
     chainId: SupportedChainId;
     destinationChainId: SupportedChainId;
   },
-  enabled = false,
+  enabled = false
 ) => {
   const tokenNameToBridge =
     NATIVE_ETH_CHAINS.includes(chainId) &&
@@ -105,11 +106,11 @@ const useBridgeBundle = (
 
   const [sourcePool, sourceToken] = useStargateTokens(
     chainId,
-    tokenNameToBridge,
+    tokenNameToBridge
   );
   const [destinationPool, destinationToken] = useStargateTokens(
     destinationChainId,
-    tokenNameToBridge,
+    tokenNameToBridge
   );
 
   const bundleActions: BundleAction[] = [
@@ -147,7 +148,7 @@ const useBridgeBundle = (
             : {
                 protocol: "enso",
                 action: "route",
-                slippage: "100",
+                slippage: "25",
                 args: {
                   tokenIn: destinationToken,
                   tokenOut,
@@ -180,7 +181,7 @@ const useBridgeBundle = (
   const { data, isLoading } = useBundleData(
     { chainId, fromAddress: receiver, spender: receiver },
     bundleActions,
-    enabled,
+    enabled
   );
 
   const bundleData = {
@@ -220,7 +221,7 @@ const useEnsoRouterData = (params: RouteParams, enabled = true) =>
 export const useBundleData = (
   bundleParams: BundleParams,
   bundleActions: BundleAction[],
-  enabled = true,
+  enabled = true
 ) => {
   const chainId = usePriorityChainId();
 
@@ -240,9 +241,9 @@ export const useEnsoData = (
   amountIn: string,
   tokenIn: Address,
   tokenOut: Address,
-  slippage: number,
+  slippage: number
 ) => {
-  const { address } = useAccount();
+  const { address = VITALIK_ADDRESS } = useAccount();
   const chainId = usePriorityChainId();
   const outChainId = useOutChainId();
   const routerParams: RouteParams = {
@@ -269,7 +270,7 @@ export const useEnsoData = (
 
   const { data: routerData, isLoading: routerLoading } = useEnsoRouterData(
     routerParams,
-    routeOrBundle,
+    routeOrBundle
   );
 
   const { data: bundleData, isLoading: bundleLoading } = useBridgeBundle(
@@ -281,7 +282,7 @@ export const useEnsoData = (
       chainId,
       destinationChainId: outChainId,
     },
-    !routeOrBundle,
+    !routeOrBundle
   );
 
   const data = routeOrBundle ? routerData : bundleData;
@@ -390,7 +391,7 @@ export const useEnsoToken = ({
 
 export const useEnsoPrice = (
   address: Address,
-  priorityChainId?: SupportedChainId,
+  priorityChainId?: SupportedChainId
 ) => {
   const chainId = usePriorityChainId(priorityChainId);
 
@@ -412,6 +413,6 @@ export const useChainProtocols = (chainId: SupportedChainId) => {
   const { data } = useEnsoProtocols();
 
   return data?.filter((protocol) =>
-    protocol.chains.some((chain) => chain.id === chainId),
+    protocol.chains.some((chain) => chain.id === chainId)
   );
 };

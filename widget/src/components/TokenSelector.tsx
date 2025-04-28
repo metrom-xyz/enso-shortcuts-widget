@@ -56,7 +56,7 @@ const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
 const hasCoincidence = (tokens: Token[], address: Address) =>
   tokens.findIndex(
     (token) =>
-      token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase(),
+      token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase()
   );
 
 const TokenSelector = ({
@@ -135,7 +135,7 @@ const TokenSelector = ({
       // debank return ''arb" and "zksync" native token names instead of token address
       if (token.address === ETH_ADDRESS) {
         balanceValue = balances?.find?.(
-          ({ token }) => token && !isAddress(token),
+          ({ token }) => token && !isAddress(token)
         );
       }
 
@@ -171,8 +171,8 @@ const TokenSelector = ({
 
       items = tokenList.filter((token) =>
         [token.symbol, token.name, token.address].some((val) =>
-          val?.toLocaleLowerCase().includes(search),
-        ),
+          val?.toLocaleLowerCase().includes(search)
+        )
       );
     }
 
@@ -189,7 +189,7 @@ const TokenSelector = ({
       setChainId(selectionChainId);
       setSelectionChainId(selectionChainId);
     },
-    [onChange, selectionChainId],
+    [onChange, selectionChainId]
   );
   const selectValue = useMemo(() => [value], [value]);
   const onOpenChange = useCallback(
@@ -197,11 +197,12 @@ const TokenSelector = ({
       if (open || obligatedToken || searchedToken) setSearchText("");
       setSelectionChainId(chainId);
     },
-    [obligatedToken, searchedToken, setSearchText, chainId],
+    [obligatedToken, searchedToken, setSearchText, chainId]
   );
 
   return (
     <SelectRoot
+      variant="outline"
       disabled={!!obligatedToken}
       collection={tokenOptions}
       value={selectValue}
@@ -209,15 +210,13 @@ const TokenSelector = ({
       size="md"
       w={"fit-content"}
       onOpenChange={onOpenChange}
-      background={"gray.100"}
-      _hover={obligatedToken ? undefined : { background: "gray.200" }}
       borderRadius={"xl"}
-      transition="all 0.2s ease-in-out"
     >
       <SelectTrigger
+        borderRadius={"xl"}
         w={"fit-content"}
         maxWidth={"100%"}
-        noIndicator
+        transition="all 0.2s ease-in-out"
         opacity={1}
         css={{
           "& > button": {
@@ -268,7 +267,7 @@ const TokenSelector = ({
                 (chainId) => {
                   setSelectionChainId(chainId);
                 },
-                [setSelectionChainId],
+                [setSelectionChainId]
               )}
             />
             <ProtocolSelector
@@ -302,7 +301,6 @@ const TokenSelector = ({
                   key={token.address}
                   style={style}
                   borderRadius={"md"}
-                  _hover={{ background: "gray.100" }}
                 >
                   <DetailedTokenIndicator token={token as TokenWithBalance} />
                 </SelectItem>

@@ -77,7 +77,7 @@ const Slippage = ({
                 flex={1}
                 border="1px solid #E2E8F0"
                 backgroundColor={slippage === value ? "#EDF2F7" : "transparent"}
-                borderRadius={"md"}
+                borderRadius={"lg"}
                 cursor={"pointer"}
               >
                 {label}

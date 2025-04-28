@@ -61,49 +61,39 @@ const ProtocolSelector = ({
 
   return (
     <SelectRoot
+      variant="outline"
       disabled={disabled}
       value={[value]}
       onValueChange={({ value }) => onChange(value[0])}
       size="md"
       w={"fit-content"}
       minWidth={"180px"}
-      background={"gray.100"}
-      _hover={{ background: "gray.200" }}
-      borderRadius={"xl"}
       transition="all 0.2s ease-in-out"
       collection={projectOptions}
     >
-      <SelectTrigger
-        clearable={
-          value &&
-          !disabled && (
-            <CloseButton
-              size="xs"
-              variant="plain"
-              focusVisibleRing="inside"
-              focusRingWidth="2px"
-              pointerEvents="auto"
-              onClick={() => onChange(undefined)}
-            />
-          )
-        }
-        maxWidth={"100%"}
-      >
-        <SelectValueText placeholder="Protocol (opt.)">
-          {([protocol]) =>
-            protocol ? (
-              <Flex alignItems={"center"}>
-                <ProtocolIcon logoUri={protocol?.logosUri?.[0]} />
-                <Text whiteSpace={"nowrap"}>{protocol?.name}</Text>
-              </Flex>
-            ) : (
-              <Flex alignItems={"center"}>
-                <Text whiteSpace={"nowrap"}>Select protocol (opt.)</Text>
-              </Flex>
-            )
-          }
-        </SelectValueText>
-      </SelectTrigger>
+      <Select.Control>
+        <SelectTrigger maxWidth={"100%"} borderRadius={"xl"}>
+          <SelectValueText placeholder="Protocol (opt.)">
+            {([protocol]) =>
+              protocol ? (
+                <Flex alignItems={"center"}>
+                  <ProtocolIcon logoUri={protocol?.logosUri?.[0]} />
+                  <Text whiteSpace={"nowrap"}>{protocol?.name}</Text>
+                </Flex>
+              ) : (
+                <Flex alignItems={"center"}>
+                  <Text whiteSpace={"nowrap"}>Select protocol (opt.)</Text>
+                </Flex>
+              )
+            }
+          </SelectValueText>
+        </SelectTrigger>
+
+        <Select.IndicatorGroup>
+          {value && !disabled && <Select.ClearTrigger />}
+          <Select.Indicator />
+        </Select.IndicatorGroup>
+      </Select.Control>
 
       <Select.Positioner>
         <SelectContent portalled={false}>

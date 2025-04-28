@@ -65,13 +65,6 @@ export default ({
   const system = useMemo(
     () =>
       createSystem(defaultConfig, themeConfig, {
-        theme: {
-          tokens: {
-            radii: {
-              sm: { value: "0.5rem" },
-            },
-          },
-        },
         cssVarsRoot: varRoot,
         preflight: { scope: varRoot },
         conditions: {
@@ -96,13 +89,7 @@ export default ({
   }, []);
 
   return (
-    <root.div
-      ref={setShadow}
-      style={{
-        borderRadius: "0.5rem",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-      }}
-    >
+    <root.div ref={setShadow} style={{ background: "none" }}>
       {shadow && cache && (
         <EnvironmentProvider value={() => shadow.shadowRoot ?? document}>
           <CacheProvider value={cache}>

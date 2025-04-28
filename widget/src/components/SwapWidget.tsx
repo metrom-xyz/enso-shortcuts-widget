@@ -263,8 +263,10 @@ const SwapWidget = ({
       position={"relative"}
       border="solid 1px"
       borderColor="gray.200"
-      borderRadius="md"
+      borderRadius="xl"
       width={adaptive ? { base: "100%", md: "450px" } : "100%"}
+      boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
+      bg="rgba(255, 255, 255, 0.5)"
     >
       {/* Portal for notifications and swap popover */}
       <Flex
@@ -396,6 +398,8 @@ const SwapWidget = ({
           ) : (
             approveNeeded && (
               <Button
+                size="lg"
+                borderRadius={"lg"}
                 colorPalette={"blue"}
                 flex={1}
                 loading={approve.isLoading}
@@ -408,6 +412,8 @@ const SwapWidget = ({
 
           <Tooltip content={swapWarning} disabled={!swapWarning}>
             <Button
+              size="lg"
+              borderRadius={"lg"}
               colorPalette={swapWarning ? "orange" : "blue"}
               flex={1}
               disabled={swapDisabled}

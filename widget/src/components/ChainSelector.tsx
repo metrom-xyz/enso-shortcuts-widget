@@ -85,9 +85,8 @@ const ChainSelector = ({
 
   return (
     <SelectRoot
-      borderRadius={"lg"}
-      background={"gray.100"}
-      _hover={{ background: "gray.200" }}
+      variant="outline"
+      borderRadius={"xl"}
       transition="all 0.2s ease-in-out"
       disabled={disabled}
       collection={chainOptions}
@@ -99,17 +98,22 @@ const ChainSelector = ({
       w={"fit-content"}
       minWidth={"180px"}
     >
-      <SelectTrigger noIndicator={disabled}>
-        <SelectValueText>
-          {(items) =>
-            items[0] ? (
-              <ChainIndicator chain={items[0]} />
-            ) : (
-              <Text whiteSpace={"nowrap"}>Select chain</Text>
-            )
-          }
-        </SelectValueText>
-      </SelectTrigger>
+      <Select.Control>
+        <SelectTrigger borderRadius={"xl"}>
+          <SelectValueText>
+            {(items) =>
+              items[0] ? (
+                <ChainIndicator chain={items[0]} />
+              ) : (
+                <Text whiteSpace={"nowrap"}>Select chain</Text>
+              )
+            }
+          </SelectValueText>
+        </SelectTrigger>
+        <Select.IndicatorGroup>
+          <Select.Indicator />
+        </Select.IndicatorGroup>
+      </Select.Control>
       <Select.Positioner>
         <Select.Content>
           {chainOptions.items.map((item) => {
@@ -117,7 +121,6 @@ const ChainSelector = ({
               <SelectItem
                 key={item.id.toString()}
                 item={item}
-                _hover={{ background: "gray.100" }}
                 cursor={"pointer"}
               >
                 <ChainIndicator chain={item} />

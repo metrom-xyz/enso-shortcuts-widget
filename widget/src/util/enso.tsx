@@ -25,8 +25,8 @@ let ensoClient: EnsoClient | null = null;
 export const setApiKey = (apiKey: string) => {
   ensoClient = new EnsoClient({
     // baseURL: "http://localhost:3000/api/v1",
-    baseURL: "https://shortcuts-backend-dynamic-int.herokuapp.com/api/v1",
-    // baseURL: "https://shortcuts-backend-dynamic-dev.herokuapp.com/api/v1",
+    // baseURL: "https://shortcuts-backend-dynamic-int.herokuapp.com/api/v1",
+    baseURL: "https://shortcuts-backend-dynamic-dev.herokuapp.com/api/v1",
     apiKey,
   });
 };
@@ -108,7 +108,7 @@ const useBridgeBundle = (
     chainId,
     tokenNameToBridge
   );
-  const [destinationPool, destinationToken] = useStargateTokens(
+  const [, destinationToken] = useStargateTokens(
     destinationChainId,
     tokenNameToBridge
   );
@@ -362,19 +362,11 @@ export const useEnsoToken = ({
   // const tokenFromList = useTokenFromList(address, priorityChainId);
 
   const token: Token[] = useMemo(() => {
-    if (!data?.data?.length || !data?.data[0]?.decimals) {
+    if (!data?.data?.length || !data?.data[0]?.decimals || !enabled) {
       return [];
     }
-    const ensoToken = data.data[0];
-    let logoURI = ensoToken.logosUri[0];
 
-    // if (!logoURI) {
-    //   if (ensoToken.underlyingTokens?.length === 1)
-    //     logoURI = ensoToken.underlyingTokens[0].logosUri[0];
-    //   else logoURI = tokenFromList?.logoURI;
-    // }
-
-    return data?.data?.map((token) => ({
+    return data.data.map((token) => ({
       ...token,
       address: token?.address.toLowerCase() as Address,
       logoURI: token?.logosUri[0],

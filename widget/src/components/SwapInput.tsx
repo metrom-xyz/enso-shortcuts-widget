@@ -43,7 +43,7 @@ const SwapInput = ({
   const balance = useTokenBalance(tokenValue);
   const [tokenInInfo] = useEnsoToken({
     address: tokenValue,
-    enabled: !!isAddress(address),
+    enabled: !!isAddress(tokenValue),
     priorityChainId: chainId,
   });
   const [tempInputValue, setTempInputValue] = useState("");

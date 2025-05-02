@@ -12,6 +12,7 @@ import {
 import { ArrowDown, TriangleAlert } from "lucide-react";
 import { Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
+import { Toaster } from "@/components/ui/toaster";
 import {
   useEnsoApprove,
   useEnsoData,
@@ -474,6 +475,7 @@ const SwapWidget = ({
           </Center>
         </Flex>
       </Flex>
+      <Toaster />
     </Box>
   );
 };

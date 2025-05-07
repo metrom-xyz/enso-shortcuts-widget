@@ -241,11 +241,9 @@ const SwapWidget = ({
     <Box
       position={"relative"}
       border="solid 1px"
-      borderColor="gray.200"
+      borderColor="border.emphasized"
       borderRadius="xl"
       width={adaptive ? { base: "100%", md: "450px" } : "100%"}
-      boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
-      bg="rgba(255, 255, 255, 0.5)"
     >
       {/* Portal for notifications and swap popover */}
       <Flex
@@ -283,13 +281,15 @@ const SwapWidget = ({
         {displayTokenRotation && (
           <Flex justifyContent="center" alignItems="center">
             <IconButton
+              bg="bg.muted"
+              _hover={{ bg: "bg.subtle" }}
+              color="fg.muted"
               borderRadius={"full"}
               marginY={-5}
               zIndex={1}
-              colorPalette={"white"}
               boxShadow={"xs"}
               size="xs"
-              variant="subtle"
+              // variant="subtle"
               onClick={() => {
                 const tempTokenIn = tokenIn;
 
@@ -446,11 +446,19 @@ const SwapWidget = ({
           <Center w={"full"}>
             <Text color={"gray.500"} fontSize={"sm"}>
               Powered by{" "}
-              <Link target={"_blank"} href={"https://www.enso.build/"}>
+              <Link
+                target={"_blank"}
+                href={"https://www.enso.build/"}
+                color={"fg.muted"}
+              >
                 Enso
               </Link>{" "}
               and{" "}
-              <Link target={"_blank"} href={"https://stargate.finance/"}>
+              <Link
+                target={"_blank"}
+                href={"https://stargate.finance/"}
+                color={"fg.muted"}
+              >
                 Stargate
               </Link>
             </Text>

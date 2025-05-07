@@ -12,9 +12,8 @@ export const SelectTrigger = React.forwardRef<
     <ChakraSelect.Trigger
       {...props}
       cursor={"pointer"}
-      _hover={{
-        bg: "rgba(255, 255, 255, 0.3)",
-      }}
+      _hover={{ background: "bg.subtle" }}
+      opacity={"1 !important"}
       ref={ref}
     >
       {props.children}

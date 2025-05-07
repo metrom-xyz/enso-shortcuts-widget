@@ -64,15 +64,18 @@ const SwapInput = ({
 
   return (
     <Flex
-      bg="rgba(0, 0, 0, 0.01)"
+      bg={!disabled ? "bg.subtle" : undefined}
       borderRadius="xl"
+      border="solid 1px"
+      borderColor="border.subtle"
       p={2}
       align="center"
       w={"full"}
+      // shadow="xs"
     >
       <Box w={"full"}>
         <Flex w={"full"}>
-          <Text fontSize="sm" color="gray.600" height="20px">
+          <Text fontSize="sm" color="fg.muted" height="20px">
             {tokenInInfo?.name || " "}
           </Text>
         </Flex>
@@ -126,23 +129,27 @@ const SwapInput = ({
         </Flex>
 
         <Flex justifyContent={"space-between"} fontSize="sm">
-          <Text
-            color={"gray.500"}
-            fontSize="sm"
-            whiteSpace={"nowrap"}
-            visibility={address ? "visible" : "hidden"}
-            maxW={"100px"}
-          >
-            Balance: {formatNumber(balanceValue)}
+          <Flex gap={1} alignItems={"center"}>
+            <Text
+              fontSize="sm"
+              color="fg.muted"
+              whiteSpace={"nowrap"}
+              visibility={address ? "visible" : "hidden"}
+              maxW={"100px"}
+            >
+              Balance: {formatNumber(balanceValue)}
+            </Text>
             <Button
+              _hover={{ bg: "bg.emphasized" }}
               size="xs"
+              color="fg.muted"
               ml={1}
               px={2}
               h="18px"
               fontSize="xs"
-              colorScheme="blue"
               variant="outline"
-              display={address && !disabled ? "inline-flex" : "none"}
+              borderColor="border.emphasized"
+              display={address && !disabled ? undefined : "none"}
               onClick={() =>
                 inputOnChange(
                   normalizeValue(balance, tokenInInfo?.decimals).toString()
@@ -151,7 +158,7 @@ const SwapInput = ({
             >
               Max
             </Button>
-          </Text>
+          </Flex>
 
           {usdValue ? (
             <Text color={"gray.500"}>~{formatUSD(usdValue)}</Text>

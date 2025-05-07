@@ -99,7 +99,13 @@ const Widget = ({
   }, []);
 
   return (
-    <root.div ref={setShadow} style={{ background: "none" }}>
+    <root.div
+      ref={setShadow}
+      style={{
+        borderRadius: "0.75rem",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      }}
+    >
       {shadow && cache && (
         <EnvironmentProvider value={() => shadow.shadowRoot ?? document}>
           <CacheProvider value={cache}>

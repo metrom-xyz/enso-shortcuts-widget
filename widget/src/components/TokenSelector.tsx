@@ -14,7 +14,7 @@ import { FixedSizeList as List } from "react-window";
 import { Token, useCurrentChainList } from "@/util/common";
 import { formatNumber, normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
-import { ETH_ADDRESS, SupportedChainId } from "@/constants";
+import { SupportedChainId } from "@/constants";
 import {
   SelectContent,
   SelectItem,
@@ -304,6 +304,7 @@ const TokenSelector = ({
         w={"100%"}
         minWidth={"300px"}
         minHeight={"400px"}
+        bg={"bg"}
       >
         <Flex
           height={"100%"}
@@ -385,6 +386,7 @@ const TokenSelector = ({
                     key={token.address}
                     style={style}
                     borderRadius={"md"}
+                    _hover={{ background: "bg.subtle" }}
                   >
                     <DetailedTokenIndicator token={token as TokenWithBalance} />
                   </SelectItem>

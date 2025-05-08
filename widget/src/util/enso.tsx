@@ -26,7 +26,8 @@ export const setApiKey = (apiKey: string) => {
   ensoClient = new EnsoClient({
     // baseURL: "http://localhost:3000/api/v1",
     // baseURL: "https://shortcuts-backend-dynamic-int.herokuapp.com/api/v1",
-    baseURL: "https://shortcuts-backend-dynamic-dev.herokuapp.com/api/v1",
+    // baseURL: "https://shortcuts-backend-dynamic-dev.herokuapp.com/api/v1",
+    baseURL: "https://api.enso.finance/api/v1",
     apiKey,
   });
 };
@@ -125,39 +126,30 @@ const useBridgeBundle = (
         tokenIn: sourceToken,
         amountIn,
         receiver,
-        callback: [
-          {
-            protocol: "enso",
-            action: "balance",
-            args: {
-              token: destinationToken,
-            },
-          },
-          destinationToken === tokenOut
-            ? {
-                protocol: "erc20",
-                action: "transfer",
-                args: {
-                  token: destinationToken,
-                  receiver,
-                  amount: {
-                    useOutputOfCallAt: 0,
+        callback:
+          destinationToken !== tokenOut
+            ? [
+                {
+                  protocol: "enso",
+                  action: "balance",
+                  args: {
+                    token: destinationToken,
                   },
                 },
-              }
-            : {
-                protocol: "enso",
-                action: "route",
-                slippage: "25",
-                args: {
-                  tokenIn: destinationToken,
-                  tokenOut,
-                  amountIn: {
-                    useOutputOfCallAt: 0,
+                {
+                  protocol: "enso",
+                  action: "route",
+                  slippage: "25",
+                  args: {
+                    tokenIn: destinationToken,
+                    tokenOut,
+                    amountIn: {
+                      useOutputOfCallAt: 0,
+                    },
                   },
                 },
-              },
-        ],
+              ]
+            : undefined,
       },
     },
   ];
@@ -187,7 +179,10 @@ const useBridgeBundle = (
   const bundleData = {
     tx: data?.tx,
     route: [],
-    amountOut: data?.amountsOut?.[tokenOut] || "0",
+    amountOut:
+      Object.entries(data?.amountsOut || {}).find(
+        ([key]) => key.toLowerCase() === tokenOut.toLowerCase()
+      )?.[1] || "0",
     gas: data?.gas || "0",
   };
 
@@ -266,11 +261,11 @@ export const useEnsoData = (
     routerParams.ignoreAggregators =
       "0x,paraswap,openocean,odos,kyberswap,native,barter";
   }
-  let routeOrBundle = outChainId === chainId;
+  let isCrosschain = outChainId === chainId;
 
   const { data: routerData, isLoading: routerLoading } = useEnsoRouterData(
     routerParams,
-    routeOrBundle
+    isCrosschain
   );
 
   const { data: bundleData, isLoading: bundleLoading } = useBridgeBundle(
@@ -282,13 +277,17 @@ export const useEnsoData = (
       chainId,
       destinationChainId: outChainId,
     },
-    !routeOrBundle
+    !isCrosschain
   );
 
-  const data = routeOrBundle ? routerData : bundleData;
-  const isLoading = routeOrBundle ? routerLoading : bundleLoading;
+  const data = isCrosschain ? routerData : bundleData;
+  const isLoading = isCrosschain ? routerLoading : bundleLoading;
 
-  const sendTransaction = useSendEnsoTransaction(data?.tx, routerParams);
+  const sendTransaction = useSendEnsoTransaction(
+    data?.tx,
+    routerParams,
+    !isCrosschain
+  );
 
   return {
     data,

@@ -19,6 +19,7 @@ import {
   NATIVE_ETH_CHAINS,
   VITALIK_ADDRESS,
 } from "@/constants";
+import { formatNumber, normalizeValue } from ".";
 
 let ensoClient: EnsoClient | null = null;
 
@@ -283,9 +284,24 @@ export const useEnsoData = (
   const data = isCrosschain ? routerData : bundleData;
   const isLoading = isCrosschain ? routerLoading : bundleLoading;
 
+  const [tokenToData] = useEnsoToken({
+    address: routerParams.tokenOut,
+    enabled: true,
+  });
+  const [tokenFromData] = useEnsoToken({
+    address: routerParams.tokenIn,
+    enabled: true,
+  });
+
+  console.log(tokenFromData, tokenToData, routerParams);
+
+  const swapTitle = `Purchase ${formatNumber(
+    normalizeValue(routerParams.amountIn, tokenFromData?.decimals)
+  )} ${tokenFromData?.symbol} of ${tokenToData?.symbol}`;
+
   const sendTransaction = useSendEnsoTransaction(
     data?.tx,
-    routerParams,
+    swapTitle,
     !isCrosschain
   );
 

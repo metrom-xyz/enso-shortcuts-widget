@@ -215,8 +215,7 @@ const useLayerZeroUrl = (
     ) {
       toaster.update(loadingToastId, {
         title: "Pending (1/4)",
-        description:
-          "Waiting for funds to be sent on destination",
+        description: "Waiting for funds to be sent on destination",
       });
     } else if (data?.status?.name === LayerZeroStatus.Delivered) {
       reset?.();
@@ -408,15 +407,8 @@ export const useApproveIfNecessary = (
 
 export const useSendEnsoTransaction = (
   ensoTxData: RouteData["tx"],
-  params: Pick<RouteParams, "tokenIn" | "tokenOut" | "amountIn">,
+  title: string,
   crosschain?: boolean
 ) => {
-  const [tokenData] = useEnsoToken({ address: params.tokenOut });
-  const [tokenFromData] = useEnsoToken({ address: params.tokenIn });
-
-  return useExtendedSendTransaction(
-    `Purchase ${formatNumber(normalizeValue(params.amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
-    ensoTxData,
-    crosschain
-  );
+  return useExtendedSendTransaction(title, ensoTxData, crosschain);
 };

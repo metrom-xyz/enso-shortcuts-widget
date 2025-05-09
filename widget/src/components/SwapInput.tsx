@@ -40,7 +40,7 @@ const SwapInput = ({
   protocol?: string;
 }) => {
   const { address } = useAccount();
-  const balance = useTokenBalance(tokenValue);
+  const balance = useTokenBalance(tokenValue, chainId);
   const [tokenInInfo] = useEnsoToken({
     address: tokenValue,
     enabled: !!isAddress(tokenValue),

@@ -13,9 +13,11 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { CloseButton } from "@/components/ui/close-button";
 import { useChainProtocols } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
+
+export const capitalize = (str?: string) =>
+  str?.slice(0, 1).toUpperCase() + str?.slice(1);
 
 // Simple protocol icon component
 const ProtocolIcon = ({ logoUri }: { logoUri?: string }) => (
@@ -49,13 +51,13 @@ const ProtocolSelector = ({
   const protocols = useChainProtocols(chainId);
   const projectOptions = useMemo(() => {
     const sortedByName = protocols?.sort((a, b) =>
-      a.name?.localeCompare(b.name)
+      a.projectId?.localeCompare(b.projectId)
     );
 
     return createListCollection({
       items: sortedByName || [],
-      itemToValue: (item) => item.slug,
-      itemToString: (item) => item.name,
+      itemToValue: (item) => item.projectId,
+      itemToString: (item) => capitalize(item.projectId),
     });
   }, [protocols]);
 
@@ -78,7 +80,9 @@ const ProtocolSelector = ({
               protocol ? (
                 <Flex alignItems={"center"}>
                   <ProtocolIcon logoUri={protocol?.logosUri?.[0]} />
-                  <Text whiteSpace={"nowrap"}>{protocol?.name}</Text>
+                  <Text whiteSpace={"nowrap"}>
+                    {capitalize(protocol?.projectId)}
+                  </Text>
                 </Flex>
               ) : (
                 <Flex alignItems={"center"}>
@@ -106,7 +110,7 @@ const ProtocolSelector = ({
               >
                 <Flex alignItems={"center"}>
                   <ProtocolIcon logoUri={item.logosUri?.[0]} />
-                  {item.name}
+                  {capitalize(item.projectId)}
                 </Flex>
               </SelectItem>
             );

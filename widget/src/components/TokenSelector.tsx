@@ -85,7 +85,7 @@ const TokenSelector = ({
   const { data: currentChainTokenList } = useCurrentChainList(selectionChainId);
   const protocolTokens = useEnsoToken({
     priorityChainId: selectionChainId,
-    protocolSlug: selectedProtocol,
+    project: selectedProtocol,
     enabled: !!selectedProtocol,
   });
 

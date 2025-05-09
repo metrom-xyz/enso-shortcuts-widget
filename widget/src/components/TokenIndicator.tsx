@@ -103,7 +103,13 @@ export const TokenIndicator = ({
         {chainId ? token?.symbol : token?.name}
       </Text>
       {token.underlyingTokens?.length > 0 && (
-        <Text fontSize={"xs"} color={"gray.500"}>
+        <Text
+          fontSize={"xs"}
+          color={"gray.500"}
+          whiteSpace={"nowrap"}
+          textOverflow={"ellipsis"}
+          overflow={"hidden"}
+        >
           {token.underlyingTokens.map((token) => token.symbol).join("/")}
         </Text>
       )}

@@ -171,12 +171,8 @@ enum LayerZeroStatus {
   Delivered = "DELIVERED",
 }
 
-const useLayerZeroUrl = (
-  hash: `0x${string}` | undefined,
-  reset?: () => void
-) => {
-  const [loadingToastId, setLoadingToastId] = useState<string | undefined>();
-  console.log("enabled", reset && !!hash);
+const useLayerZeroUrl = (hash?: `0x${string}`, reset?: () => void) => {
+  const [loadingToastId, setLoadingToastId] = useState<string>();
   const { data } = useQuery({
     queryKey: ["layerZeroUrl", hash || "none", !!reset],
     queryFn: async () => {

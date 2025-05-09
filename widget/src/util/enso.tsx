@@ -8,6 +8,7 @@ import {
   BundleAction,
   BundleParams,
   BundleActionType,
+  ProtocolData,
 } from "@ensofinance/sdk";
 import { isAddress } from "viem";
 import { Token, usePriorityChainId, useOutChainId } from "@/util/common";
@@ -417,7 +418,15 @@ export const useEnsoProtocols = () => {
 export const useChainProtocols = (chainId: SupportedChainId) => {
   const { data } = useEnsoProtocols();
 
-  return data?.filter((protocol) =>
-    protocol.chains.some((chain) => chain.id === chainId)
-  );
+  return data
+    ?.filter((protocol) =>
+      protocol.chains.some((chain) => chain.id === chainId)
+    )
+    .reduce((acc, protocol) => {
+      // @ts-ignore
+      acc.set(protocol.projectId ?? protocol.project, protocol);
+      return acc;
+    }, new Map())
+    .values()
+    .toArray();
 };

@@ -293,8 +293,6 @@ export const useEnsoData = (
     enabled: true,
   });
 
-  console.log(tokenFromData, tokenToData, routerParams);
-
   const swapTitle = `Purchase ${formatNumber(
     normalizeValue(routerParams.amountIn, tokenFromData?.decimals)
   )} ${tokenFromData?.symbol} of ${tokenToData?.symbol}`;

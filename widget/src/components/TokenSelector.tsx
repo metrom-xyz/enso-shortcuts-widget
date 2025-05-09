@@ -191,7 +191,11 @@ const TokenSelector = ({
     },
     [onChange, selectionChainId]
   );
-  const selectValue = useMemo(() => [value], [value]);
+  const selectValue = useMemo(
+    () => (chainId === selectionChainId ? [value] : []),
+    [value, chainId, selectionChainId]
+  );
+
   const onOpenChange = useCallback(
     ({ open }: { open: boolean }) => {
       if (open || obligatedToken || searchedToken) setSearchText("");

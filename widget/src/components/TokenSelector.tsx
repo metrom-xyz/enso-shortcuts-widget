@@ -114,6 +114,10 @@ const TokenSelector = ({
     enabled: isAddress(value),
   });
 
+  useEffect(() => {
+    setSelectedProtocol(undefined);
+  }, [selectionChainId]);
+
   const tokenList = useMemo(() => {
     let tokens = currentTokenList ? currentTokenList.slice() : [];
 

@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { createListCollection, Flex, Input, Text } from "@chakra-ui/react";
+import {
+  createListCollection,
+  Stack,
+  Flex,
+  Input,
+  Text,
+  Skeleton,
+  Box,
+} from "@chakra-ui/react";
 import { useMemo } from "react";
 import { Address, isAddress } from "viem";
 import { FixedSizeList as List } from "react-window";
@@ -25,6 +33,15 @@ type TokenWithBalance = Token & {
   tvl?: number;
   type: string;
 };
+
+const TokenIndicatorSkeleton = () => (
+  <Flex align="center" gap={2}>
+    <Skeleton height="28px" width="28px" borderRadius="full" />
+    <Flex flexDirection={"column"}>
+      <Skeleton height="22px" width="50px" mb="2px" />
+    </Flex>
+  </Flex>
+);
 
 const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
   <Flex align="center" w={"full"} justifyContent={"space-between"}>
@@ -81,13 +98,19 @@ const TokenSelector = ({
   const [searchText, setSearchText] = useState("");
   const [selectionChainId, setSelectionChainId] = useState(chainId);
   const [selectedProtocol, setSelectedProtocol] = useState(protocol);
-  const { data: balances } = useEnsoBalances(selectionChainId);
-  const { data: currentChainTokenList } = useCurrentChainList(selectionChainId);
-  const protocolTokens = useEnsoToken({
-    priorityChainId: selectionChainId,
-    project: selectedProtocol,
-    enabled: !!selectedProtocol,
-  });
+  const { data: balances, isLoading: balancesLoading } =
+    useEnsoBalances(selectionChainId);
+  const {
+    data: currentChainTokenList,
+    isLoading: tokensLoading,
+    isFetched: tokensFetched,
+  } = useCurrentChainList(selectionChainId);
+  const { tokens: protocolTokens, isLoading: protocolTokensLoading } =
+    useEnsoToken({
+      priorityChainId: selectionChainId,
+      project: selectedProtocol,
+      enabled: !!selectedProtocol,
+    });
 
   useEffect(() => {
     setSelectionChainId(chainId);
@@ -103,12 +126,18 @@ const TokenSelector = ({
     !limitTokens
       ? (searchText as Address)
       : undefined;
-  const [searchedToken] = useEnsoToken({
+  const {
+    tokens: [searchedToken],
+    isLoading: searchedTokenLoading,
+  } = useEnsoToken({
     address: searchAddress,
     priorityChainId: selectionChainId,
     enabled: isAddress(searchAddress),
   });
-  const [valueToken] = useEnsoToken({
+  const {
+    tokens: [valueToken],
+    isLoading: valueTokenLoading,
+  } = useEnsoToken({
     address: value,
     priorityChainId: selectionChainId,
     enabled: isAddress(value),
@@ -208,6 +237,14 @@ const TokenSelector = ({
     [obligatedToken, searchedToken, setSearchText, chainId]
   );
 
+  const isLoading =
+    protocolTokensLoading ||
+    tokensLoading ||
+    balancesLoading ||
+    searchedTokenLoading ||
+    valueTokenLoading ||
+    !tokensFetched;
+
   return (
     <SelectRoot
       variant="outline"
@@ -239,7 +276,9 @@ const TokenSelector = ({
             maxWidth={"100%"}
           >
             {(tokens: Token[]) =>
-              tokens[0] ? (
+              isLoading ? (
+                <TokenIndicatorSkeleton />
+              ) : tokens[0] ? (
                 <TokenIndicator
                   chainId={selectionChainId}
                   token={tokens[0] || undefined}
@@ -286,35 +325,67 @@ const TokenSelector = ({
             />
           </Flex>
 
-          <Input
-            autoFocus
-            paddingX={2}
-            placeholder="Search by name or paste address"
-            value={searchText}
-            onChange={(e) => obligatedToken || setSearchText(e.target.value)}
-          />
+          <Box height={"36px"}>
+            <Input
+              paddingX={2}
+              autoFocus
+              placeholder="Search by name or paste address"
+              value={searchText}
+              onChange={(e) => obligatedToken || setSearchText(e.target.value)}
+              size={"sm"}
+              borderRadius={"md"}
+            />
+          </Box>
 
-          <List
-            height={350}
-            itemCount={tokenOptions.items.length}
-            itemSize={48}
-            width={"100%"}
-          >
-            {({ index, style }) => {
-              const token = tokenOptions.items[index];
-
-              return (
-                <SelectItem
-                  item={token}
-                  key={token.address}
-                  style={style}
-                  borderRadius={"md"}
+          {isLoading && (
+            <Stack gap={3} width="100%" padding={2}>
+              {[...Array(6)].map((_, index) => (
+                <Flex
+                  key={index}
+                  align="center"
+                  w={"full"}
+                  justifyContent={"space-between"}
                 >
-                  <DetailedTokenIndicator token={token as TokenWithBalance} />
-                </SelectItem>
-              );
-            }}
-          </List>
+                  <Flex align="center">
+                    <Skeleton
+                      height="24px"
+                      width="24px"
+                      borderRadius="full"
+                      mr={2}
+                    />
+                    <Skeleton height="20px" width="80px" />
+                  </Flex>
+                  <Flex flexDirection={"column"} alignItems={"flex-end"}>
+                    <Skeleton height="16px" width="100px" />
+                    <Skeleton height="16px" width="60px" mt={1} />
+                  </Flex>
+                </Flex>
+              ))}
+            </Stack>
+          )}
+          {
+            <List
+              height={350}
+              itemCount={tokenOptions.items.length}
+              itemSize={48}
+              width={"100%"}
+            >
+              {({ index, style }) => {
+                const token = tokenOptions.items[index];
+
+                return (
+                  <SelectItem
+                    item={token}
+                    key={token.address}
+                    style={style}
+                    borderRadius={"md"}
+                  >
+                    <DetailedTokenIndicator token={token as TokenWithBalance} />
+                  </SelectItem>
+                );
+              }}
+            </List>
+          }
         </Flex>
       </SelectContent>
     </SelectRoot>

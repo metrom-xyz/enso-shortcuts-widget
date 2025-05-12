@@ -8,7 +8,9 @@ import { TokenIcon } from "@/components/TokenIndicator";
 
 const TokenBadge = ({ address }: { address: Address }) => {
   const token = useTokenFromList(address);
-  const [ensoToken] = useEnsoToken({ address, enabled: !!isAddress(address) });
+  const {
+    tokens: [ensoToken],
+  } = useEnsoToken({ address, enabled: !!isAddress(address) });
   const symbol = ensoToken?.symbol ?? token?.symbol;
   const logoURI = token?.logoURI ?? ensoToken?.logoURI;
 

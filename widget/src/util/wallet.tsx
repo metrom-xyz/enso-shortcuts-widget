@@ -22,7 +22,6 @@ import {
 import erc20Abi from "@/erc20Abi.json";
 import { ETH_ADDRESS, SupportedChainId } from "@/constants";
 import { formatNumber, normalizeValue } from "@/util/index";
-import { useEnsoToken } from "./enso";
 import { toaster } from "@/components/ui/toaster";
 
 enum TxState {

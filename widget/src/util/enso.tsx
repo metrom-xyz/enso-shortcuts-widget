@@ -285,11 +285,15 @@ export const useEnsoData = (
   const data = isCrosschain ? routerData : bundleData;
   const isLoading = isCrosschain ? routerLoading : bundleLoading;
 
-  const [tokenToData] = useEnsoToken({
+  const {
+    tokens: [tokenToData],
+  } = useEnsoToken({
     address: routerParams.tokenOut,
     enabled: true,
   });
-  const [tokenFromData] = useEnsoToken({
+  const {
+    tokens: [tokenFromData],
+  } = useEnsoToken({
     address: routerParams.tokenIn,
     enabled: true,
   });
@@ -366,7 +370,7 @@ export const useEnsoToken = ({
   project?: string;
   enabled?: boolean;
 }) => {
-  const { data } = useEnsoTokenDetails({
+  const { data, isLoading } = useEnsoTokenDetails({
     address,
     priorityChainId,
     project,
@@ -375,7 +379,7 @@ export const useEnsoToken = ({
   });
   // const tokenFromList = useTokenFromList(address, priorityChainId);
 
-  const token: Token[] = useMemo(() => {
+  const tokens: Token[] = useMemo(() => {
     if (!data?.data?.length || !data?.data[0]?.decimals || !enabled) {
       return [];
     }
@@ -392,7 +396,7 @@ export const useEnsoToken = ({
     }));
   }, [data]);
 
-  return token;
+  return { tokens, isLoading };
 };
 
 export const useEnsoPrice = (

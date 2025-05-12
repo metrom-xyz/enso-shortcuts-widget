@@ -68,7 +68,7 @@ const SwapWidget = ({
   const chainId = usePriorityChainId();
   const wagmiChainId = useChainId();
   const setOutChainId = useStore((state) => state.setTokenOutChainId);
-  const outChainId = useStore((state) => state.tokenOutChainId) ?? chainId;
+  const outChainId = useStore((state) => state.tokenOutChainId ?? chainId);
 
   const { switchChain } = useSwitchChain();
   const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
@@ -78,11 +78,15 @@ const SwapWidget = ({
   const setObligatedChainId = useStore((state) => state.setObligatedChainId);
 
   // const prevWagmiChainId = usePrevious(wagmiChainId);
-  const [tokenInInfo] = useEnsoToken({
+  const {
+    tokens: [tokenInInfo],
+  } = useEnsoToken({
     address: tokenIn,
     enabled: isAddress(tokenIn),
   });
-  const [tokenOutInfo] = useEnsoToken({
+  const {
+    tokens: [tokenOutInfo],
+  } = useEnsoToken({
     address: tokenOut,
     priorityChainId: outChainId,
     enabled: isAddress(tokenOut),

@@ -1,5 +1,13 @@
 import { Address } from "viem";
 
+export type WidgetState = {
+  tokenIn?: Address;
+  tokenOut?: Address;
+  chainId?: number;
+  outChainId?: number;
+  outProject?: string;
+};
+
 export type WidgetProps = {
   adaptive?: boolean;
   tokenOut?: Address;
@@ -8,7 +16,8 @@ export type WidgetProps = {
   enableShare?: boolean;
   indicateRoute?: boolean;
   rotateObligated?: boolean | ObligatedToken;
-  outProtocol?: string;
+  outProject?: string;
+  onChange?: (newState: WidgetState) => void;
 };
 
 export enum NotifyType {

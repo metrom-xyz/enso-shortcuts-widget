@@ -315,6 +315,8 @@ export const useEnsoData = (
   };
 };
 
+const projectProp = "projectId";
+
 export const useEnsoBalances = (priorityChainId?: SupportedChainId) => {
   const { address } = useAccount();
   const chainId = usePriorityChainId(priorityChainId);
@@ -423,12 +425,19 @@ export const useChainProtocols = (chainId: SupportedChainId) => {
   const { data } = useEnsoProtocols();
 
   return data
-    ?.filter((protocol) =>
-      protocol.chains.some((chain) => chain.id === chainId)
+    ?.filter(
+      (protocol) =>
+        protocol.chains.some((chain) => chain.id === chainId) &&
+        // @ts-ignore
+        protocol[projectProp] !== "permit2" &&
+        // @ts-ignore
+        protocol[projectProp] !== "erc4626" &&
+        // @ts-ignore
+        protocol[projectProp] !== "wrapped-native"
     )
     .reduce((acc, protocol) => {
       // @ts-ignore
-      acc.set(protocol.projectId ?? protocol.project, protocol);
+      acc.set(protocol[projectProp], protocol);
       return acc;
     }, new Map())
     .values()

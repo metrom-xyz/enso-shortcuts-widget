@@ -54,7 +54,8 @@ const SwapWidget = ({
   indicateRoute,
   adaptive,
   rotateObligated,
-  outProtocol,
+  outProject,
+  onChange,
 }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
@@ -69,6 +70,7 @@ const SwapWidget = ({
   const wagmiChainId = useChainId();
   const setOutChainId = useStore((state) => state.setTokenOutChainId);
   const outChainId = useStore((state) => state.tokenOutChainId ?? chainId);
+  const obligatedChainId = useStore((state) => state.obligatedChainId);
 
   const { switchChain } = useSwitchChain();
   const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
@@ -77,7 +79,6 @@ const SwapWidget = ({
   const setNotification = useStore((state) => state.setNotification);
   const setObligatedChainId = useStore((state) => state.setObligatedChainId);
 
-  // const prevWagmiChainId = usePrevious(wagmiChainId);
   const {
     tokens: [tokenInInfo],
   } = useEnsoToken({
@@ -91,74 +92,58 @@ const SwapWidget = ({
     priorityChainId: outChainId,
     enabled: isAddress(tokenOut),
   });
+  // Handle internal token state changes and call parent callback
 
   const setFromChainId = useCallback(
     (newChainId: number) => {
       setObligatedChainId(newChainId);
+      // We'll notify parent after state is updated via effect
       if (chainId === wagmiChainId) {
         switchChain({ chainId: newChainId });
       }
     },
-    [wagmiChainId]
+    [wagmiChainId, chainId, setObligatedChainId, switchChain]
   );
 
-  // set default token in
-  // useEffect(() => {
-  //   setTokenIn(ETH_ADDRESS);
-  //   if (!outChainId) setTokenOut(undefined);
-  // }, [chainId]);
-  // sets selected tokens if ones are provided
+  // Notify parent of state changes when any relevant state changes
   useEffect(() => {
-    if (providedTokenOut) setTokenOut(providedTokenOut);
-    if (providedTokenIn) setTokenIn(providedTokenIn);
-    else setTokenIn(ETH_ADDRESS);
-  }, [providedTokenOut, providedTokenIn]);
-
-  // reset tokens if chain changes not to target
-  // useEffect(() => {
-  //   if (
-  //     enableShare &&
-  //     prevWagmiChainId &&
-  //     prevWagmiChainId !== wagmiChainId &&
-  //     wagmiChainId !== chainId
-  //   ) {
-  //     setObligatedChainId(wagmiChainId);
-  //     setTokenIn(ETH_ADDRESS);
-  //     setTokenOut(undefined);
-
-  //     const url = new URL(window.location.href);
-  //     url.searchParams.set("chainId", wagmiChainId.toString());
-  //     window.history.replaceState({}, "", url.toString());
-  //   }
-  // }, [wagmiChainId]);
-  // sets query params for tokenIn, tokenOut, and chainId
-  useEffect(() => {
-    if (!enableShare) return;
-
-    const url = new URL(window.location.href);
-    if (tokenIn) url.searchParams.set("tokenIn", tokenIn);
-    else url.searchParams.delete("tokenIn");
-
-    if (tokenOut || outProtocol) {
-      tokenOut && url.searchParams.set("tokenOut", tokenOut);
-      outProtocol && url.searchParams.set("outProtocol", outProtocol);
-      outChainId && url.searchParams.set("outChainId", outChainId.toString());
-    } else {
-      url.searchParams.delete("tokenOut");
-      url.searchParams.delete("outChainId");
-      url.searchParams.delete("outProtocol");
-    }
-
-    url.searchParams.set("chainId", chainId.toString());
-    if (obligateSelection)
-      url.searchParams.set("obligated", obligateSelection.toString());
-    window.history.replaceState({}, "", url.toString());
+    onChange?.({
+      tokenIn,
+      tokenOut,
+      chainId,
+      outChainId,
+    });
   }, [tokenIn, tokenOut, chainId, outChainId]);
+
+  // Initialize tokens when provided or when chainId changes
+  useEffect(() => {
+    if (providedTokenIn) {
+      setTokenIn(providedTokenIn);
+    } else if (!tokenIn) {
+      setTokenIn(ETH_ADDRESS);
+    }
+  }, [providedTokenIn]);
+
+  useEffect(() => {
+    if (providedTokenOut) {
+      setTokenOut(providedTokenOut);
+    }
+  }, [providedTokenOut]);
 
   // reset warning if token changes
   useEffect(() => {
     setWarningAccepted(false);
   }, [tokenIn, tokenOut]);
+
+  // Handle chain changes from outside the component
+  useEffect(() => {
+    if (obligatedChainId && obligatedChainId !== chainId) {
+      // Update internal state to match external state
+      if (chainId === wagmiChainId) {
+        switchChain({ chainId: obligatedChainId });
+      }
+    }
+  }, [obligatedChainId, chainId, wagmiChainId, switchChain]);
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
@@ -205,7 +190,7 @@ const SwapWidget = ({
         link: LP_REDIRECT_TOKENS[providedTokenOut],
       });
     }
-  }, [providedTokenOut]);
+  }, [providedTokenOut, setNotification]);
 
   const tokenInUsdPrice = +(inUsdPrice?.price ?? 0) * +valueIn;
   const tokenOutUsdPrice =
@@ -214,14 +199,8 @@ const SwapWidget = ({
 
   const urlToCopy = useMemo(() => {
     const url = new URL(window.location.href);
-
-    if (tokenIn) url.searchParams.set("tokenIn", tokenIn);
-    if (tokenOut) url.searchParams.set("tokenOut", tokenOut);
-
-    url.searchParams.set("chainId", chainId.toString());
-
     return url.toString();
-  }, [tokenIn, tokenOut, chainId]);
+  }, []);
 
   const priceImpactValue = (routerData as any)?.priceImpact;
 
@@ -254,7 +233,7 @@ const SwapWidget = ({
       variant: NotifyType.Warning,
     });
     setWarningAccepted(true);
-  }, [priceImpactWarning]);
+  }, [priceImpactWarning, setNotification]);
 
   const limitInputTokens =
     chainId === mainnet.id && tokenOutInfo?.symbol === "UNI-V2";
@@ -342,7 +321,7 @@ const SwapWidget = ({
 
         <SwapInput
           disabled
-          protocol={outProtocol}
+          project={outProject}
           chainId={outChainId}
           setChainId={setOutChainId}
           obligatedToken={obligatedToken === ObligatedToken.TokenOut}

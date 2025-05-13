@@ -22,7 +22,7 @@ const SwapInput = ({
   portalRef,
   obligatedToken,
   limitTokens,
-  protocol,
+  project,
 }: {
   chainId?: SupportedChainId;
   setChainId?: (chainId: SupportedChainId) => void;
@@ -37,7 +37,7 @@ const SwapInput = ({
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
   limitTokens?: Address[];
-  protocol?: string;
+  project?: string;
 }) => {
   const { address } = useAccount();
   const balance = useTokenBalance(tokenValue, chainId);
@@ -76,7 +76,7 @@ const SwapInput = ({
         </Flex>
         <Flex w={"full"}>
           <TokenSelector
-            protocol={protocol}
+            project={project}
             setChainId={setChainId}
             chainId={chainId}
             limitTokens={limitTokens}

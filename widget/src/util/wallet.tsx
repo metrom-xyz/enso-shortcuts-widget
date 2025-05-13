@@ -21,7 +21,11 @@ import {
 } from "./common";
 import erc20Abi from "@/erc20Abi.json";
 import { ETH_ADDRESS, SupportedChainId } from "@/constants";
-import { formatNumber, normalizeValue } from "@/util/index";
+import {
+  compareCaseInsensitive,
+  formatNumber,
+  normalizeValue,
+} from "@/util/index";
 import { toaster } from "@/components/ui/toaster";
 
 enum TxState {
@@ -49,14 +53,17 @@ const useChangingIndex = () => {
 
   useInterval(() => {
     setIndex(index + 1);
-  }, 6000);
+  }, 10000);
 
   return index;
 };
 
-export const useErc20Balance = (tokenAddress: `0x${string}`) => {
+export const useErc20Balance = (
+  tokenAddress: `0x${string}`,
+  priorityChainId?: SupportedChainId
+) => {
   const { address } = useAccount();
-  const chainId = usePriorityChainId();
+  const chainId = usePriorityChainId(priorityChainId);
 
   return useReadContract({
     chainId,
@@ -76,8 +83,10 @@ export const useTokenBalance = (
   const chainId = usePriorityChainId(priorityChainId);
   const index = useChangingIndex();
   const queryClient = useQueryClient();
-  const { data: erc20Balance, queryKey: erc20QueryKey } =
-    useErc20Balance(token);
+  const { data: erc20Balance, queryKey: erc20QueryKey } = useErc20Balance(
+    token,
+    priorityChainId
+  );
   const { data: balance, queryKey: balanceQueryKey } = useBalance({
     address,
     chainId,
@@ -88,7 +97,9 @@ export const useTokenBalance = (
     queryClient.invalidateQueries({ queryKey: balanceQueryKey });
   }, [index, queryClient, erc20QueryKey, balanceQueryKey]);
 
-  const value = token === ETH_ADDRESS ? balance?.value : erc20Balance;
+  const value = compareCaseInsensitive(token, ETH_ADDRESS)
+    ? balance?.value
+    : erc20Balance;
 
   return value?.toString() ?? "0";
 };

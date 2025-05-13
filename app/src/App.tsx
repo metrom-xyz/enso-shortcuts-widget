@@ -1,8 +1,14 @@
-import React, { ComponentProps, useEffect, useMemo } from "react";
-import { useLocation } from "react-router-dom";
-import Providers from "@/components/Providers";
-import { isAddress } from "viem";
+import {
+  ComponentProps,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
+import { Address, isAddress } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useLocation, useNavigate } from "react-router-dom";
+import Providers from "@/components/Providers";
 import SwapWidget from "@ensofinance/shortcuts-widget";
 
 import logoUrl from "./logo_black_white.png";
@@ -12,35 +18,95 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 const EnsoApiKey = import.meta.env.VITE_ENSO_API_KEY;
 
+// Define types locally to avoid import issues
+type AppState = {
+  tokenIn?: Address;
+  tokenOut?: Address;
+  chainId?: number;
+  outChainId?: number;
+  outProject?: string;
+  obligateSelection?: boolean;
+};
+
 function App() {
   const location = useLocation();
-  const props = useMemo(() => {
-    const searchParams = new URLSearchParams(window.location.search);
+  const navigate = useNavigate();
+
+  // Use a single state object instead of multiple state variables
+  const [state, setState] = useState<AppState>({});
+
+  // Parse URL params on initial load and location changes
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
     const tokenInParam = searchParams.get("tokenIn");
     const tokenOutParam = searchParams.get("tokenOut");
     const chainIdParam = searchParams.get("chainId");
     const outChainIdParam = searchParams.get("outChainId");
-    const outProtocolParam = searchParams.get("outProtocol");
-    const obligated = Boolean(searchParams.get("obligated"));
+    const outProjectParam = searchParams.get("outProject");
+    const obligated = searchParams.get("obligated");
 
-    const props: ComponentProps<typeof SwapWidget> = {
-      apiKey: EnsoApiKey,
-    };
+    // Create a new state object with URL parameters
+    const newState: AppState = {};
 
-    if (chainIdParam) {
-      props.chainId = parseInt(chainIdParam);
-      if (isAddress(tokenInParam)) props.tokenIn = tokenInParam;
-      if (obligated) props.obligateSelection = obligated;
+    // Set initial state from URL parameters
+    if (chainIdParam) newState.chainId = parseInt(chainIdParam);
+    if (outChainIdParam) newState.outChainId = parseInt(outChainIdParam);
+    if (isAddress(tokenInParam)) newState.tokenIn = tokenInParam as Address;
+    if (isAddress(tokenOutParam)) newState.tokenOut = tokenOutParam as Address;
+    if (outProjectParam) newState.outProject = outProjectParam;
+    if (obligated) newState.obligateSelection = obligated === "true";
 
-      if (isAddress(tokenOutParam) || outProtocolParam) {
-        isAddress(tokenOutParam) && (props.tokenOut = tokenOutParam);
-        outProtocolParam && (props.outProtocol = outProtocolParam);
-        outChainIdParam && (props.outChainId = parseInt(outChainIdParam));
-      }
+    // Only update state if we have actual values
+    if (Object.keys(newState).length > 0) {
+      setState(newState);
+    }
+  }, []);
+
+  // Update URL when parameters change
+  useEffect(() => {
+    const searchParams = new URLSearchParams();
+
+    if (state.tokenIn) searchParams.set("tokenIn", state.tokenIn);
+
+    if (state.tokenOut) {
+      state.tokenOut && searchParams.set("tokenOut", state.tokenOut);
+      state.outChainId &&
+        searchParams.set("outChainId", state.outChainId.toString());
     }
 
+    if (state.chainId) searchParams.set("chainId", state.chainId.toString());
+    if (state.obligateSelection)
+      searchParams.set("obligated", state.obligateSelection.toString());
+
+    navigate({ search: searchParams.toString() }, { replace: true });
+  }, [state, navigate]);
+
+  // Handler for state changes coming from the widget
+  const handleStateChange = useCallback((newWidgetState: Partial<AppState>) => {
+    setState((prevState) => ({
+      ...prevState,
+      ...newWidgetState,
+    }));
+  }, []);
+
+  // Widget props
+  const widgetProps = useMemo(() => {
+    const props: ComponentProps<typeof SwapWidget> = {
+      apiKey: EnsoApiKey,
+      onChange: handleStateChange,
+    };
+
+    // Only include props that have values
+    if (state.chainId) props.chainId = state.chainId;
+    if (state.tokenIn) props.tokenIn = state.tokenIn;
+    if (state.tokenOut) props.tokenOut = state.tokenOut;
+    if (state.outChainId) props.outChainId = state.outChainId;
+    if (state.outProject) props.outProject = state.outProject;
+    if (state.obligateSelection)
+      props.obligateSelection = state.obligateSelection;
+
     return props;
-  }, [location]);
+  }, [state, handleStateChange]);
 
   useEffect(() => {
     // Set the title of the page from the environment variable
@@ -85,7 +151,7 @@ function App() {
         }}
       >
         <div style={{ marginTop: "70px" }}>
-          <SwapWidget {...props} enableShare adaptive />
+          <SwapWidget {...widgetProps} enableShare adaptive />
         </div>
         <div />
       </div>

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { TokenIndicator } from "@/components/TokenIndicator";
 import ChainSelector from "./ChainSelector";
-import ProtocolSelector from "./ProtocolSelector";
+import ProjectSelector from "./ProjectSelector";
 
 type TokenWithBalance = Token & {
   balance?: string;
@@ -84,7 +84,7 @@ const TokenSelector = ({
   limitTokens,
   chainId,
   setChainId,
-  protocol,
+  project,
 }: {
   setChainId?: (chainId: SupportedChainId) => void;
   chainId?: SupportedChainId;
@@ -93,11 +93,12 @@ const TokenSelector = ({
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
   limitTokens?: Address[];
-  protocol?: string;
+  project?: string;
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectionChainId, setSelectionChainId] = useState(chainId);
-  const [selectedProtocol, setSelectedProtocol] = useState(protocol);
+  const [selectedProject, setSelectedProject] = useState(project);
+
   const { data: balances, isLoading: balancesLoading } =
     useEnsoBalances(selectionChainId);
   const {
@@ -108,15 +109,15 @@ const TokenSelector = ({
   const { tokens: protocolTokens, isLoading: protocolTokensLoading } =
     useEnsoToken({
       priorityChainId: selectionChainId,
-      project: selectedProtocol,
-      enabled: !!selectedProtocol,
+      project: selectedProject,
+      enabled: !!selectedProject,
     });
 
   useEffect(() => {
     setSelectionChainId(chainId);
   }, [chainId]);
 
-  const currentTokenList = selectedProtocol
+  const currentTokenList = selectedProject
     ? protocolTokens
     : currentChainTokenList;
 
@@ -144,8 +145,8 @@ const TokenSelector = ({
   });
 
   useEffect(() => {
-    setSelectedProtocol(undefined);
-  }, [selectionChainId]);
+    setSelectedProject(project);
+  }, [project, selectionChainId]);
 
   const tokenList = useMemo(() => {
     let tokens = currentTokenList ? currentTokenList.slice() : [];
@@ -308,7 +309,7 @@ const TokenSelector = ({
         >
           <Flex justifyContent={"space-between"} gap={2}>
             <ChainSelector
-              disabled={!!protocol}
+              disabled={!!project}
               value={selectionChainId}
               onChange={useCallback(
                 (chainId) => {
@@ -317,10 +318,10 @@ const TokenSelector = ({
                 [setSelectionChainId]
               )}
             />
-            <ProtocolSelector
-              disabled={!!protocol}
-              value={selectedProtocol}
-              onChange={setSelectedProtocol}
+            <ProjectSelector
+              disabled={!!project}
+              value={selectedProject}
+              onChange={setSelectedProject}
               chainId={selectionChainId}
             />
           </Flex>

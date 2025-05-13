@@ -37,7 +37,7 @@ const ProtocolIcon = ({ logoUri }: { logoUri?: string }) => (
   </Box>
 );
 
-const ProtocolSelector = ({
+const ProjectSelector = ({
   value,
   onChange,
   chainId,
@@ -121,4 +121,4 @@ const ProtocolSelector = ({
   );
 };
 
-export default ProtocolSelector;
+export default ProjectSelector;

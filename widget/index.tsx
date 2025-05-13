@@ -37,13 +37,14 @@ export default ({
   indicateRoute,
   adaptive,
   rotateObligated,
-  outProtocol,
+  outProject,
+  onChange,
 }: WidgetProps & {
   apiKey: string;
   themeConfig?: SystemConfig;
   chainId?: number;
   outChainId?: number;
-  outProtocol?: string;
+  outProject?: string;
 }) => {
   const [shadow, setShadow] = useState<HTMLElement | null>(null);
   const [cache, setCache] = useState<ReturnType<typeof createCache> | null>(
@@ -77,10 +78,18 @@ export default ({
     [themeConfig]
   );
 
+  // Initialize chain IDs on mount and when they change in props
   useEffect(() => {
-    setObligatedChainId(chainId);
-    outChainId && setTokenOutChainId(outChainId);
-  }, []);
+    if (chainId) {
+      setObligatedChainId(chainId);
+    }
+  }, [chainId, setObligatedChainId]);
+
+  useEffect(() => {
+    if (outChainId) {
+      setTokenOutChainId(outChainId);
+    }
+  }, [outChainId, setTokenOutChainId]);
 
   // initialize client with key before it is used
   useEffect(() => {
@@ -95,7 +104,7 @@ export default ({
           <CacheProvider value={cache}>
             <ChakraProvider value={system}>
               <SwapWidget
-                outProtocol={outProtocol}
+                outProject={outProject}
                 rotateObligated={rotateObligated}
                 indicateRoute={indicateRoute}
                 obligateSelection={obligateSelection}
@@ -103,6 +112,7 @@ export default ({
                 tokenOut={tokenOut?.toLowerCase() as Address}
                 enableShare={enableShare}
                 adaptive={adaptive}
+                onChange={onChange}
               />
             </ChakraProvider>
           </CacheProvider>

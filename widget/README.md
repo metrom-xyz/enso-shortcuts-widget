@@ -37,11 +37,11 @@ import React from 'react';
 import SwapWidget from '@ensofinance/shortcuts-widget';
 
 const App = () => {
-  return (
-    <div>
-      <SwapWidget apiKey={"YOUR_API_KEY"} />
+    return (
+        <div>
+            <SwapWidget apiKey={"YOUR_API_KEY"} />
     </div>
-  );
+);
 };
 
 export default App;
@@ -54,14 +54,17 @@ export default App;
 The `SwapWidget` component accepts the following props:
 
 - `apiKey` (string): Enso API key (required)
+
 - `tokenOut` (string): Token address for the output token
 - `tokenIn` (string): Token address for the input token
-- `chainId` (number): Chain ID for the blockchain network (required if tokenIn or tokenOut are provided)
+- `chainId` (number): Chain ID for the blockchain network (required if tokenIn is provided)
+- `outChainId` (number): Chain ID for the output token (required if tokenOut are provided)'
+- `projectOut` (string): Project to limit target selection for
+
 - `themeConfig` (SystemConfig): Optional theme configuration
 - `enableShare` (boolean): Enable route sharing functionality (copy with button)
 - `obligateSelection` (boolean): Obligate token selection
 - `rotateObligated` (boolean | 0 | 1): For use with `obligateSelection`, displays arrow to rotate the obligated token
-- `indicateRoute` (boolean): Displays shortcut execution route
 
 ## License
 

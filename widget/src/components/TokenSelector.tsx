@@ -241,7 +241,6 @@ const TokenSelector = ({
   const isLoading =
     protocolTokensLoading ||
     tokensLoading ||
-    balancesLoading ||
     searchedTokenLoading ||
     valueTokenLoading ||
     !tokensFetched;

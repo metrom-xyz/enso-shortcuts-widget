@@ -12,7 +12,10 @@ import {
   polygon,
   berachain,
   sonic,
-  unichain
+  ink,
+  soneium,
+  unichain,
+  plumeMainnet,
 } from "viem/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
@@ -26,7 +29,19 @@ const berachainWithIcon = {
 const sonicWithIcon = {
   ...sonic,
   iconUrl:
-    "https://assets.coingecko.com/coins/images/38108/standard/200x200_Sonic_Logo.png",
+    "https://assets.coingecko.com/coins/images/38108/large/200x200_Sonic_Logo.png",
+};
+const plumeWithIcon = {
+  ...plumeMainnet,
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/53623/large/plume-token.png?1736896935",
+};
+
+const soneiumWithIcon = {
+  ...soneium,
+  name: "Soneium",
+  iconUrl:
+    "https://assets.coingecko.com/asset_platforms/images/22200/large/soneium-removebg-preview.png?1737099934",
 };
 
 const config = getDefaultConfig({
@@ -40,12 +55,15 @@ const config = getDefaultConfig({
     sonicWithIcon,
     unichain,
     optimism,
+    soneiumWithIcon,
     bsc,
     zksync,
     avalanche,
     gnosis,
     polygon,
     linea,
+    ink,
+    plumeWithIcon,
   ],
 });
 const queryClient = new QueryClient();

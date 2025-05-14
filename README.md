@@ -5,15 +5,17 @@
 
 </div>
 
-# Shortcuts Widget
+# Cross-chain Shortcuts Widget
 
 ## Overview
 
-This widget is a React component designed to provide a user-friendly interface for swapping tokens. It integrates with Enso API to allow not only simple swaps but also operations like zap-in.
+This widget is a React component that utilizes Enso API. It is designed to provide a user-friendly interface for swapping, bridging and executing DeFi action
 
 ## Features
 
 - Swap any-to-any tokens
+- Bridge any-to-any tokens
+- Deposit/withdraw into DeFi protocols
 - Perform zap-in operations
 - Display token details including balance, USD cost, slippage, etc.
 - Enable DeFi operations composition since Enso API is used
@@ -40,8 +42,8 @@ const App = () => {
     return (
         <div>
             <SwapWidget apiKey={"YOUR_API_KEY"} />
-    </div>
-);
+        </div>
+    );
 };
 
 export default App;

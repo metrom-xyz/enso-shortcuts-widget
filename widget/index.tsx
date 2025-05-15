@@ -38,6 +38,7 @@ export default ({
   adaptive,
   rotateObligated,
   outProject,
+  outTokens,
   onChange,
 }: WidgetProps & {
   apiKey: string;
@@ -112,6 +113,7 @@ export default ({
                 tokenOut={tokenOut?.toLowerCase() as Address}
                 enableShare={enableShare}
                 adaptive={adaptive}
+                outTokens={outTokens}
                 onChange={onChange}
               />
             </ChakraProvider>

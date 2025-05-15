@@ -82,6 +82,7 @@ const TokenSelector = ({
   portalRef,
   obligatedToken,
   limitTokens,
+  excludeTokens,
   chainId,
   setChainId,
   project,
@@ -93,6 +94,7 @@ const TokenSelector = ({
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
   limitTokens?: Address[];
+  excludeTokens?: Address[];
   project?: string;
 }) => {
   const [searchText, setSearchText] = useState("");
@@ -155,6 +157,10 @@ const TokenSelector = ({
       tokens = tokens.filter((token) => limitTokens.includes(token.address));
     }
 
+    if (excludeTokens) {
+      tokens = tokens.filter((token) => !excludeTokens.includes(token.address));
+    }
+
     if (searchedToken) {
       tokens = [...tokens, searchedToken];
     }
@@ -195,7 +201,14 @@ const TokenSelector = ({
     });
 
     return balancesWithTotals;
-  }, [balances, currentTokenList, searchedToken, valueToken]);
+  }, [
+    balances,
+    currentTokenList,
+    searchedToken,
+    valueToken,
+    limitTokens,
+    excludeTokens,
+  ]);
 
   const tokenOptions = useMemo(() => {
     let items = tokenList;

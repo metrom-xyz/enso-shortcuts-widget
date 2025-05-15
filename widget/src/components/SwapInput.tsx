@@ -22,6 +22,7 @@ const SwapInput = ({
   portalRef,
   obligatedToken,
   limitTokens,
+  excludeTokens,
   project,
 }: {
   chainId?: SupportedChainId;
@@ -37,6 +38,7 @@ const SwapInput = ({
   portalRef?: React.RefObject<HTMLDivElement>;
   obligatedToken?: boolean;
   limitTokens?: Address[];
+  excludeTokens?: Address[];
   project?: string;
 }) => {
   const { address } = useAccount();
@@ -80,6 +82,7 @@ const SwapInput = ({
             setChainId={setChainId}
             chainId={chainId}
             limitTokens={limitTokens}
+            excludeTokens={excludeTokens}
             obligatedToken={obligatedToken}
             portalRef={portalRef}
             value={tokenValue}

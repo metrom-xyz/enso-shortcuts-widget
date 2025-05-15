@@ -6,6 +6,10 @@ export type WidgetState = {
   chainId?: number;
   outChainId?: number;
   outProject?: string;
+  outTokens?: {
+    include: Address[];
+    exclude: Address[];
+  };
 };
 
 export type WidgetProps = {
@@ -18,6 +22,10 @@ export type WidgetProps = {
   rotateObligated?: boolean | ObligatedToken;
   outProject?: string;
   onChange?: (newState: WidgetState) => void;
+  outTokens?: {
+    include: Address[];
+    exclude: Address[];
+  };
 };
 
 export enum NotifyType {

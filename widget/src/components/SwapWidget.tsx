@@ -55,6 +55,7 @@ const SwapWidget = ({
   adaptive,
   rotateObligated,
   outProject,
+  outTokens,
   onChange,
 }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
@@ -318,6 +319,8 @@ const SwapWidget = ({
           project={outProject}
           chainId={outChainId}
           setChainId={setOutChainId}
+          limitTokens={outTokens?.include}
+          excludeTokens={outTokens?.exclude}
           obligatedToken={obligatedToken === ObligatedToken.TokenOut}
           loading={routerLoading}
           portalRef={portalRef}

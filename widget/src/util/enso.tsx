@@ -1,7 +1,7 @@
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
   EnsoClient,
   RouteParams,
@@ -66,21 +66,30 @@ const useStargatePools = () =>
         .then(({ data }) => data.v2),
   });
 
-const useStargateTokens = (chainId: SupportedChainId, tokenSymbol: string) => {
+const useStargateTokensGetter = () => {
   const { data: stargatePools } = useStargatePools();
-  const foundOccurrency = stargatePools?.find(
-    (pool) =>
-      pool.chainKey === STARGATE_CHAIN_NAMES[chainId] &&
-      pool.token.symbol.includes(tokenSymbol)
+
+  return useCallback(
+    (chainId: SupportedChainId, tokenSymbol: string) => {
+      const foundOccurrency = stargatePools?.find(
+        (pool) =>
+          pool.chainKey === STARGATE_CHAIN_NAMES[chainId] &&
+          pool.token.symbol.includes(tokenSymbol)
+      );
+
+      let underyingToken = foundOccurrency?.token.address.toLowerCase();
+
+      if (underyingToken === "0x0000000000000000000000000000000000000000") {
+        underyingToken = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+      }
+
+      return [
+        foundOccurrency?.address.toLowerCase() as Address,
+        underyingToken,
+      ];
+    },
+    [stargatePools]
   );
-
-  let underyingToken = foundOccurrency?.token.address.toLowerCase();
-
-  if (underyingToken === "0x0000000000000000000000000000000000000000") {
-    underyingToken = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-  }
-
-  return [foundOccurrency?.address.toLowerCase() as Address, underyingToken];
 };
 
 const useBridgeBundle = (
@@ -91,6 +100,7 @@ const useBridgeBundle = (
     receiver,
     chainId,
     destinationChainId,
+    slippage,
   }: {
     tokenIn: Address;
     tokenOut: Address;
@@ -98,23 +108,35 @@ const useBridgeBundle = (
     receiver: Address;
     chainId: SupportedChainId;
     destinationChainId: SupportedChainId;
+    slippage: number;
   },
   enabled = false
 ) => {
-  const tokenNameToBridge =
+  const tokenPriority =
     NATIVE_ETH_CHAINS.includes(chainId) &&
     NATIVE_ETH_CHAINS.includes(destinationChainId)
-      ? "ETH"
-      : "USDC";
+      ? ["ETH", "USDC", "USDT"]
+      : ["USDC", "ETH", "USDT"];
 
-  const [sourcePool, sourceToken] = useStargateTokens(
-    chainId,
-    tokenNameToBridge
-  );
-  const [, destinationToken] = useStargateTokens(
-    destinationChainId,
-    tokenNameToBridge
-  );
+  const getStargateTokens = useStargateTokensGetter();
+
+  const [sourcePool, sourceToken, destinationToken] = useMemo(() => {
+    for (const tokenNameToBridge of tokenPriority) {
+      const [sourcePool, sourceToken] = getStargateTokens(
+        chainId,
+        tokenNameToBridge
+      );
+      const [, destinationToken] = getStargateTokens(
+        destinationChainId,
+        tokenNameToBridge
+      );
+
+      if (sourceToken && destinationToken) {
+        return [sourcePool, sourceToken, destinationToken];
+      }
+    }
+    return [null, null, null];
+  }, [chainId, destinationChainId, tokenPriority, getStargateTokens]);
 
   const bundleActions: BundleAction[] = [
     {
@@ -133,15 +155,15 @@ const useBridgeBundle = (
             ? [
                 {
                   protocol: "enso",
-                  action: "balance",
+                  action: BundleActionType.Balance,
                   args: {
                     token: destinationToken,
                   },
                 },
                 {
                   protocol: "enso",
-                  action: "route",
-                  slippage: "25",
+                  action: BundleActionType.Route,
+                  slippage,
                   args: {
                     tokenIn: destinationToken,
                     tokenOut,
@@ -164,6 +186,7 @@ const useBridgeBundle = (
     bundleActions.unshift({
       protocol: "enso",
       action: BundleActionType.Route,
+      slippage,
       args: {
         tokenIn,
         amountIn,
@@ -278,6 +301,7 @@ export const useEnsoData = (
       receiver: address,
       chainId,
       destinationChainId: outChainId,
+      slippage,
     },
     !isCrosschain
   );

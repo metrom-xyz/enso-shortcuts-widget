@@ -1,6 +1,6 @@
 {
   "name": "@ensofinance/shortcuts-widget",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "homepage": "https://www.enso.build/",
   "repository": {
@@ -36,10 +36,18 @@
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.62.10",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0",
     "viem": "2.x",
     "wagmi": "^2.14.16"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -51,8 +59,8 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
     "viem": "2.x",

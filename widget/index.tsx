@@ -25,7 +25,7 @@ posthog.init("phc_w7nnXuFCFpuhrXLAAHrOrlr7Z0AAFHE79JybZ4bUabk", {
 
 const varRoot = ":host";
 
-export default ({
+const Widget = ({
   apiKey,
   tokenOut,
   tokenIn,
@@ -123,3 +123,6 @@ export default ({
     </root.div>
   );
 };
+
+export default Widget;
+export { Widget };

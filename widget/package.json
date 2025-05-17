@@ -1,6 +1,6 @@
 {
   "name": "@ensofinance/shortcuts-widget",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "module",
   "homepage": "https://www.enso.build/",
   "repository": {
@@ -20,7 +20,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.16.1",
+    "@chakra-ui/react": "^3.19.1",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@ensofinance/sdk": "^1.0.18",
@@ -59,8 +59,6 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
     "viem": "2.x",

@@ -18,11 +18,6 @@ import { WidgetProps } from "@/types";
 
 export { type SystemConfig };
 
-posthog.init("phc_w7nnXuFCFpuhrXLAAHrOrlr7Z0AAFHE79JybZ4bUabk", {
-  api_host: "https://eu.i.posthog.com",
-  person_profiles: "always", // or 'always' to create profiles for anonymous users as well
-});
-
 const varRoot = ":host";
 
 const Widget = ({
@@ -94,6 +89,11 @@ const Widget = ({
 
   // initialize client with key before it is used
   useEffect(() => {
+    posthog.init("phc_w7nnXuFCFpuhrXLAAHrOrlr7Z0AAFHE79JybZ4bUabk", {
+      api_host: "https://eu.i.posthog.com",
+      person_profiles: "always", // or 'always' to create profiles for anonymous users as well
+    });
+
     if (apiKey) setApiKey(apiKey);
     else alert("Provide Enso API key to the widget");
   }, []);

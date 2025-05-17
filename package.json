@@ -9,5 +9,15 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "pnpm": {
+    "overrides": {
+          "react": "^18.2.0 || ^19.0.0",
+          "react-dom": "^18.2.0 || ^19.0.0"
+    }
+  }
 }

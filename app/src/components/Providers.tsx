@@ -44,11 +44,27 @@ const soneiumWithIcon = {
     "https://assets.coingecko.com/asset_platforms/images/22200/large/soneium-removebg-preview.png?1737099934",
 };
 
+const ethereumWithRpc = {
+  ...mainnet,
+  rpcUrls: {
+    default: {
+      http: [
+        "https://mainnet.gateway.tenderly.co",
+        "https://eth-mainnet.public.blastapi.io",
+      ],
+      webSocket: [
+        "wss://mainnet.gateway.tenderly.co",
+        "wss://ethereum-rpc.publicnode.com",
+      ],
+    },
+  },
+};
+
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "YOUR_PROJECT_ID",
   chains: [
-    mainnet,
+    ethereumWithRpc,
     base,
     arbitrum,
     berachainWithIcon,

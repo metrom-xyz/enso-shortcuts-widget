@@ -65,8 +65,7 @@
     "vite": "^6.0.5",
     "vite-plugin-dts": "^4.4.0",
     "vite-plugin-lib-inject-css": "^2.2.1",
-    "vite-tsconfig-paths": "^5.1.4",
-    "wagmi": "^2.14.16"
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "main": "./dist/shortcuts-widget.umd.js",
   "module": "./dist/shortcuts-widget.es.js",

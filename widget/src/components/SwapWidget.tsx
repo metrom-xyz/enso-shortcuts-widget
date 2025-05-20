@@ -371,6 +371,8 @@ const SwapWidget = ({
         <Flex w={"full"} gap={4}>
           {wrongChain ? (
             <Button
+              size="lg"
+              borderRadius={"lg"}
               colorPalette={"blue"}
               onClick={() => switchChain({ chainId })}
             >

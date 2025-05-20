@@ -11,7 +11,12 @@ import {
   ProtocolData,
 } from "@ensofinance/sdk";
 import { isAddress } from "viem";
-import { Token, usePriorityChainId, useOutChainId } from "@/util/common";
+import {
+  Token,
+  usePriorityChainId,
+  useOutChainId,
+  useTokenFromList,
+} from "@/util/common";
 import { useSendEnsoTransaction } from "@/util/wallet";
 import {
   ONEINCH_ONLY_TOKENS,
@@ -112,16 +117,57 @@ const useBridgeBundle = (
   },
   enabled = false
 ) => {
-  const tokenPriority =
-    NATIVE_ETH_CHAINS.includes(chainId) &&
-    NATIVE_ETH_CHAINS.includes(destinationChainId)
-      ? ["ETH", "USDC", "USDT"]
-      : ["USDC", "ETH", "USDT"];
-
   const getStargateTokens = useStargateTokensGetter();
+  const {
+    tokens: [tokenInData],
+  } = useEnsoToken({ address: tokenIn, enabled: isAddress(tokenIn) });
+  const {
+    tokens: [tokenOutData],
+  } = useEnsoToken({
+    address: tokenOut,
+    priorityChainId: destinationChainId,
+    enabled: isAddress(tokenOut),
+  });
+
+  /*
+    If outToken is stable it should have priority
+    Than if inToken is stable it should have priority
+    Having pririty means use it if it is USDC/USDT or just use one of them
+    Otherwise use default priority depending on if chain is native eth chain
+  */
+  const prioritizedBridgeSymbols = useMemo(() => {
+    if (!tokenInData || !tokenOutData) {
+      return [];
+    }
+    const stableTokens = ["USDC", "USDT"];
+    const stablePriority = [...stableTokens, "ETH"];
+    const defaultPriority =
+      NATIVE_ETH_CHAINS.includes(chainId) &&
+      NATIVE_ETH_CHAINS.includes(destinationChainId)
+        ? ["ETH", ...stableTokens]
+        : stablePriority;
+
+    const tokenOutStable = stableTokens.find((token) =>
+      tokenOutData.symbol.includes(token)
+    );
+    const tokenInStable = stableTokens.find((token) =>
+      tokenInData.symbol.includes(token)
+    );
+
+    const tokenStable = tokenOutStable || tokenInStable;
+
+    if (tokenStable) {
+      return [
+        tokenStable,
+        ...stablePriority.filter((token) => token !== tokenStable),
+      ];
+    }
+
+    return defaultPriority;
+  }, [tokenInData, tokenOutData, chainId, destinationChainId]);
 
   const [sourcePool, sourceToken, destinationToken] = useMemo(() => {
-    for (const tokenNameToBridge of tokenPriority) {
+    for (const tokenNameToBridge of prioritizedBridgeSymbols) {
       const [sourcePool, sourceToken] = getStargateTokens(
         chainId,
         tokenNameToBridge
@@ -136,7 +182,7 @@ const useBridgeBundle = (
       }
     }
     return [null, null, null];
-  }, [chainId, destinationChainId, tokenPriority, getStargateTokens]);
+  }, [chainId, destinationChainId, prioritizedBridgeSymbols, getStargateTokens]);
 
   const bundleActions: BundleAction[] = [
     {
@@ -403,7 +449,7 @@ export const useEnsoToken = ({
     protocolSlug,
     enabled,
   });
-  // const tokenFromList = useTokenFromList(address, priorityChainId);
+  const tokenFromList = useTokenFromList(address, priorityChainId);
 
   const tokens: Token[] = useMemo(() => {
     if (!data?.data?.length || !data?.data[0]?.decimals || !enabled) {
@@ -413,14 +459,14 @@ export const useEnsoToken = ({
     return data.data.map((token) => ({
       ...token,
       address: token?.address.toLowerCase() as Address,
-      logoURI: token?.logosUri[0],
+      logoURI: tokenFromList?.logoURI ?? token?.logosUri[0],
       underlyingTokens: token?.underlyingTokens?.map((token) => ({
         ...token,
         address: token?.address.toLowerCase() as Address,
         logoURI: token?.logosUri[0],
       })),
     }));
-  }, [data]);
+  }, [data, tokenFromList]);
 
   return { tokens, isLoading };
 };

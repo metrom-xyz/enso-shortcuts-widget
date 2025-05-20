@@ -136,7 +136,7 @@ function App() {
       >
         <img src={logoUrl} alt={"Enso"} style={{ height: "50px" }} />
 
-        <ConnectButton />
+        <ConnectButton chainStatus={"none"} />
       </div>
 
       <div

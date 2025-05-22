@@ -304,6 +304,8 @@ const TokenSelector = ({
         w={"100%"}
         minWidth={"300px"}
         minHeight={"400px"}
+        borderWidth={1}
+        borderRadius={"xl"}
         bg={"bg"}
       >
         <Flex

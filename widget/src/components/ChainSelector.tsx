@@ -44,7 +44,7 @@ const ChainIcon = ({ chainId }: { chainId: SupportedChainId }) => {
 // Chain indicator component to display in the dropdown
 const ChainIndicator = forwardRef<HTMLDivElement, { chain: Chain }>(
   ({ chain }, ref) => (
-    <Flex align="center" gap={2} mr={8} ref={ref}>
+    <Flex align="center" gap={2} mr={8} ref={ref} borderRadius={"lg"}>
       <ChainIcon chainId={chain.id} />
       <Text fontWeight="medium" whiteSpace={"nowrap"}>
         {chain?.name || "Unknown Chain"}
@@ -115,14 +115,10 @@ const ChainSelector = ({
         </Select.IndicatorGroup>
       </Select.Control>
       <Select.Positioner>
-        <Select.Content>
+        <Select.Content borderWidth={1} borderRadius={"xl"} bg={"bg"}>
           {chainOptions.items.map((item) => {
             return (
-              <SelectItem
-                key={item.id.toString()}
-                item={item}
-                cursor={"pointer"}
-              >
+              <SelectItem key={item.id.toString()} item={item}>
                 <ChainIndicator chain={item} />
               </SelectItem>
             );

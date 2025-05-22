@@ -100,14 +100,10 @@ const ProjectSelector = ({
       </Select.Control>
 
       <Select.Positioner>
-        <SelectContent portalled={false}>
+        <SelectContent portalled={false} borderWidth={1} borderRadius={"xl"} bg={"bg"}>
           {projectOptions.items.map((item) => {
             return (
-              <SelectItem
-                key={item.slug}
-                item={item}
-                _hover={{ background: "gray.100" }}
-              >
+              <SelectItem key={item.slug} item={item}>
                 <Flex alignItems={"center"}>
                   <ProtocolIcon logoUri={item.logosUri?.[0]} />
                   {capitalize(item.projectId)}

@@ -8,6 +8,7 @@ import {
   Link,
   Text,
   useDisclosure,
+  Button,
 } from "@chakra-ui/react";
 import { ArrowDown, TriangleAlert } from "lucide-react";
 import { Address, isAddress } from "viem";
@@ -38,7 +39,6 @@ import {
 } from "@/constants";
 import { useStore } from "@/store";
 import SwapInput from "@/components/SwapInput";
-import { Button } from "@/components/ui/button";
 import Notification from "@/components/Notification";
 import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
 import RouteIndication from "@/components/RouteIndication";

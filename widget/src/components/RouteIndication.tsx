@@ -6,13 +6,23 @@ import { capitalize, Token, useTokenFromList } from "@/util/common";
 import { useEnsoToken } from "@/util/enso";
 import { TokenIcon } from "@/components/TokenIndicator";
 
-const TokenBadge = ({ address }: { address: Address }) => {
+const TokenBadge = ({
+  address,
+  chainId,
+}: {
+  address: Address;
+  chainId: number;
+}) => {
   const token = useTokenFromList(address);
   const {
     tokens: [ensoToken],
-  } = useEnsoToken({ address, enabled: !!isAddress(address) });
+  } = useEnsoToken({
+    address,
+    enabled: !!isAddress(address),
+    priorityChainId: chainId,
+  });
   const symbol = ensoToken?.symbol ?? token?.symbol;
-  const logoURI = token?.logoURI ?? ensoToken?.logoURI;
+  const logoURI = ensoToken?.logoURI;
 
   return <TokenIcon token={{ logoURI, symbol } as Token} />;
 };
@@ -35,7 +45,7 @@ const RouteSegment = ({ step }: { step: RouteSegment }) => (
     <Flex alignItems={"center"}>
       <Flex flexDirection={"column"} gap={1}>
         {step.tokenIn?.map((token, i) => (
-          <TokenBadge address={token} key={i} />
+          <TokenBadge address={token} key={i} chainId={step.chainId} />
         ))}
       </Flex>
       {step.tokenIn.length && step.tokenOut.length && (
@@ -45,7 +55,7 @@ const RouteSegment = ({ step }: { step: RouteSegment }) => (
       )}
       <Flex flexDirection={"column"} gap={1}>
         {step.tokenOut.map((token, i) => (
-          <TokenBadge address={token} key={i} />
+          <TokenBadge address={token} key={i} chainId={step.chainId} />
         ))}
       </Flex>
     </Flex>
@@ -98,16 +108,15 @@ const RouteIndication = ({
                   flexDirection="column"
                   alignItems="center"
                 >
-                  {isCrosschainBridge ? (
+                  {isCrosschainBridge && (
                     <>
-                      <Text color="fg" fontSize="xs">
+                      <Text color="fg" fontSize="sm">
                         Stargate
                       </Text>
                       <Text fontSize="xs">(bridge)</Text>
                     </>
-                  ) : (
-                    <ChevronsRight />
                   )}
+                  {<ChevronsRight />}
                 </Flex>
               );
             }

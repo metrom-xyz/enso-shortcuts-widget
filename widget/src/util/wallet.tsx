@@ -13,7 +13,7 @@ import {
 } from "wagmi";
 import { Address, BaseError } from "viem";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { RouteData, RouteParams } from "@ensofinance/sdk";
+import { RouteData } from "@ensofinance/sdk";
 import {
   useEtherscanUrl,
   usePriorityChainId,

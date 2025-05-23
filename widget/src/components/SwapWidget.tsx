@@ -26,7 +26,7 @@ import {
   formatUSD,
   normalizeValue,
 } from "@/util";
-import { useApproveIfNecessary } from "@/util/wallet";
+import { useApproveIfNecessary, useTokenBalance } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import {
   DEFAULT_SLIPPAGE,
@@ -165,8 +165,10 @@ const SwapWidget = ({
     approveData.data?.spender,
     amountIn
   );
+  const balance = useTokenBalance(tokenIn, chainId);
+  const isBalanceEnough = +amountIn <= +(balance ?? 0);
 
-  const approveNeeded = Boolean(approve && tokenIn) && +amountIn > 0;
+  const approveNeeded = Boolean(approve && tokenIn) && isBalanceEnough;
 
   const wrongChain = chainId && +wagmiChainId !== +chainId;
 
@@ -209,11 +211,24 @@ const SwapWidget = ({
     !!approve ||
     wrongChain ||
     !(+routerData?.amountOut > 0) ||
-    swapLimitExceeded;
+    swapLimitExceeded ||
+    !isBalanceEnough;
 
-  const swapWarning = swapLimitExceeded
-    ? `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}.  You can do multiple transactions of this size.`
-    : "";
+  const swapWarning = useMemo(() => {
+    if (swapLimitExceeded)
+      return `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}.  You can do multiple transactions of this size.`;
+    if (!isBalanceEnough) return "Balance is not enough to perform transaction";
+    if (wrongChain) return "Please switch to the correct chain";
+    if (approveNeeded) return "Please approve the token first";
+    return "";
+  }, [
+    swapLimitExceeded,
+    isBalanceEnough,
+    wrongChain,
+    approveNeeded,
+    swapDisabled,
+    tokenOut,
+  ]);
 
   const formattedPriceImpact = priceImpactValue
     ? (-priceImpactValue / 100).toFixed(2)
@@ -397,7 +412,7 @@ const SwapWidget = ({
             <Button
               size="lg"
               borderRadius={"lg"}
-              colorPalette={swapWarning ? "orange" : "blue"}
+              colorPalette={"blue"}
               flex={1}
               disabled={swapDisabled}
               loading={sendTransaction.isLoading || routerLoading}

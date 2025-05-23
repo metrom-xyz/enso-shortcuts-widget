@@ -92,6 +92,7 @@ function App() {
     const props: ComponentProps<typeof SwapWidget> = {
       apiKey: EnsoApiKey,
       onChange: handleStateChange,
+      indicateRoute: true,
     };
 
     // Only include props that have values

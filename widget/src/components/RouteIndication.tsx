@@ -17,7 +17,7 @@ const TokenBadge = ({ address }: { address: Address }) => {
   return <TokenIcon token={{ logoURI, symbol } as Token} />;
 };
 
-type RouteSegment = RouteData["route"][0];
+type RouteSegment = RouteData["route"][0] & { chainId: number };
 
 const RouteSegment = ({ step }: { step: RouteSegment }) => (
   <Flex flexDirection={"column"} alignItems={"center"} p={1} w={100}>
@@ -28,7 +28,7 @@ const RouteSegment = ({ step }: { step: RouteSegment }) => (
         overflow="hidden"
         textOverflow="ellipsis"
       >{`${capitalize(step.protocol)}`}</Text>
-      <Text color={"gray.400"} fontSize={"xs"} mt={-2}>
+      <Text color={"fg.subtle"} fontSize={"xs"} mt={-2}>
         ({step.action})
       </Text>
     </Box>
@@ -39,7 +39,7 @@ const RouteSegment = ({ step }: { step: RouteSegment }) => (
         ))}
       </Flex>
       {step.tokenIn.length && step.tokenOut.length && (
-        <Box color={"gray.400"}>
+        <Box color={"fg.subtle"}>
           <ChevronRightIcon />
         </Box>
       )}
@@ -73,10 +73,13 @@ const RouteIndication = ({
         >
           {route.reduce((acc, step, currentIndex) => {
             acc.push(
-              <Box>
+              <Box key={`route-segment-${currentIndex}`}>
                 {step.action === "split" ? (
-                  step.internalRoutes?.map(([step], i) => (
-                    <RouteSegment step={step} key={i} />
+                  step.internalRoutes?.map(([internalStep], i) => (
+                    <RouteSegment
+                      step={{ ...internalStep, chainId: step.chainId }}
+                      key={i}
+                    />
                   ))
                 ) : (
                   <RouteSegment step={step} />
@@ -85,10 +88,27 @@ const RouteIndication = ({
             );
 
             if (route.length - 1 !== currentIndex) {
+              const nextStep = route[currentIndex + 1];
+              const isCrosschainBridge = step.chainId !== nextStep.chainId;
+
               acc.push(
-                <Box color={"gray.400"}>
-                  <ChevronsRight />
-                </Box>
+                <Flex
+                  key={`connector-${currentIndex}`}
+                  color={"fg.subtle"}
+                  flexDirection="column"
+                  alignItems="center"
+                >
+                  {isCrosschainBridge ? (
+                    <>
+                      <Text color="fg" fontSize="xs">
+                        Stargate
+                      </Text>
+                      <Text fontSize="xs">(bridge)</Text>
+                    </>
+                  ) : (
+                    <ChevronsRight />
+                  )}
+                </Flex>
               );
             }
 

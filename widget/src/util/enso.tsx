@@ -182,7 +182,12 @@ const useBridgeBundle = (
       }
     }
     return [null, null, null];
-  }, [chainId, destinationChainId, prioritizedBridgeSymbols, getStargateTokens]);
+  }, [
+    chainId,
+    destinationChainId,
+    prioritizedBridgeSymbols,
+    getStargateTokens,
+  ]);
 
   const bundleActions: BundleAction[] = [
     {
@@ -249,7 +254,8 @@ const useBridgeBundle = (
 
   const bundleData = {
     tx: data?.tx,
-    route: [],
+    // @ts-ignore
+    route: data?.route,
     amountOut:
       Object.entries(data?.amountsOut || {}).find(
         ([key]) => key.toLowerCase() === tokenOut.toLowerCase()

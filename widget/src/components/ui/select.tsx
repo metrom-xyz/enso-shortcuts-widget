@@ -69,7 +69,14 @@ export const SelectValueText = React.forwardRef<
 >(function SelectValueText(props, ref) {
   const { children, ...rest } = props;
   return (
-    <ChakraSelect.ValueText {...rest} ref={ref}>
+    <ChakraSelect.ValueText
+      {...rest}
+      ref={ref}
+      maxWidth={"100%"}
+      minH={"40px"}
+      display={"flex"}
+      alignItems={"center"}
+    >
       <ChakraSelect.Context>
         {(select) => {
           const items = select.selectedItems;

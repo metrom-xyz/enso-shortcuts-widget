@@ -129,14 +129,12 @@ const SwapInput = ({
         </Flex>
 
         <Flex justifyContent={"space-between"} fontSize="sm">
-          <Flex gap={1} alignItems={"center"}>
-            <Text
-              fontSize="sm"
-              color="fg.muted"
-              whiteSpace={"nowrap"}
-              visibility={address ? "visible" : "hidden"}
-              maxW={"100px"}
-            >
+          <Flex
+            gap={1}
+            alignItems={"center"}
+            visibility={address ? "visible" : "hidden"}
+          >
+            <Text fontSize="sm" color="fg.muted" whiteSpace={"nowrap"}>
               Balance: {formatNumber(balanceValue)}
             </Text>
             <Button

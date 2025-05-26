@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       external: [
+        /^wagmi($|\/)/,
         /^react($|\/)/,
         /^react-dom($|\/)/, // removes legacy react-dom/server
         "react",

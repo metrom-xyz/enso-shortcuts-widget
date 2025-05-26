@@ -158,7 +158,7 @@ export const CHAINS_ETHERSCAN: Record<SupportedChainId, string> = {
   [SupportedChainId.UNICHAIN]: "https://uniscan.xyz",
   [SupportedChainId.INK]: "https://explorer.inkonchain.com",
   [SupportedChainId.SONEIUM]: "https://soneium.blockscout.com/",
-  [SupportedChainId.PLUME]: "https://explorer.plumenetwork.xyz",
+  [SupportedChainId.PLUME]: "https://explorer.plume.org/",
 };
 
 export const NATIVE_ETH_CHAINS = [

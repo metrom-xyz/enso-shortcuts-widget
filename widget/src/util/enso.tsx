@@ -305,7 +305,10 @@ export const useBundleData = (
       bundleActions.length > 0 &&
       isAddress(bundleParams.fromAddress) &&
       // @ts-ignore
-      +(bundleActions[0]?.args?.amountIn as string) > 0,
+      +(bundleActions[0]?.args?.amountIn as string) > 0 &&
+      // @ts-ignore
+      (isAddress(bundleActions[0]?.args?.tokenOut) ||
+        bundleActions[0].action === BundleActionType.Bridge),
   });
 };
 

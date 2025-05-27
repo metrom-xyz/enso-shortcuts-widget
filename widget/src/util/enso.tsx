@@ -316,7 +316,8 @@ export const useEnsoData = (
   amountIn: string,
   tokenIn: Address,
   tokenOut: Address,
-  slippage: number
+  slippage: number,
+  onSuccess?: () => void
 ) => {
   const { address = VITALIK_ADDRESS } = useAccount();
   const chainId = usePriorityChainId();
@@ -381,11 +382,12 @@ export const useEnsoData = (
     normalizeValue(routerParams.amountIn, tokenFromData?.decimals)
   )} ${tokenFromData?.symbol} of ${tokenToData?.symbol}`;
 
-  const sendTransaction = useSendEnsoTransaction(
-    data?.tx,
-    swapTitle,
-    !isCrosschain
-  );
+  const sendTransaction = useSendEnsoTransaction({
+    args: data?.tx,
+    title: swapTitle,
+    crosschain: !isCrosschain,
+    onSuccess,
+  });
 
   return {
     data,

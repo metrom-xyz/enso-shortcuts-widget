@@ -148,11 +148,15 @@ const SwapWidget = ({
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
+  const resetInput = useCallback(() => {
+    setValueIn("");
+  }, []);
+
   const {
     data: routerData,
     isLoading: routerLoading,
     sendTransaction,
-  } = useEnsoData(amountIn, tokenIn, tokenOut, slippage);
+  } = useEnsoData(amountIn, tokenIn, tokenOut, slippage, resetInput);
 
   const valueOut = normalizeValue(
     routerData?.amountOut.toString(),

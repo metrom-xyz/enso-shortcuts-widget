@@ -367,11 +367,17 @@ const useWatchWriteTransactionHash = (description: string) => {
   return useWatchTransactionHash(writeContract, description);
 };
 
-export const useExtendedSendTransaction = (
-  title: string,
-  args: UseSimulateContractParameters,
-  crosschain?: boolean
-) => {
+export const useExtendedSendTransaction = ({
+  title,
+  args,
+  onSuccess,
+  crosschain,
+}: {
+  title: string;
+  args: UseSimulateContractParameters;
+  onSuccess?: () => void;
+  crosschain?: boolean;
+}) => {
   const sendTransaction = useWatchSendTransactionHash(title, crosschain);
 
   const send = useCallback(() => {
@@ -385,8 +391,9 @@ export const useExtendedSendTransaction = (
         });
         console.error(error);
       },
+      onSuccess,
     });
-  }, [sendTransaction, args]);
+  }, [sendTransaction, args, onSuccess]);
 
   return {
     ...sendTransaction,
@@ -411,10 +418,21 @@ export const useApproveIfNecessary = (
   return +allowance < +amount ? writeApprove : undefined;
 };
 
-export const useSendEnsoTransaction = (
-  ensoTxData: RouteData["tx"],
-  title: string,
-  crosschain?: boolean
-) => {
-  return useExtendedSendTransaction(title, ensoTxData, crosschain);
+export const useSendEnsoTransaction = ({
+  args,
+  title,
+  crosschain,
+  onSuccess,
+}: {
+  args: RouteData["tx"];
+  title: string;
+  crosschain?: boolean;
+  onSuccess?: () => void;
+}) => {
+  return useExtendedSendTransaction({
+    title,
+    args,
+    crosschain,
+    onSuccess,
+  });
 };

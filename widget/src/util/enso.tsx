@@ -150,16 +150,11 @@ const useBridgeBundle = (
     const tokenOutStable = stableTokens.find((token) =>
       tokenOutData.symbol.includes(token)
     );
-    const tokenInStable = stableTokens.find((token) =>
-      tokenInData.symbol.includes(token)
-    );
 
-    const tokenStable = tokenOutStable || tokenInStable;
-
-    if (tokenStable) {
+    if (tokenOutStable) {
       return [
-        tokenStable,
-        ...stablePriority.filter((token) => token !== tokenStable),
+        tokenOutStable,
+        ...stablePriority.filter((token) => token !== tokenOutStable),
       ];
     }
 

@@ -164,8 +164,10 @@ const TokenSelector = ({
     if (searchedToken) {
       tokens = [...tokens, searchedToken];
     }
+
     if (valueToken) {
-      tokens.splice(hasCoincidence(tokens, valueToken?.address), 1);
+      const valueTokenIndex = hasCoincidence(tokens, valueToken.address);
+      if (valueTokenIndex !== -1) tokens.splice(valueTokenIndex, 1);
       tokens.unshift(valueToken);
     }
 

@@ -162,7 +162,7 @@ const RouteIndication = ({
   route?: RouteSegment[];
   loading?: boolean;
 }) => (
-  <Flex w="full" justifyContent="center" minHeight="80px" py={2}>
+  <Flex w="full" justifyContent="center" minHeight="100px" py={1}>
     {loading ? (
       <Skeleton h="full" w="150px" borderRadius="lg" />
     ) : (

@@ -7,7 +7,7 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import {  ChevronsRight, ArrowRight } from "lucide-react";
+import { ChevronsRight, ArrowRight } from "lucide-react";
 import { Address, isAddress } from "viem";
 import { RouteData } from "@ensofinance/sdk";
 import { capitalize, Token, useTokenFromList } from "@/util/common";
@@ -47,7 +47,7 @@ const TokenBadge = ({
   );
 };
 
-type RouteSegment = RouteData["route"][0] & { chainId: number };
+type RouteSegment = RouteData["route"][0] & { chainId?: number };
 
 const RouteSegment = ({ step }: { step: RouteSegment }) => (
   <VStack minW="80px" maxW="100px" gap={0}>
@@ -114,7 +114,7 @@ const BridgeConnector = ({
       <Badge
         colorScheme="purple"
         variant="solid"
-        px={2}
+        px={1}
         py={0.5}
         borderRadius="md"
         fontSize="2xs"

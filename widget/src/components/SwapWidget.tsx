@@ -156,6 +156,7 @@ const SwapWidget = ({
     data: routerData,
     isLoading: routerLoading,
     sendTransaction,
+    error,
   } = useEnsoData(amountIn, tokenIn, tokenOut, slippage, resetInput);
 
   const valueOut = normalizeValue(
@@ -430,6 +431,12 @@ const SwapWidget = ({
             </Button>
           </Tooltip>
         </Flex>
+
+        {error && (
+          <Text color="red.500" fontSize="xs" mt={1}>
+            {error.message || "An error occurred while fetching swap data"}
+          </Text>
+        )}
 
         {indicateRoute && (
           <Box>

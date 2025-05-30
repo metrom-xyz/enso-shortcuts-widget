@@ -241,7 +241,7 @@ const useBridgeBundle = (
     } as BundleAction);
   }
 
-  const { data, isLoading } = useBundleData(
+  const { data, isLoading, error } = useBundleData(
     { chainId, fromAddress: receiver, spender: receiver },
     bundleActions,
     enabled
@@ -261,6 +261,7 @@ const useBridgeBundle = (
   return {
     data: bundleData,
     isLoading,
+    error,
   };
 };
 
@@ -337,28 +338,32 @@ export const useEnsoData = (
     routerParams.ignoreAggregators =
       "0x,paraswap,openocean,odos,kyberswap,native,barter";
   }
-  let isCrosschain = outChainId === chainId;
+  let isCrosschain = outChainId !== chainId;
 
-  const { data: routerData, isLoading: routerLoading } = useEnsoRouterData(
-    routerParams,
-    isCrosschain
-  );
+  if (isCrosschain) {
+    // @ts-ignore
+    routerParams.destinationChainId = outChainId;
+  }
 
-  const { data: bundleData, isLoading: bundleLoading } = useBridgeBundle(
-    {
-      tokenIn,
-      tokenOut,
-      amountIn,
-      receiver: address,
-      chainId,
-      destinationChainId: outChainId,
-      slippage,
-    },
-    !isCrosschain
-  );
+  // const {
+  //   data: bundleData,
+  //   isLoading: bundleLoading,
+  //   error: bundleError,
+  // } = useBridgeBundle(
+  //   {
+  //     tokenIn,
+  //     tokenOut,
+  //     amountIn,
+  //     receiver: address,
+  //     chainId,
+  //     destinationChainId: outChainId,
+  //     slippage,
+  //   },
+  //   !isCrosschain
+  // );
 
-  const data = isCrosschain ? routerData : bundleData;
-  const isLoading = isCrosschain ? routerLoading : bundleLoading;
+  // const data = isCrosschain ? routerData : bundleData;
+  // const isLoading = isCrosschain ? routerLoading : bundleLoading;
 
   const {
     tokens: [tokenToData],
@@ -377,16 +382,17 @@ export const useEnsoData = (
     normalizeValue(routerParams.amountIn, tokenFromData?.decimals)
   )} ${tokenFromData?.symbol} of ${tokenToData?.symbol}`;
 
+  const routerData = useEnsoRouterData(routerParams, true);
+
   const sendTransaction = useSendEnsoTransaction({
-    args: data?.tx,
+    args: routerData.data?.tx,
     title: swapTitle,
-    crosschain: !isCrosschain,
+    crosschain: isCrosschain,
     onSuccess,
   });
 
   return {
-    data,
-    isLoading,
+    ...routerData,
     sendTransaction,
   };
 };

@@ -29,6 +29,10 @@ import { formatNumber, normalizeValue } from ".";
 
 let ensoClient: EnsoClient | null = null;
 
+type CrosschainParams = RouteParams & {
+  destinationChainId?: number;
+};
+
 export const setApiKey = (apiKey: string) => {
   ensoClient = new EnsoClient({
     // baseURL: "http://localhost:3000/api/v1",
@@ -265,11 +269,12 @@ const useBridgeBundle = (
   };
 };
 
-const useEnsoRouterData = (params: RouteParams, enabled = true) =>
+const useEnsoRouterData = (params: CrosschainParams, enabled = true) =>
   useQuery({
     queryKey: [
       "enso-router",
       params.chainId,
+      params.destinationChainId,
       params.fromAddress,
       params.tokenIn,
       params.tokenOut,
@@ -282,7 +287,9 @@ const useEnsoRouterData = (params: RouteParams, enabled = true) =>
       isAddress(params.fromAddress) &&
       isAddress(params.tokenIn) &&
       isAddress(params.tokenOut) &&
-      params.tokenIn !== params.tokenOut,
+      (params.tokenIn !== params.tokenOut ||
+        (params.destinationChainId &&
+          params.chainId !== params.destinationChainId)),
     retry: 2,
   });
 
@@ -318,7 +325,7 @@ export const useEnsoData = (
   const { address = VITALIK_ADDRESS } = useAccount();
   const chainId = usePriorityChainId();
   const outChainId = useOutChainId();
-  const routerParams: RouteParams = {
+  const routerParams: CrosschainParams = {
     amountIn,
     tokenIn,
     tokenOut,
@@ -341,7 +348,6 @@ export const useEnsoData = (
   let isCrosschain = outChainId !== chainId;
 
   if (isCrosschain) {
-    // @ts-ignore
     routerParams.destinationChainId = outChainId;
   }
 

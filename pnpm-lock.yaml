@@ -154,6 +154,9 @@ importers:
       url:
         specifier: ^0.11.4
         version: 0.11.4
+      viem:
+        specifier: ^2.22.1
+        version: 2.29.4(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)
       wagmi:
         specifier: ^2.14.16
         version: 2.14.16(@tanstack/query-core@5.76.0)(@tanstack/react-query@5.76.1(react@19.1.0))(@types/react@18.3.21)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.6.3)(utf-8-validate@5.0.10)(viem@2.29.4(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10))
@@ -194,9 +197,6 @@ importers:
       typescript-eslint:
         specifier: ^8.18.2
         version: 8.32.1(eslint@9.27.0)(typescript@5.6.3)
-      viem:
-        specifier: 2.x
-        version: 2.29.4(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)
       vite:
         specifier: ^6.0.5
         version: 6.3.5(@types/node@22.15.19)
@@ -6835,8 +6835,8 @@ snapshots:
   ox@0.6.7(typescript@5.6.3):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.8.1
-      '@noble/hashes': 1.7.1
+      '@noble/curves': 1.9.1
+      '@noble/hashes': 1.8.0
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.6.3)
@@ -6849,8 +6849,8 @@ snapshots:
   ox@0.6.7(typescript@5.8.2):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.8.1
-      '@noble/hashes': 1.7.1
+      '@noble/curves': 1.9.1
+      '@noble/hashes': 1.8.0
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.8.2)
@@ -6863,8 +6863,8 @@ snapshots:
   ox@0.6.9(typescript@5.6.3):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.8.2
-      '@noble/hashes': 1.7.2
+      '@noble/curves': 1.9.1
+      '@noble/hashes': 1.8.0
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.6.3)
@@ -6877,8 +6877,8 @@ snapshots:
   ox@0.6.9(typescript@5.8.2):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.8.2
-      '@noble/hashes': 1.7.2
+      '@noble/curves': 1.9.1
+      '@noble/hashes': 1.8.0
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.8.2)

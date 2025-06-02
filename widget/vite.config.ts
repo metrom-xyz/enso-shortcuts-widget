@@ -26,7 +26,6 @@ export default defineConfig(({ mode }) => ({
         "react",
         "react-dom",
         "wagmi",
-        "viem",
         "@tanstack/react-query",
         "react/jsx-runtime",
         "react/jsx-dev-runtime",

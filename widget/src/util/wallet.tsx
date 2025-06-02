@@ -11,7 +11,7 @@ import {
   useWriteContract,
   UseWriteContractReturnType,
 } from "wagmi";
-import { Address, BaseError } from "viem";
+import { Address, BaseError, isAddress } from "viem";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RouteData } from "@ensofinance/sdk";
 import {
@@ -71,6 +71,12 @@ export const useErc20Balance = (
     abi: erc20Abi,
     functionName: "balanceOf",
     args: [address],
+    query: {
+      enabled:
+        isAddress(address) &&
+        isAddress(tokenAddress) &&
+        !compareCaseInsensitive(tokenAddress, ETH_ADDRESS),
+    },
   });
 };
 
@@ -90,6 +96,9 @@ export const useTokenBalance = (
   const { data: balance, queryKey: balanceQueryKey } = useBalance({
     address,
     chainId,
+    query: {
+      enabled: compareCaseInsensitive(token, ETH_ADDRESS),
+    },
   });
 
   useEffect(() => {
@@ -115,6 +124,12 @@ export const useAllowance = (token: Address, spender: Address) => {
     abi: erc20Abi,
     functionName: "allowance",
     args: [address, spender],
+    query: {
+      enabled:
+        isAddress(address) &&
+        isAddress(token) &&
+        !compareCaseInsensitive(token, ETH_ADDRESS),
+    },
   });
 
   useEffect(() => {
@@ -125,7 +140,7 @@ export const useAllowance = (token: Address, spender: Address) => {
 };
 
 export const useApprove = (token: Address, target: Address, amount: string) => {
-  const tokenData = useTokenFromList(token);
+  const [tokenData] = useTokenFromList(token);
   const chainId = usePriorityChainId();
 
   return {

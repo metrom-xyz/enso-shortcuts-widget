@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   ChakraProvider,
   createSystem,
@@ -7,6 +7,7 @@ import {
   EnvironmentProvider,
 } from "@chakra-ui/react";
 import { Address } from "viem";
+import { WagmiContext } from "wagmi";
 import posthog from "posthog-js";
 import root from "react-shadow/emotion";
 import { CacheProvider } from "@emotion/react";
@@ -46,6 +47,16 @@ const Widget = ({
   const [cache, setCache] = useState<ReturnType<typeof createCache> | null>(
     null
   );
+
+  const context = useContext(WagmiContext);
+
+  useEffect(() => {
+    if (!context) {
+      console.error(
+        "Wagmi context is not available. Ensure you are using the EVMProvider."
+      );
+    }
+  }, [context]);
 
   useEffect(() => {
     if (!shadow?.shadowRoot || cache) return;

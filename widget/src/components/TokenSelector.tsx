@@ -119,6 +119,23 @@ const TokenSelector = ({
     setSelectionChainId(chainId);
   }, [chainId]);
 
+  const balanceDefiAddresses = useMemo(() => {
+    return balances
+      ?.filter(
+        (balance) =>
+          !currentChainTokenList?.find(
+            (token) => token.address === balance.token
+          ) && +balance.price > 0
+      )
+      .map((b) => b.token);
+  }, [currentChainTokenList, balances]);
+
+  const { tokens: balanceDefiTokens } = useEnsoToken({
+    address: balanceDefiAddresses,
+    priorityChainId: selectionChainId,
+    enabled: balanceDefiAddresses?.length > 0,
+  });
+
   const currentTokenList = selectedProject
     ? protocolTokens
     : currentChainTokenList;
@@ -171,24 +188,29 @@ const TokenSelector = ({
       tokens.unshift(valueToken);
     }
 
-    const balancesWithTotals = tokens?.map((token) => {
-      let balanceValue = balances?.find?.((b) => b.token === token.address);
+    const balancesWithTotals = [...balanceDefiTokens, ...tokens]?.map(
+      (token) => {
+        let balanceValue = balances?.find?.((b) => b.token === token.address);
 
-      // cut scientific notation
-      const balance = Number(balanceValue?.amount).toLocaleString("fullwide", {
-        useGrouping: false,
-      });
-
-      return balanceValue
-        ? {
-            ...token,
-            balance,
-            costUsd:
-              +normalizeValue(balance, balanceValue?.decimals) *
-              +balanceValue?.price,
+        // cut scientific notation
+        const balance = Number(balanceValue?.amount).toLocaleString(
+          "fullwide",
+          {
+            useGrouping: false,
           }
-        : token;
-    });
+        );
+
+        return balanceValue
+          ? {
+              ...token,
+              balance,
+              costUsd:
+                +normalizeValue(balance, balanceValue?.decimals) *
+                +balanceValue?.price,
+            }
+          : token;
+      }
+    );
 
     //sort by costUsd
     balancesWithTotals.sort((a: TokenWithBalance, b: TokenWithBalance) => {
@@ -198,6 +220,7 @@ const TokenSelector = ({
     return balancesWithTotals;
   }, [
     balances,
+    balanceDefiTokens,
     currentTokenList,
     searchedToken,
     valueToken,

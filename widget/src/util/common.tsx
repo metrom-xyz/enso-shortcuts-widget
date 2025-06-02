@@ -238,12 +238,15 @@ export const useOneInchTokenList = () => {
 };
 
 export const useTokenFromList = (
-  tokenAddress: Address,
+  tokenAddress: Address | Address[],
   priorityChainId?: SupportedChainId
 ) => {
   const { data } = useCurrentChainList(priorityChainId);
+  const arrayData = Array.isArray(tokenAddress) ? tokenAddress : [tokenAddress];
 
-  return data?.find?.((token) => token.address == tokenAddress);
+  return arrayData.map((address) =>
+    data?.find((token) => token.address == address)
+  );
 };
 
 export const useOutChainId = () => {

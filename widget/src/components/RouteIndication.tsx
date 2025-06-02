@@ -21,7 +21,7 @@ const TokenBadge = ({
   address: Address;
   chainId: number;
 }) => {
-  const token = useTokenFromList(address);
+  const [token] = useTokenFromList(address);
   const {
     tokens: [ensoToken],
   } = useEnsoToken({

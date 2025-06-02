@@ -424,7 +424,7 @@ const useEnsoTokenDetails = ({
   protocolSlug,
   enabled = true,
 }: {
-  address: Address;
+  address: Address | Address[];
   priorityChainId?: SupportedChainId;
   project?: string;
   protocolSlug?: string;
@@ -454,7 +454,7 @@ export const useEnsoToken = ({
   protocolSlug,
   enabled,
 }: {
-  address?: Address;
+  address?: Address | Address[];
   priorityChainId?: SupportedChainId;
   protocolSlug?: string;
   project?: string;
@@ -477,7 +477,9 @@ export const useEnsoToken = ({
     return data.data.map((token) => ({
       ...token,
       address: token?.address.toLowerCase() as Address,
-      logoURI: tokenFromList?.logoURI ?? token?.logosUri[0],
+      logoURI:
+        tokenFromList?.find((t) => t?.address == token?.address)?.logoURI ??
+        token?.logosUri[0],
       underlyingTokens: token?.underlyingTokens?.map((token) => ({
         ...token,
         address: token?.address.toLowerCase() as Address,

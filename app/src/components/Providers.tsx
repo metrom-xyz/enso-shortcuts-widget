@@ -60,12 +60,28 @@ const ethereumWithRpc = {
   },
 };
 
+const baseWithRpc = {
+  ...base,
+  rpcUrls: {
+    default: {
+      http: [
+        "https://base-rpc.publicnode.com",
+        "https://base-mainnet.public.blastapi.io",
+      ],
+      webSocket: [
+        "wss://base-rpc.publicnode.com",
+        "wss://base-mainnet.public.blastapi.io",
+      ],
+    },
+  },
+};
+
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "YOUR_PROJECT_ID",
   chains: [
     ethereumWithRpc,
-    base,
+    baseWithRpc,
     arbitrum,
     berachainWithIcon,
     sonicWithIcon,

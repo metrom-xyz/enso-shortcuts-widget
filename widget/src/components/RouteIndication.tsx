@@ -7,10 +7,10 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import { ChevronsRight, ArrowRight } from "lucide-react";
+import { ChevronsRight } from "lucide-react";
 import { Address, isAddress } from "viem";
 import { RouteData } from "@ensofinance/sdk";
-import { capitalize, Token, useTokenFromList } from "@/util/common";
+import { Token, useTokenFromList } from "@/util/common";
 import { useEnsoToken } from "@/util/enso";
 import { TokenIcon } from "@/components/TokenIndicator";
 
@@ -35,73 +35,68 @@ const TokenBadge = ({
   return (
     <Box
       p={0.5}
-      borderRadius="sm"
-      bg="bg.subtle"
-      border="1px solid"
-      borderColor="border.subtle"
+      borderRadius="full"
       transition="all 0.2s"
-      _hover={{ borderColor: "border.emphasized", transform: "scale(1.05)" }}
+      _hover={{ transform: "scale(1.05)" }}
     >
-      <TokenIcon token={{ logoURI, symbol } as Token} />
+      <TokenIcon token={{ logoURI, symbol } as Token} chainId={chainId} />
     </Box>
   );
 };
 
-type RouteSegment = RouteData["route"][0] & { chainId?: number };
+type RouteSegment = RouteData["route"][0] & {
+  chainId?: number;
+  destinationChainId?: number;
+};
 
 const RouteSegment = ({ step }: { step: RouteSegment }) => (
-  <VStack minW="80px" maxW="100px" gap={0}>
-    <VStack gap={0}>
+  <HStack gap={0}>
+    <VStack minW="50px" maxW="100px" gap={0}>
       <Badge
-        colorScheme="blue"
-        variant="subtle"
+        colorPalette={step.action === "bridge" ? "purple" : "blue"}
         px={1}
         py={0.5}
         borderRadius="md"
         fontSize="2xs"
         fontWeight="medium"
-        textTransform="none"
+        textTransform="capitalize"
       >
-        {capitalize(step.protocol)}
+        {step.protocol}
       </Badge>
+
       <Text
         color="fg.muted"
         fontSize="2xs"
         fontWeight="normal"
-        textTransform="capitalize"
         cursor="default"
       >
         {step.action}
       </Text>
+
+      <Box
+        color={step.action === "bridge" ? "purple.400" : "fg.muted"}
+        p={0.5}
+        borderRadius="sm"
+        bg="bg.subtle"
+        transition="all 0.2s"
+        _hover={{ color: "fg", bg: "bg.emphasized" }}
+      >
+        <ChevronsRight size={10} />
+      </Box>
     </VStack>
 
-    <HStack alignItems="center" gap={0}>
-      <VStack gap={0}>
-        {step.tokenIn?.map((token, i) => (
-          <TokenBadge address={token} key={i} chainId={step.chainId} />
-        ))}
-      </VStack>
-
-      {step.tokenIn.length > 0 && step.tokenOut.length > 0 && (
-        <Box
-          color="fg.muted"
-          p={0.5}
-          borderRadius="sm"
-          bg="bg.subtle"
-          transition="all 0.2s"
-          _hover={{ color: "fg", bg: "bg.emphasized" }}
-        >
-          <ArrowRight size={10} />
-        </Box>
-      )}
-
-      <VStack gap={0}>
-        {step.tokenOut.map((token, i) => (
-          <TokenBadge address={token} key={i} chainId={step.chainId} />
-        ))}
-      </VStack>
-    </HStack>
-  </VStack>
+    <VStack gap={0}>
+      {step.tokenOut.map((token, i) => (
+        <TokenBadge
+          address={token}
+          key={i}
+          chainId={
+            step.action === "bridge" ? step.destinationChainId : step.chainId
+          }
+        />
+      ))}
+    </VStack>
+  </HStack>
 );
 
 const BridgeConnector = ({
@@ -143,82 +138,77 @@ const BridgeConnector = ({
   </VStack>
 );
 
-const StepConnector = () => (
-  <Box
-    color="fg.muted"
-    borderRadius="sm"
-    bg="bg.subtle"
-    transition="all 0.2s"
-    _hover={{ color: "fg", bg: "bg.emphasized" }}
-  >
-    <ChevronsRight size={12} />
-  </Box>
-);
-
 const RouteIndication = ({
   route,
   loading,
 }: {
   route?: RouteSegment[];
   loading?: boolean;
-}) => (
-  <Flex w="full" justifyContent="center" minHeight="100px" py={1}>
-    {loading ? (
-      <Skeleton h="full" w="150px" borderRadius="lg" />
-    ) : (
-      route?.length > 0 && (
-        <Box
-          border="1px solid"
-          borderColor="border.emphasized"
-          borderRadius="lg"
-          bg="bg.surface"
-          p={2}
-          _hover={{ shadow: "sm" }}
-          transition="all 0.3s"
-          maxW="full"
-          overflow="auto"
-        >
-          <HStack alignItems="center" flexWrap="nowrap" gap={0}>
-            {route.reduce((acc, step, currentIndex) => {
-              acc.push(
-                <Box key={`route-segment-${currentIndex}`}>
-                  {step.action === "split" ? (
-                    <VStack>
-                      {step.internalRoutes?.map(([internalStep], i) => (
-                        <RouteSegment
-                          step={{ ...internalStep, chainId: step.chainId }}
+}) => {
+  return (
+    <Flex w="full" justifyContent="center" minHeight="75px" py={1}>
+      {loading ? (
+        <Skeleton h="full" w="150px" borderRadius="lg" />
+      ) : (
+        route?.length > 0 && (
+          <Box
+            border="1px solid"
+            borderColor="border.emphasized"
+            borderRadius="lg"
+            bg="bg.surface"
+            p={2}
+            _hover={{ shadow: "sm" }}
+            transition="all 0.3s"
+            maxW="full"
+            overflow="auto"
+          >
+            <HStack alignItems="center" flexWrap="nowrap" gap={0}>
+              {route.reduce((acc, step, currentIndex) => {
+                if (currentIndex === 0) {
+                  acc.push(
+                    <VStack gap={0}>
+                      {step.tokenIn?.map((token, i) => (
+                        <TokenBadge
+                          address={token}
                           key={i}
+                          chainId={step.chainId}
                         />
                       ))}
                     </VStack>
-                  ) : (
-                    <RouteSegment step={step} />
-                  )}
-                </Box>
-              );
-
-              if (route.length - 1 !== currentIndex) {
-                const nextStep = route[currentIndex + 1];
-                const isCrosschainBridge = step.chainId !== nextStep.chainId;
-
+                  );
+                }
                 acc.push(
-                  <Box key={`connector-${currentIndex}`} p={1}>
-                    {isCrosschainBridge ? (
-                      <BridgeConnector />
+                  <Box key={`route-segment-${currentIndex}`}>
+                    {step.action === "split" ? (
+                      <VStack>
+                        {step.internalRoutes?.map(([internalStep], i) => (
+                          <RouteSegment
+                            step={{
+                              ...internalStep,
+                              chainId: step.chainId,
+                              tokenOut:
+                                step.internalRoutes.length === 1
+                                  ? step.tokenOut || internalStep.tokenOut
+                                  : internalStep.tokenOut,
+                            }}
+                            key={i}
+                          />
+                        ))}
+                      </VStack>
                     ) : (
-                      <StepConnector />
+                      <RouteSegment step={step} />
                     )}
                   </Box>
                 );
-              }
 
-              return acc;
-            }, [])}
-          </HStack>
-        </Box>
-      )
-    )}
-  </Flex>
-);
+                return acc;
+              }, [])}
+            </HStack>
+          </Box>
+        )
+      )}
+    </Flex>
+  );
+};
 
 export default RouteIndication;

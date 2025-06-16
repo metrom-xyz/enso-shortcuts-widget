@@ -108,7 +108,7 @@ const TokenSelector = ({
     isLoading: tokensLoading,
     isFetched: tokensFetched,
   } = useCurrentChainList(selectionChainId);
-  const { tokens: protocolTokens, isLoading: protocolTokensLoading } =
+  const { tokens: projectTokens, isLoading: projectTokensLoading } =
     useEnsoToken({
       priorityChainId: selectionChainId,
       project: selectedProject,
@@ -119,16 +119,18 @@ const TokenSelector = ({
     setSelectionChainId(chainId);
   }, [chainId]);
 
-  const balanceDefiAddresses = useMemo(() => {
-    return balances
-      ?.filter(
-        (balance) =>
-          !currentChainTokenList?.find(
-            (token) => token.address === balance.token
-          ) && +balance.price > 0
-      )
-      .map((b) => b.token);
-  }, [currentChainTokenList, balances]);
+  const balanceDefiAddresses = useMemo(
+    () =>
+      balances
+        ?.filter(
+          (balance) =>
+            !currentChainTokenList?.find(
+              (token) => token.address === balance.token
+            ) && +balance.price > 0
+        )
+        .map((b) => b.token),
+    [currentChainTokenList, balances]
+  );
 
   const { tokens: balanceDefiTokens } = useEnsoToken({
     address: balanceDefiAddresses,
@@ -136,9 +138,13 @@ const TokenSelector = ({
     enabled: balanceDefiAddresses?.length > 0,
   });
 
-  const currentTokenList = selectedProject
-    ? protocolTokens
-    : currentChainTokenList;
+  const currentTokenList = useMemo(
+    () =>
+      selectedProject
+        ? projectTokens
+        : [...(balanceDefiTokens ?? []), ...(currentChainTokenList ?? [])],
+    [selectedProject, projectTokens, currentChainTokenList, balanceDefiTokens]
+  );
 
   const searchAddress =
     currentTokenList?.length &&
@@ -188,29 +194,24 @@ const TokenSelector = ({
       tokens.unshift(valueToken);
     }
 
-    const balancesWithTotals = [...balanceDefiTokens, ...tokens]?.map(
-      (token) => {
-        let balanceValue = balances?.find?.((b) => b.token === token.address);
+    const balancesWithTotals = tokens.map((token) => {
+      let balanceValue = balances?.find?.((b) => b.token === token.address);
 
-        // cut scientific notation
-        const balance = Number(balanceValue?.amount).toLocaleString(
-          "fullwide",
-          {
-            useGrouping: false,
+      // cut scientific notation
+      const balance = Number(balanceValue?.amount).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
+
+      return balanceValue
+        ? {
+            ...token,
+            balance,
+            costUsd:
+              +normalizeValue(balance, balanceValue?.decimals) *
+              +balanceValue?.price,
           }
-        );
-
-        return balanceValue
-          ? {
-              ...token,
-              balance,
-              costUsd:
-                +normalizeValue(balance, balanceValue?.decimals) *
-                +balanceValue?.price,
-            }
-          : token;
-      }
-    );
+        : token;
+    });
 
     //sort by costUsd
     balancesWithTotals.sort((a: TokenWithBalance, b: TokenWithBalance) => {
@@ -270,7 +271,7 @@ const TokenSelector = ({
   );
 
   const isLoading =
-    protocolTokensLoading ||
+    projectTokensLoading ||
     tokensLoading ||
     searchedTokenLoading ||
     valueTokenLoading ||

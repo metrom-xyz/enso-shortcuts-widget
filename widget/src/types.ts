@@ -1,5 +1,13 @@
 import { Address } from "viem";
 
+export type Placement =
+  | "top-start"
+  | "top"
+  | "top-end"
+  | "bottom-start"
+  | "bottom"
+  | "bottom-end";
+
 export type WidgetState = {
   tokenIn?: Address;
   tokenOut?: Address;
@@ -16,6 +24,7 @@ export type WidgetProps = {
   adaptive?: boolean;
   tokenOut?: Address;
   tokenIn?: Address;
+  notificationPlacement?: Placement;
   obligateSelection?: boolean;
   enableShare?: boolean;
   indicateRoute?: boolean;

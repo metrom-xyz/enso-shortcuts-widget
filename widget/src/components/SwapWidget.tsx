@@ -57,6 +57,7 @@ const SwapWidget = ({
   outProject,
   outTokens,
   onChange,
+  notificationPlacement,
 }: WidgetProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
@@ -491,7 +492,7 @@ const SwapWidget = ({
           </Center>
         </Flex>
       </Flex>
-      <Toaster />
+      <Toaster placement={notificationPlacement} />
     </Box>
   );
 };

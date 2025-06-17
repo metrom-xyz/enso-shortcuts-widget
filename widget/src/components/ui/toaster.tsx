@@ -8,6 +8,8 @@ import {
   Toast,
   createToaster,
 } from "@chakra-ui/react";
+import { Placement } from "@/types";
+import { useEffect } from "react";
 
 export const toaster = createToaster({
   placement: "bottom-end",
@@ -16,9 +18,17 @@ export const toaster = createToaster({
 
 export const Toaster = ({
   portalRef,
+  placement,
 }: {
   portalRef?: React.RefObject<HTMLElement>;
+  placement?: Placement;
 }) => {
+  useEffect(() => {
+    if (placement) {
+      toaster.attrs.placement = placement;
+    }
+  }, [placement]);
+
   return (
     <Portal container={portalRef}>
       <ChakraToaster toaster={toaster} insetInline={{ mdDown: "4" }}>

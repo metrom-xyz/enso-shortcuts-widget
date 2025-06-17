@@ -36,6 +36,7 @@ const Widget = ({
   outProject,
   outTokens,
   onChange,
+  notificationPlacement,
 }: WidgetProps & {
   apiKey: string;
   themeConfig?: SystemConfig;
@@ -122,6 +123,7 @@ const Widget = ({
           <CacheProvider value={cache}>
             <ChakraProvider value={system}>
               <SwapWidget
+                notificationPlacement={notificationPlacement}
                 outProject={outProject}
                 rotateObligated={rotateObligated}
                 indicateRoute={indicateRoute}

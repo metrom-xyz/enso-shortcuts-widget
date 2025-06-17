@@ -119,6 +119,7 @@ The `SwapWidget` component accepts the following props:
 - `rotateObligated` (boolean | 0 | 1): Display arrow to rotate obligated token selection
 - `indicateRoute` (boolean): Show routing information in the UI
 - `adaptive` (boolean): Enable adaptive UI behavior based on container size
+- `notificationPlacement` (string): Control the placement of notification toasts
 
 #### Event Handlers
 

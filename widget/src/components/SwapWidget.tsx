@@ -44,7 +44,7 @@ import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
 import RouteIndication from "@/components/RouteIndication";
 import { Tooltip } from "@/components/ui/tooltip";
 import Slippage from "@/components/Slippage";
-import { NotifyType, ObligatedToken, WidgetProps } from "@/types";
+import { NotifyType, ObligatedToken, WidgetComponentProps } from "@/types";
 
 const SwapWidget = ({
   tokenOut: providedTokenOut,
@@ -58,7 +58,7 @@ const SwapWidget = ({
   outTokens,
   onChange,
   notificationPlacement,
-}: WidgetProps) => {
+}: WidgetComponentProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
   const [warningAccepted, setWarningAccepted] = useState(false);

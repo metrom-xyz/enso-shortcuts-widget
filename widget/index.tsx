@@ -15,9 +15,29 @@ import createCache from "@emotion/cache";
 import SwapWidget from "@/components/SwapWidget";
 import { useStore } from "@/store";
 import { setApiKey } from "@/util/enso";
-import { WidgetProps } from "@/types";
+import {
+  WidgetComponentProps,
+  WidgetState,
+  Placement,
+  ObligatedToken,
+} from "./src/types";
 
 export { type SystemConfig };
+
+export type {
+  WidgetComponentProps,
+  WidgetState,
+  Placement,
+  ObligatedToken,
+} from "./src/types";
+
+export type WidgetProps = WidgetComponentProps & {
+  apiKey: string;
+  themeConfig?: SystemConfig;
+  chainId?: number;
+  outChainId?: number;
+  outProject?: string;
+};
 
 const varRoot = ":host";
 
@@ -37,13 +57,7 @@ const Widget = ({
   outTokens,
   onChange,
   notificationPlacement,
-}: WidgetProps & {
-  apiKey: string;
-  themeConfig?: SystemConfig;
-  chainId?: number;
-  outChainId?: number;
-  outProject?: string;
-}) => {
+}: WidgetProps) => {
   const [shadow, setShadow] = useState<HTMLElement | null>(null);
   const [cache, setCache] = useState<ReturnType<typeof createCache> | null>(
     null
@@ -73,7 +87,7 @@ const Widget = ({
 
   const system = useMemo(
     () =>
-      createSystem(defaultConfig, themeConfig, {
+      createSystem(defaultConfig, themeConfig || {}, {
         cssVarsRoot: varRoot,
         preflight: { scope: varRoot },
         conditions: {

@@ -5,7 +5,11 @@ import dts from "vite-plugin-dts";
 export default defineConfig(({ mode }) => ({
   plugins: [
     mode === "development" ? react() : undefined,
-    dts(), // generates *.d.ts beside the JS
+    dts({
+      insertTypesEntry: true,
+      rollupTypes: true,
+      bundledPackages: ["./src/types"],
+    }), // generates *.d.ts beside the JS
   ].filter(Boolean),
   resolve: {
     alias: {

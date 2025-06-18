@@ -20,7 +20,7 @@ export type WidgetState = {
   };
 };
 
-export type WidgetProps = {
+export type WidgetComponentProps = {
   adaptive?: boolean;
   tokenOut?: Address;
   tokenIn?: Address;

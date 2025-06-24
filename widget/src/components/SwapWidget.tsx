@@ -30,6 +30,7 @@ import { useApproveIfNecessary, useTokenBalance } from "@/util/wallet";
 import { getChainName, usePriorityChainId } from "@/util/common";
 import {
   DEFAULT_SLIPPAGE,
+  ERROR_MSG,
   ETH_ADDRESS,
   LP_REDIRECT_TOKENS,
   MAINNET_ZAP_INPUT_TOKENS,
@@ -435,7 +436,7 @@ const SwapWidget = ({
 
         {error && (
           <Text color="red.500" fontSize="xs" mt={1}>
-            {error.message || "An error occurred while fetching swap data"}
+            {!!error.message && ERROR_MSG}
           </Text>
         )}
 

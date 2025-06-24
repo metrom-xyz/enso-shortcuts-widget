@@ -1,6 +1,8 @@
 import { Address } from "viem";
 import { Token } from "@/util/common";
 
+export const ERROR_MSG = "Swap not found for a required underlying of defi route, please make sure your amount is within an acceptable range"
+
 export const VITALIK_ADDRESS = "0xd8da6bf26964af9d7eed9e03e53415d37aa96045";
 export const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export const ETH_TOKEN: Token = {

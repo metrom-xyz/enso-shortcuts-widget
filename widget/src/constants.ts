@@ -1,7 +1,8 @@
 import { Address } from "viem";
 import { Token } from "@/util/common";
 
-export const ERROR_MSG = "Swap not found for a required underlying of defi route, please make sure your amount is within an acceptable range"
+export const ERROR_MSG =
+  "Swap not found for a required underlying of defi route, please make sure your amount is within an acceptable range";
 
 export const VITALIK_ADDRESS = "0xd8da6bf26964af9d7eed9e03e53415d37aa96045";
 export const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -68,6 +69,14 @@ const PLUME_TOKEN: Token = {
   logoURI:
     "https://assets.coingecko.com/coins/images/53623/standard/plume-token.png?1736896935",
 };
+const HYPERLIQUID_TOKEN: Token = {
+  address: ETH_ADDRESS,
+  name: "Hyperliquid",
+  symbol: "HYPE",
+  decimals: 18,
+  logoURI:
+    "https://assets.coingecko.com/asset_platforms/images/243/large/hyperliquid.png",
+};
 
 export enum SupportedChainId {
   MAINNET = 1,
@@ -89,6 +98,7 @@ export enum SupportedChainId {
   INK = 57073,
   SONEIUM = 1868,
   PLUME = 98866,
+  HYPERLIQUID = 999,
   // ARBITRUM_RINKEBY = 421611,
   // OPTIMISM_GOERLI = 420,w
   // GOERLI = 5,
@@ -117,6 +127,7 @@ export const GECKO_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
   [SupportedChainId.INK]: "ink",
   [SupportedChainId.SONEIUM]: "soneium",
   [SupportedChainId.PLUME]: "plume",
+  [SupportedChainId.HYPERLIQUID]: "hyperevm",
 };
 
 export const STARGATE_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
@@ -136,6 +147,7 @@ export const STARGATE_CHAIN_NAMES: { [key in SupportedChainId]: string } = {
   [SupportedChainId.INK]: "ink",
   [SupportedChainId.SONEIUM]: "soneium",
   [SupportedChainId.PLUME]: "plumephoenix",
+  [SupportedChainId.HYPERLIQUID]: "hyperliquid",
 };
 
 export const MOCK_IMAGE_URL =
@@ -161,6 +173,7 @@ export const CHAINS_ETHERSCAN: Record<SupportedChainId, string> = {
   [SupportedChainId.INK]: "https://explorer.inkonchain.com",
   [SupportedChainId.SONEIUM]: "https://soneium.blockscout.com/",
   [SupportedChainId.PLUME]: "https://explorer.plume.org/",
+  [SupportedChainId.HYPERLIQUID]: "https://www.hyperscan.com/",
 };
 
 export const NATIVE_ETH_CHAINS = [
@@ -192,6 +205,7 @@ export const CHAINS_NATIVE_TOKENS: Record<SupportedChainId, Token> = {
   [SupportedChainId.GNOSIS]: DAI_TOKEN,
   [SupportedChainId.SONIC]: SONIC_TOKEN,
   [SupportedChainId.PLUME]: PLUME_TOKEN,
+  [SupportedChainId.HYPERLIQUID]: HYPERLIQUID_TOKEN,
 };
 
 export const SWAP_LIMITS: Record<Address, number> = {

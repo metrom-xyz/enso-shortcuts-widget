@@ -76,6 +76,29 @@ const baseWithRpc = {
   },
 };
 
+const hyperevm = {
+  id: 999,
+  name: "Hyperevm",
+  iconUrl:
+    "https://assets.coingecko.com/asset_platforms/images/243/large/hyperliquid.png",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Hyperliquid",
+    symbol: "HYPE",
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.hyperliquid.xyz/evm", "https://hyperliquid.drpc.org"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Hyperscan",
+      url: "https://www.hyperscan.com/",
+    },
+  },
+};
+
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "YOUR_PROJECT_ID",
@@ -86,7 +109,9 @@ const config = getDefaultConfig({
     berachainWithIcon,
     sonicWithIcon,
     unichain,
+    plumeWithIcon,
     optimism,
+    hyperevm,
     soneiumWithIcon,
     bsc,
     zksync,
@@ -95,7 +120,6 @@ const config = getDefaultConfig({
     polygon,
     linea,
     ink,
-    plumeWithIcon,
   ],
 });
 const queryClient = new QueryClient();

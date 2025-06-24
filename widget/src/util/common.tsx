@@ -166,6 +166,7 @@ const getCurrentChainTokens = (chainId: SupportedChainId) => {
     case SupportedChainId.INK:
     case SupportedChainId.UNICHAIN:
     case SupportedChainId.SONEIUM:
+    case SupportedChainId.HYPERLIQUID:
       getters = [getGeckoList(chainId)];
       break;
     default:

@@ -99,9 +99,11 @@ const hyperevm = {
   },
 };
 
+const projectId = import.meta.env.VITE_RAINBOWKIT_PROJECT_ID ?? "";
+
 const config = getDefaultConfig({
-  appName: "My RainbowKit App",
-  projectId: "YOUR_PROJECT_ID",
+  appName: "Happy Path",
+  projectId,
   chains: [
     ethereumWithRpc,
     baseWithRpc,

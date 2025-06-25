@@ -10,7 +10,7 @@ import {
   useDisclosure,
   Button,
 } from "@chakra-ui/react";
-import { ArrowDown, TriangleAlert } from "lucide-react";
+import { ArrowDown, Fuel, TriangleAlert } from "lucide-react";
 import { Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
 import { Toaster } from "@/components/ui/toaster";
@@ -46,6 +46,41 @@ import RouteIndication from "@/components/RouteIndication";
 import { Tooltip } from "@/components/ui/tooltip";
 import Slippage from "@/components/Slippage";
 import { NotifyType, ObligatedToken, WidgetComponentProps } from "@/types";
+
+const BridgingFee = ({
+  gasValue,
+  chainId,
+}: {
+  gasValue: string;
+  chainId: number;
+}) => {
+  const { data: nativeTokenPriceData } = useEnsoPrice(ETH_ADDRESS, chainId);
+  const {
+    tokens: [nativeTokenInfo],
+  } = useEnsoToken({
+    address: ETH_ADDRESS,
+    priorityChainId: chainId,
+    enabled: !!chainId,
+  });
+
+  const gasCostUSD = +gasValue * +(nativeTokenPriceData?.price ?? 0);
+
+  return (
+    <Text
+      title={"Bridging fee"}
+      cursor={"default"}
+      display={"flex"}
+      alignItems={"center"}
+      gap={1}
+      color="gray.500"
+      fontSize={"xs"}
+    >
+      <Fuel size={12} />
+      {formatNumber(gasValue, true)} {nativeTokenInfo?.symbol},{" "}
+      {formatUSD(gasCostUSD)}
+    </Text>
+  );
+};
 
 const SwapWidget = ({
   tokenOut: providedTokenOut,
@@ -259,6 +294,17 @@ const SwapWidget = ({
     rotateObligated ||
     typeof rotateObligated === "number";
 
+  const gasValue = useMemo(() => {
+    let txCost = +(routerData?.tx.value ?? 0);
+    if (tokenIn === ETH_ADDRESS) {
+      txCost -= +amountIn;
+    }
+
+    return normalizeValue(Math.max(0, txCost).toString(), 18);
+  }, [routerData?.tx?.value, tokenIn, amountIn]);
+
+  const isBridging = Boolean(chainId !== outChainId && outChainId);
+
   return (
     <Box
       position={"relative"}
@@ -365,6 +411,10 @@ const SwapWidget = ({
                 1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
                 {tokenOutInfo?.symbol}
               </Text>
+
+              {isBridging && (
+                <BridgingFee gasValue={gasValue} chainId={chainId} />
+              )}
 
               <Slippage slippage={slippage} setSlippage={setSlippage} />
             </Flex>

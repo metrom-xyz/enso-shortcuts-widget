@@ -15,12 +15,7 @@ import createCache from "@emotion/cache";
 import SwapWidget from "@/components/SwapWidget";
 import { useStore } from "@/store";
 import { setApiKey } from "@/util/enso";
-import {
-  WidgetComponentProps,
-  WidgetState,
-  Placement,
-  ObligatedToken,
-} from "./src/types";
+import { WidgetComponentProps } from "@/types";
 
 export { type SystemConfig };
 
@@ -56,6 +51,7 @@ const Widget = ({
   outProject,
   outTokens,
   onChange,
+  onSuccess,
   notificationPlacement,
 }: WidgetProps) => {
   const [shadow, setShadow] = useState<HTMLElement | null>(null);
@@ -137,6 +133,7 @@ const Widget = ({
           <CacheProvider value={cache}>
             <ChakraProvider value={system}>
               <SwapWidget
+                onSuccess={onSuccess}
                 notificationPlacement={notificationPlacement}
                 outProject={outProject}
                 rotateObligated={rotateObligated}

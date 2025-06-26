@@ -94,6 +94,7 @@ const SwapWidget = ({
   outTokens,
   onChange,
   notificationPlacement,
+  onSuccess,
 }: WidgetComponentProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
@@ -186,8 +187,9 @@ const SwapWidget = ({
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
   const resetInput = useCallback(() => {
+    onSuccess?.(amountIn);
     setValueIn("");
-  }, []);
+  }, [amountIn]);
 
   const {
     data: routerData,

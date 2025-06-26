@@ -124,6 +124,7 @@ The `SwapWidget` component accepts the following props:
 #### Event Handlers
 
 - `onChange` (function): Callback triggered when token selections or route change
+- `onSuccess` (function): Callback called with amount argument once user perfoms swap action
 
 ## Customization
 

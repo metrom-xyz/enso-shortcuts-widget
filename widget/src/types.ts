@@ -21,6 +21,7 @@ export type WidgetState = {
 };
 
 export type WidgetComponentProps = {
+  onSuccess?: (amountIn: string) => void;
   adaptive?: boolean;
   tokenOut?: Address;
   tokenIn?: Address;

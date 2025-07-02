@@ -36,6 +36,9 @@ export type WidgetComponentProps = {
     include: Address[];
     exclude: Address[];
   };
+  inTokens?: {
+    exclude: Address[];
+  };
 };
 
 export enum NotifyType {

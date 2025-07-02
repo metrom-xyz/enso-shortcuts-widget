@@ -50,6 +50,7 @@ const Widget = ({
   rotateObligated,
   outProject,
   outTokens,
+  inTokens,
   onChange,
   onSuccess,
   notificationPlacement,
@@ -144,6 +145,7 @@ const Widget = ({
                 enableShare={enableShare}
                 adaptive={adaptive}
                 outTokens={outTokens}
+                inTokens={inTokens}
                 onChange={onChange}
               />
             </ChakraProvider>

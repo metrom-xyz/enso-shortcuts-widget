@@ -92,6 +92,7 @@ const SwapWidget = ({
   rotateObligated,
   outProject,
   outTokens,
+  inTokens,
   onChange,
   notificationPlacement,
   onSuccess,
@@ -339,6 +340,7 @@ const SwapWidget = ({
           chainId={chainId}
           setChainId={setFromChainId}
           limitTokens={limitInputTokens && MAINNET_ZAP_INPUT_TOKENS}
+          excludeTokens={inTokens?.exclude}
           obligatedToken={obligatedToken === ObligatedToken.TokenIn}
           portalRef={portalRef}
           tokenValue={tokenIn}

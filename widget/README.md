@@ -110,6 +110,7 @@ The `SwapWidget` component accepts the following props:
 - `outChainId` (number): Chain ID for the output token's blockchain network
 - `outProject` (string): Limit output token selection to a specific project
 - `outTokens` (object): Object containing tokens to limit output token options
+- `inTokens` (object): Object containing tokens to limit input token options
 
 #### UI Configuration
 

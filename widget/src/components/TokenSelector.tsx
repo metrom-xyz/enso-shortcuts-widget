@@ -25,6 +25,7 @@ import {
 import { TokenIndicator } from "@/components/TokenIndicator";
 import ChainSelector from "./ChainSelector";
 import ProjectSelector from "./ProjectSelector";
+import { ProjectFilter } from "@/types";
 
 type TokenWithBalance = Token & {
   balance?: string;
@@ -86,6 +87,7 @@ const TokenSelector = ({
   chainId,
   setChainId,
   project,
+  projectsFilter,
 }: {
   setChainId?: (chainId: SupportedChainId) => void;
   chainId?: SupportedChainId;
@@ -96,6 +98,7 @@ const TokenSelector = ({
   limitTokens?: Address[];
   excludeTokens?: Address[];
   project?: string;
+  projectsFilter?: ProjectFilter;
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectionChainId, setSelectionChainId] = useState(chainId);
@@ -357,6 +360,7 @@ const TokenSelector = ({
               value={selectedProject}
               onChange={setSelectedProject}
               chainId={selectionChainId}
+              projectsFilter={projectsFilter}
             />
           </Flex>
 

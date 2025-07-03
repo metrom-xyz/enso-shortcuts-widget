@@ -44,16 +44,16 @@ import React from "react";
 import SwapWidget from "@ensofinance/shortcuts-widget";
 
 const App = () => {
-  return (
-    <div className="app-container">
-      <SwapWidget
-        apiKey="YOUR_API_KEY"
-        // Optional configuration
-        enableShare={true}
-        adaptive={true}
-      />
-    </div>
-  );
+    return (
+        <div className="app-container">
+            <SwapWidget
+                apiKey="YOUR_API_KEY"
+                // Optional configuration
+                enableShare={true}
+                adaptive={true}
+            />
+        </div>
+    );
 };
 
 export default App;
@@ -66,27 +66,27 @@ import React, { useState } from "react";
 import SwapWidget from "@ensofinance/shortcuts-widget";
 
 const App = () => {
-  const [selectedTokens, setSelectedTokens] = useState(null);
+    const [selectedTokens, setSelectedTokens] = useState(null);
 
-  const handleChange = (data) => {
-    setSelectedTokens(data);
-    console.log("Widget selection changed:", data);
-  };
+    const handleChange = (data) => {
+        setSelectedTokens(data);
+        console.log("Widget selection changed:", data);
+    };
 
-  return (
-    <div className="app-container">
-      <SwapWidget
-        apiKey="YOUR_API_KEY"
-        tokenIn="0x1234..." // Specify input token address
-        chainId={1} // Ethereum mainnet
-        tokenOut="0xabcd..." // Specify output token address
-        outChainId={137} // Polygon
-        onChange={handleChange}
-        enableShare={true}
-        indicateRoute={true}
-      />
-    </div>
-  );
+    return (
+        <div className="app-container">
+            <SwapWidget
+                apiKey="YOUR_API_KEY"
+                tokenIn="0x1234..." // Specify input token address
+                chainId={1} // Ethereum mainnet
+                tokenOut="0xabcd..." // Specify output token address
+                outChainId={137} // Polygon
+                onChange={handleChange}
+                enableShare={true}
+                indicateRoute={true}
+            />
+        </div>
+    );
 };
 
 export default App;
@@ -109,7 +109,10 @@ The `SwapWidget` component accepts the following props:
 - `chainId` (number): Chain ID for the input token's blockchain network
 - `outChainId` (number): Chain ID for the output token's blockchain network
 - `outProject` (string): Limit output token selection to a specific project
+- `outProjects` (object): Object containing projects to limit input projects options
+- `inProjects` (object): Object containing projects to limit input projects options
 - `outTokens` (object): Object containing tokens to limit output token options
+- `inTokens` (object): Object containing tokens to limit input token options
 
 #### UI Configuration
 

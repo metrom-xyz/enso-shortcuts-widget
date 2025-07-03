@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { useChainProtocols } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
+import { ProjectFilter } from "@/types";
 
 export const capitalize = (str?: string) =>
   str?.slice(0, 1).toUpperCase() + str?.slice(1);
@@ -42,15 +43,30 @@ const ProjectSelector = ({
   onChange,
   chainId,
   disabled,
+  projectsFilter,
 }: {
   value: string;
   onChange: (value: string) => void;
   chainId?: SupportedChainId;
   disabled?: boolean;
+  projectsFilter?: ProjectFilter;
 }) => {
   const protocols = useChainProtocols(chainId);
   const projectOptions = useMemo(() => {
-    const sortedByName = protocols?.sort((a, b) =>
+    let availableProjects = protocols;
+
+    if (projectsFilter?.include?.length > 0) {
+      availableProjects = availableProjects?.filter((p) =>
+        projectsFilter.include.includes(p.projectId)
+      );
+    }
+    if (projectsFilter?.exclude?.length > 0) {
+      availableProjects = availableProjects?.filter(
+        (p) => !projectsFilter.exclude.includes(p.projectId)
+      );
+    }
+
+    const sortedByName = availableProjects?.sort((a, b) =>
       a.projectId?.localeCompare(b.projectId)
     );
 
@@ -59,7 +75,7 @@ const ProjectSelector = ({
       itemToValue: (item) => item.projectId,
       itemToString: (item) => capitalize(item.projectId),
     });
-  }, [protocols]);
+  }, [protocols, projectsFilter]);
 
   return (
     <SelectRoot

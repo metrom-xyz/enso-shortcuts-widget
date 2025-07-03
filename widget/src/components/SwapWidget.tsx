@@ -91,6 +91,8 @@ const SwapWidget = ({
   adaptive,
   rotateObligated,
   outProject,
+  outProjects,
+  inProjects,
   outTokens,
   inTokens,
   onChange,
@@ -338,6 +340,7 @@ const SwapWidget = ({
       <Flex flexDirection={"column"} p={3} overflow={"hidden"} gap={1}>
         <SwapInput
           chainId={chainId}
+          projects={inProjects}
           setChainId={setFromChainId}
           limitTokens={limitInputTokens && MAINNET_ZAP_INPUT_TOKENS}
           excludeTokens={inTokens?.exclude}
@@ -389,6 +392,7 @@ const SwapWidget = ({
         <SwapInput
           disabled
           project={outProject}
+          projects={outProjects}
           chainId={outChainId}
           setChainId={setOutChainId}
           limitTokens={outTokens?.include}

@@ -8,6 +8,7 @@ import { formatNumber, formatUSD, normalizeValue } from "@/util";
 import { useTokenBalance } from "@/util/wallet";
 import { useEnsoToken } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
+import { ProjectFilter } from "@/types";
 
 const SwapInput = ({
   chainId,
@@ -24,6 +25,7 @@ const SwapInput = ({
   limitTokens,
   excludeTokens,
   project,
+  projects,
 }: {
   chainId?: SupportedChainId;
   setChainId?: (chainId: SupportedChainId) => void;
@@ -40,6 +42,7 @@ const SwapInput = ({
   limitTokens?: Address[];
   excludeTokens?: Address[];
   project?: string;
+  projects?: ProjectFilter;
 }) => {
   const { address } = useAccount();
   const balance = useTokenBalance(tokenValue, chainId);
@@ -82,6 +85,7 @@ const SwapInput = ({
         <Flex w={"full"}>
           <TokenSelector
             project={project}
+            projectsFilter={projects}
             setChainId={setChainId}
             chainId={chainId}
             limitTokens={limitTokens}

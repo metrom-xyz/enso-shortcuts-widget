@@ -49,6 +49,8 @@ const Widget = ({
   adaptive,
   rotateObligated,
   outProject,
+  outProjects,
+  inProjects,
   outTokens,
   inTokens,
   onChange,
@@ -144,6 +146,8 @@ const Widget = ({
                 tokenOut={tokenOut?.toLowerCase() as Address}
                 enableShare={enableShare}
                 adaptive={adaptive}
+                outProjects={outProjects}
+                inProjects={inProjects}
                 outTokens={outTokens}
                 inTokens={inTokens}
                 onChange={onChange}

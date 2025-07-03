@@ -20,6 +20,11 @@ export type WidgetState = {
   };
 };
 
+export type ProjectFilter = {
+  include: string[];
+  exclude: string[];
+};
+
 export type WidgetComponentProps = {
   onSuccess?: (amountIn: string) => void;
   adaptive?: boolean;
@@ -31,6 +36,8 @@ export type WidgetComponentProps = {
   indicateRoute?: boolean;
   rotateObligated?: boolean | ObligatedToken;
   outProject?: string;
+  outProjects?: ProjectFilter;
+  inProjects?: ProjectFilter;
   onChange?: (newState: WidgetState) => void;
   outTokens?: {
     include: Address[];

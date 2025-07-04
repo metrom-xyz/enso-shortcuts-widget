@@ -390,7 +390,7 @@ export const useExtendedSendTransaction = ({
 }: {
   title: string;
   args: UseSimulateContractParameters;
-  onSuccess?: () => void;
+  onSuccess?: (hash: string) => void;
   crosschain?: boolean;
 }) => {
   const sendTransaction = useWatchSendTransactionHash(title, crosschain);
@@ -442,7 +442,7 @@ export const useSendEnsoTransaction = ({
   args: RouteData["tx"];
   title: string;
   crosschain?: boolean;
-  onSuccess?: () => void;
+  onSuccess?: (hash: string) => void;
 }) => {
   return useExtendedSendTransaction({
     title,

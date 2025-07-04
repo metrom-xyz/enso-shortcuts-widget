@@ -320,7 +320,7 @@ export const useEnsoData = (
   tokenIn: Address,
   tokenOut: Address,
   slippage: number,
-  onSuccess?: () => void
+  onSuccess?: (hash: string) => void
 ) => {
   const { address = VITALIK_ADDRESS } = useAccount();
   const chainId = usePriorityChainId();

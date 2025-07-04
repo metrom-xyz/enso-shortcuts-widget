@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useChainId, useSwitchChain } from "wagmi";
+import { useSwitchChain, useAccount } from "wagmi";
 import {
   Box,
   Center,
@@ -109,7 +109,7 @@ const SwapWidget = ({
   );
 
   const chainId = usePriorityChainId();
-  const wagmiChainId = useChainId();
+  const { chainId: wagmiChainId } = useAccount();
   const setOutChainId = useStore((state) => state.setTokenOutChainId);
   const outChainId = useStore((state) => state.tokenOutChainId ?? chainId);
   const obligatedChainId = useStore((state) => state.obligatedChainId);
@@ -189,10 +189,10 @@ const SwapWidget = ({
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
-  const resetInput = useCallback(() => {
-    onSuccess?.(amountIn);
+  const resetInput = useCallback((hash: string) => {
+    onSuccess?.(hash);
     setValueIn("");
-  }, [amountIn]);
+  }, []);
 
   const {
     data: routerData,
@@ -216,7 +216,6 @@ const SwapWidget = ({
   const isBalanceEnough = +amountIn <= +(balance ?? 0);
 
   const approveNeeded = Boolean(approve && tokenIn) && isBalanceEnough;
-
   const wrongChain = chainId && +wagmiChainId !== +chainId;
 
   const portalRef = useRef<HTMLDivElement>(null);

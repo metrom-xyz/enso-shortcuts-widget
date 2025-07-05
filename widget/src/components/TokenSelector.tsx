@@ -77,6 +77,19 @@ const hasCoincidence = (tokens: Token[], address: Address) =>
       token.address?.toLocaleLowerCase() === address?.toLocaleLowerCase()
   );
 
+const filterTokensByAddressList = (
+  tokens: Token[],
+  addressList: Address[],
+  include: boolean
+) => {
+  const addressSet = new Set(addressList.map((a) => a.toLowerCase()));
+
+  return tokens.filter((token) => {
+    const tokenInSet = addressSet.has(token.address.toLowerCase());
+    return include ? tokenInSet : !tokenInSet;
+  });
+};
+
 const TokenSelector = ({
   value,
   onChange,
@@ -180,11 +193,11 @@ const TokenSelector = ({
     let tokens = currentTokenList ? currentTokenList.slice() : [];
 
     if (limitTokens) {
-      tokens = tokens.filter((token) => limitTokens.includes(token.address));
+      tokens = filterTokensByAddressList(tokens, limitTokens, true);
     }
 
     if (excludeTokens) {
-      tokens = tokens.filter((token) => !excludeTokens.includes(token.address));
+      tokens = filterTokensByAddressList(tokens, excludeTokens, false);
     }
 
     if (searchedToken) {

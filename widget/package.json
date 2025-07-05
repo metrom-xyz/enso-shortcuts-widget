@@ -1,6 +1,6 @@
 {
   "name": "@ensofinance/shortcuts-widget",
-  "version": "1.0.39",
+  "version": "1.0.40",
   "type": "module",
   "homepage": "https://www.enso.build/",
   "repository": {
@@ -17,7 +17,8 @@
     "dev": "vite build --watch",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "publish:complete": "npm run build && npm run bump && npm run publish"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.19.1",

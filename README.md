@@ -145,6 +145,6 @@ Contributions are welcome! Please open an issue or submit a pull request on GitH
 
 For any questions or support, please contact the Enso Finance team:
 
-- [Telegram](https://t.me/enso_intent_engine)
+- [Telegram](https://t.me/Enso_shortcuts)
 - [Twitter](https://twitter.com/EnsoBuild)
 - [Website](https://enso.finance)

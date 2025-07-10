@@ -495,7 +495,11 @@ const SwapWidget = ({
             </Tooltip>
           </Flex>
         ) : (
-          <Text>Please connect your wallet</Text>
+          <Flex justifyContent="center" alignItems="center" w={"full"} mt={2}>
+            <Text color="gray.500" fontSize="xs" mt={1}>
+              Please connect your wallet
+            </Text>
+          </Flex>
         )}
 
         {error && (

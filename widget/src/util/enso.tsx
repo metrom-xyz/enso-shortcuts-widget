@@ -1,18 +1,16 @@
-import { Address } from "viem";
 import { useAccount } from "wagmi";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import {
   EnsoClient,
-  RouteParams,
-  BundleAction,
-  BundleParams,
+  type RouteParams,
+  type BundleAction,
+  type BundleParams,
   BundleActionType,
-  ProtocolData,
 } from "@ensofinance/sdk";
-import { isAddress } from "viem";
+import { type Address, isAddress } from "viem";
 import {
-  Token,
+  type Token,
   usePriorityChainId,
   useOutChainId,
   useTokenFromList,
@@ -315,13 +313,20 @@ export const useBundleData = (
   });
 };
 
+type UseEnsoDataResult = UseQueryResult<
+  Awaited<ReturnType<EnsoClient["getRouterData"]>>,
+  Error
+> & {
+  sendTransaction: ReturnType<typeof useSendEnsoTransaction>;
+};
+
 export const useEnsoData = (
   amountIn: string,
   tokenIn: Address,
   tokenOut: Address,
   slippage: number,
   onSuccess?: (hash: string) => void
-) => {
+): UseEnsoDataResult => {
   const { address = VITALIK_ADDRESS } = useAccount();
   const chainId = usePriorityChainId();
   const outChainId = useOutChainId();
@@ -375,13 +380,13 @@ export const useEnsoData = (
     tokens: [tokenToData],
   } = useEnsoToken({
     address: routerParams.tokenOut,
-    enabled: true,
+    enabled: isAddress(routerParams.tokenOut),
   });
   const {
     tokens: [tokenFromData],
   } = useEnsoToken({
     address: routerParams.tokenIn,
-    enabled: true,
+    enabled: isAddress(routerParams.tokenIn),
   });
 
   const swapTitle = `Purchase ${formatNumber(

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
-import { Address, zeroAddress } from "viem";
+import { type Address, zeroAddress } from "viem";
 import {
   CHAINS_ETHERSCAN,
   CHAINS_NATIVE_TOKENS,
@@ -271,7 +271,7 @@ export const useOutChainId = () => {
 
 export const usePriorityChainId = (priorityChainId?: SupportedChainId) => {
   const obligatedChainId = useStore((state) => state.obligatedChainId);
-  const { chainId } = useAccount();
+  const { chainId = 1 } = useAccount();
 
   return priorityChainId ?? obligatedChainId ?? chainId;
 };

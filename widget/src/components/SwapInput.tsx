@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Box, chakra, Flex, Skeleton, Text, Button } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
-import { Address, isAddress } from "viem";
+import { type Address, isAddress } from "viem";
 import TokenSelector from "@/components/TokenSelector";
 import { formatNumber, formatUSD, normalizeValue } from "@/util";
 import { useTokenBalance } from "@/util/wallet";
 import { useEnsoToken } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
-import { ProjectFilter } from "@/types";
+import { type ProjectFilter } from "@/types";
 
 const SwapInput = ({
   chainId,

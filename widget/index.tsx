@@ -3,10 +3,10 @@ import {
   ChakraProvider,
   createSystem,
   defaultConfig,
-  SystemConfig,
+  type SystemConfig,
   EnvironmentProvider,
 } from "@chakra-ui/react";
-import { Address } from "viem";
+import { type Address } from "viem";
 import { WagmiContext } from "wagmi";
 import posthog from "posthog-js";
 import root from "react-shadow/emotion";
@@ -15,7 +15,7 @@ import createCache from "@emotion/cache";
 import SwapWidget from "@/components/SwapWidget";
 import { useStore } from "@/store";
 import { setApiKey } from "@/util/enso";
-import { WidgetComponentProps } from "@/types";
+import { type WidgetComponentProps } from "@/types";
 
 export { type SystemConfig };
 

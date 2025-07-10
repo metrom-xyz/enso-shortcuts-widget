@@ -8,9 +8,9 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { ChevronsRight } from "lucide-react";
-import { Address, isAddress } from "viem";
-import { RouteData } from "@ensofinance/sdk";
-import { Token, useTokenFromList } from "@/util/common";
+import { type Address, isAddress } from "viem";
+import { type RouteData } from "@ensofinance/sdk";
+import { type Token, useTokenFromList } from "@/util/common";
 import { useEnsoToken } from "@/util/enso";
 import { TokenIcon } from "@/components/TokenIndicator";
 

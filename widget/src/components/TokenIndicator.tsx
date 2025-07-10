@@ -1,5 +1,5 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { Token } from "@/util/common";
+import { type Token } from "@/util/common";
 import {
   MOCK_IMAGE_URL,
   SupportedChainId,

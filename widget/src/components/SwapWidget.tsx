@@ -11,7 +11,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { ArrowDown, Fuel, TriangleAlert } from "lucide-react";
-import { Address, isAddress } from "viem";
+import { type Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
 import { Toaster } from "@/components/ui/toaster";
 import {
@@ -45,7 +45,7 @@ import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
 import RouteIndication from "@/components/RouteIndication";
 import { Tooltip } from "@/components/ui/tooltip";
 import Slippage from "@/components/Slippage";
-import { NotifyType, ObligatedToken, WidgetComponentProps } from "@/types";
+import { NotifyType, ObligatedToken, type WidgetComponentProps } from "@/types";
 
 const BridgingFee = ({
   gasValue,
@@ -109,7 +109,7 @@ const SwapWidget = ({
   );
 
   const chainId = usePriorityChainId();
-  const { chainId: wagmiChainId } = useAccount();
+  const { chainId: wagmiChainId, address } = useAccount();
   const setOutChainId = useStore((state) => state.setTokenOutChainId);
   const outChainId = useStore((state) => state.tokenOutChainId ?? chainId);
   const obligatedChainId = useStore((state) => state.obligatedChainId);
@@ -143,8 +143,11 @@ const SwapWidget = ({
       if (chainId === wagmiChainId) {
         switchChain({ chainId: newChainId });
       }
+      if (!tokenOut) {
+        setOutChainId(newChainId);
+      }
     },
-    [wagmiChainId, chainId, setObligatedChainId, switchChain]
+    [wagmiChainId, chainId, switchChain, tokenOut]
   );
 
   // Notify parent of state changes when any relevant state changes
@@ -447,49 +450,53 @@ const SwapWidget = ({
           </Flex>
         </Box>
 
-        <Flex w={"full"} gap={4}>
-          {wrongChain ? (
-            <Button
-              size="lg"
-              borderRadius={"lg"}
-              colorPalette={"blue"}
-              onClick={() => switchChain({ chainId })}
-            >
-              Switch to {getChainName(chainId)}
-            </Button>
-          ) : (
-            approveNeeded && (
+        {address ? (
+          <Flex w={"full"} gap={4}>
+            {wrongChain ? (
+              <Button
+                size="lg"
+                borderRadius={"lg"}
+                colorPalette={"blue"}
+                onClick={() => switchChain({ chainId })}
+              >
+                Switch to {getChainName(chainId)}
+              </Button>
+            ) : (
+              approveNeeded && (
+                <Button
+                  size="lg"
+                  borderRadius={"lg"}
+                  colorPalette={"blue"}
+                  flex={1}
+                  loading={approve.isLoading}
+                  onClick={approve.write}
+                >
+                  Approve
+                </Button>
+              )
+            )}
+
+            <Tooltip content={swapWarning} disabled={!swapWarning}>
               <Button
                 size="lg"
                 borderRadius={"lg"}
                 colorPalette={"blue"}
                 flex={1}
-                loading={approve.isLoading}
-                onClick={approve.write}
+                disabled={swapDisabled}
+                loading={sendTransaction.isLoading || routerLoading}
+                onClick={
+                  needToAcceptWarning
+                    ? showPriceImpactWarning
+                    : sendTransaction.send
+                }
               >
-                Approve
+                {chainId === outChainId ? "Swap" : "Bridge"}
               </Button>
-            )
-          )}
-
-          <Tooltip content={swapWarning} disabled={!swapWarning}>
-            <Button
-              size="lg"
-              borderRadius={"lg"}
-              colorPalette={"blue"}
-              flex={1}
-              disabled={swapDisabled}
-              loading={sendTransaction.isLoading || routerLoading}
-              onClick={
-                needToAcceptWarning
-                  ? showPriceImpactWarning
-                  : sendTransaction.send
-              }
-            >
-              {chainId === outChainId ? "Swap" : "Bridge"}
-            </Button>
-          </Tooltip>
-        </Flex>
+            </Tooltip>
+          </Flex>
+        ) : (
+          <Text>Please connect your wallet</Text>
+        )}
 
         {error && (
           <Text color="red.500" fontSize="xs" mt={1}>

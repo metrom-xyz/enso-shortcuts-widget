@@ -9,9 +9,9 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
-import { Address, isAddress } from "viem";
+import { type Address, isAddress } from "viem";
 import { FixedSizeList as List } from "react-window";
-import { Token, useCurrentChainList } from "@/util/common";
+import { type Token, useCurrentChainList } from "@/util/common";
 import { formatNumber, normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
@@ -431,7 +431,6 @@ const TokenSelector = ({
                     key={token.address}
                     style={style}
                     borderRadius={"md"}
-                    _hover={{ background: "bg.subtle" }}
                   >
                     <DetailedTokenIndicator token={token as TokenWithBalance} />
                   </SelectItem>

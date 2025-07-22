@@ -14,10 +14,6 @@ export type WidgetState = {
   chainId?: number;
   outChainId?: number;
   outProject?: string;
-  outTokens?: {
-    include: Address[];
-    exclude: Address[];
-  };
 };
 
 export type ProjectFilter = {
@@ -39,6 +35,7 @@ export type WidgetComponentProps = {
   outProjects?: ProjectFilter;
   inProjects?: ProjectFilter;
   onChange?: (newState: WidgetState) => void;
+  referralCode?: string;
   outTokens?: {
     include: Address[];
     exclude: Address[];

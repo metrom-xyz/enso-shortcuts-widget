@@ -9,9 +9,9 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
-import { type Address, isAddress } from "viem";
+import { Address, isAddress } from "viem";
 import { FixedSizeList as List } from "react-window";
-import { type Token, useCurrentChainList } from "@/util/common";
+import { Token, useCurrentChainList } from "@/util/common";
 import { formatNumber, normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
 import { SupportedChainId } from "@/constants";

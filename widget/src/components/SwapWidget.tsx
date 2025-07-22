@@ -98,6 +98,7 @@ const SwapWidget = ({
   onChange,
   notificationPlacement,
   onSuccess,
+  referralCode,
 }: WidgetComponentProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
@@ -202,7 +203,14 @@ const SwapWidget = ({
     isLoading: routerLoading,
     sendTransaction,
     error,
-  } = useEnsoData(amountIn, tokenIn, tokenOut, slippage, resetInput);
+  } = useEnsoData(
+    amountIn,
+    tokenIn,
+    tokenOut,
+    slippage,
+    referralCode,
+    resetInput
+  );
 
   const valueOut = normalizeValue(
     routerData?.amountOut.toString(),

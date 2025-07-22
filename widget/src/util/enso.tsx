@@ -28,6 +28,7 @@ import { formatNumber, normalizeValue } from ".";
 let ensoClient: EnsoClient | null = null;
 
 type CrosschainParams = RouteParams & {
+  referralCode: string;
   destinationChainId?: number;
 };
 
@@ -325,12 +326,14 @@ export const useEnsoData = (
   tokenIn: Address,
   tokenOut: Address,
   slippage: number,
+  referralCode?: string,
   onSuccess?: (hash: string) => void
 ): UseEnsoDataResult => {
   const { address = VITALIK_ADDRESS } = useAccount();
   const chainId = usePriorityChainId();
   const outChainId = useOutChainId();
   const routerParams: CrosschainParams = {
+    referralCode,
     amountIn,
     tokenIn,
     tokenOut,

@@ -113,6 +113,7 @@ The `SwapWidget` component accepts the following props:
 - `inProjects` (object): Object containing projects to limit input projects options
 - `outTokens` (object): Object containing tokens to limit output token options
 - `inTokens` (object): Object containing tokens to limit input token options
+- `referralCode` (string): 16 bytes string that enables onchain request tracking
 
 #### UI Configuration
 

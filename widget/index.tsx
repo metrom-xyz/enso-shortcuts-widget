@@ -20,7 +20,7 @@ import {
   WidgetState,
   Placement,
   ObligatedToken,
-} from "@/types";
+} from "./src/types";
 
 type WidgetProps = WidgetComponentProps & {
   apiKey: string;

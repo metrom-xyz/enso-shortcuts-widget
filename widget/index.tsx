@@ -3,10 +3,10 @@ import {
   ChakraProvider,
   createSystem,
   defaultConfig,
-  type SystemConfig,
+  SystemConfig,
   EnvironmentProvider,
 } from "@chakra-ui/react";
-import { type Address } from "viem";
+import { Address } from "viem";
 import { WagmiContext } from "wagmi";
 import posthog from "posthog-js";
 import root from "react-shadow/emotion";
@@ -15,18 +15,14 @@ import createCache from "@emotion/cache";
 import SwapWidget from "@/components/SwapWidget";
 import { useStore } from "@/store";
 import { setApiKey } from "@/util/enso";
-import { type WidgetComponentProps } from "@/types";
-
-export { type SystemConfig };
-
-export type {
+import {
   WidgetComponentProps,
   WidgetState,
   Placement,
   ObligatedToken,
-} from "./src/types";
+} from "@/types";
 
-export type WidgetProps = WidgetComponentProps & {
+type WidgetProps = WidgetComponentProps & {
   apiKey: string;
   themeConfig?: SystemConfig;
   chainId?: number;
@@ -164,3 +160,12 @@ const Widget = ({
 
 export default Widget;
 export { Widget };
+
+export type {
+  WidgetComponentProps,
+  WidgetProps,
+  WidgetState,
+  Placement,
+  ObligatedToken,
+  SystemConfig,
+};

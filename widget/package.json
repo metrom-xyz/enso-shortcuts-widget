@@ -1,6 +1,6 @@
 {
   "name": "@ensofinance/shortcuts-widget",
-  "version": "1.0.44",
+  "version": "1.0.46",
   "type": "module",
   "homepage": "https://www.enso.build/",
   "repository": {
@@ -63,9 +63,9 @@
   "module": "./dist/shortcuts-widget.es.js",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/shortcuts-widget.es.js",
-      "require": "./dist/shortcuts-widget.umd.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/shortcuts-widget.umd.js"
     }
   }
 }

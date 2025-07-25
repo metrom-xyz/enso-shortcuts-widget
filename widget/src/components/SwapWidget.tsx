@@ -165,7 +165,7 @@ const SwapWidget = ({
   useEffect(() => {
     if (providedTokenIn) {
       setTokenIn(providedTokenIn);
-    } else if (!tokenIn) {
+    } else if (!tokenIn && !inTokens?.exclude?.includes(ETH_ADDRESS)) {
       setTokenIn(ETH_ADDRESS);
     }
   }, [providedTokenIn]);

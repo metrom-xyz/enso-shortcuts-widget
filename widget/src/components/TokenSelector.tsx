@@ -192,14 +192,6 @@ const TokenSelector = ({
   const tokenList = useMemo(() => {
     let tokens = currentTokenList ? currentTokenList.slice() : [];
 
-    if (limitTokens) {
-      tokens = filterTokensByAddressList(tokens, limitTokens, true);
-    }
-
-    if (excludeTokens) {
-      tokens = filterTokensByAddressList(tokens, excludeTokens, false);
-    }
-
     if (searchedToken) {
       tokens = [...tokens, searchedToken];
     }
@@ -208,6 +200,13 @@ const TokenSelector = ({
       const valueTokenIndex = hasCoincidence(tokens, valueToken.address);
       if (valueTokenIndex !== -1) tokens.splice(valueTokenIndex, 1);
       tokens.unshift(valueToken);
+    }
+    if (limitTokens) {
+      tokens = filterTokensByAddressList(tokens, limitTokens, true);
+    }
+
+    if (excludeTokens) {
+      tokens = filterTokensByAddressList(tokens, excludeTokens, false);
     }
 
     const balancesWithTotals = tokens.map((token) => {

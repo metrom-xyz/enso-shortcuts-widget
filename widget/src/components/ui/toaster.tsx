@@ -11,7 +11,7 @@ import {
 import { Placement } from "@/types";
 import { useEffect } from "react";
 
-export const toaster = createToaster({
+export const toaster: ReturnType<typeof createToaster> = createToaster({
   placement: "bottom-end",
   pauseOnPageIdle: true,
 });

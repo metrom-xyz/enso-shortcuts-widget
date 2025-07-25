@@ -405,7 +405,7 @@ export const useEnsoData = (
       });
       onSuccess?.(hash);
     },
-    [swapTitle, chainId],
+    [swapTitle, chainId]
   );
 
   const sendTransaction = useExtendedSendTransaction({
@@ -516,6 +516,8 @@ export const useEnsoPrice = (
   return useQuery({
     queryKey: ["enso-token-price", address, chainId],
     queryFn: () => ensoClient.getPriceData({ address, chainId }),
+    staleTime: 1000 * 30,
+    refetchInterval: 1000 * 30,
     enabled: chainId && isAddress(address),
   });
 };

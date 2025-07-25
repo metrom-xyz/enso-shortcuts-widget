@@ -236,6 +236,24 @@ const SwapWidget = ({
   const { data: inUsdPrice } = useEnsoPrice(tokenIn);
   const { data: outUsdPrice } = useEnsoPrice(tokenOut, outChainId);
 
+  const tokenInUsdPrice = +(inUsdPrice?.price ?? 0) * +valueIn;
+  const tokenOutUsdPrice =
+    +(outUsdPrice?.price ?? 0) *
+    +normalizeValue(routerData?.amountOut?.toString(), tokenOutInfo?.decimals);
+
+  const priceImpactValue = useMemo(() => {
+    const backendPriceImpact = (routerData as any)?.priceImpact;
+    if (typeof backendPriceImpact === "number") {
+      return backendPriceImpact;
+    }
+    if (tokenInUsdPrice > 0 && tokenOutUsdPrice >= 0 && routerData?.amountOut) {
+      let priceImpact =
+        ((tokenInUsdPrice - tokenOutUsdPrice) / tokenInUsdPrice) * 10000;
+      priceImpact = Math.max(0, priceImpact);
+      return priceImpact;
+    }
+  }, [routerData, tokenInUsdPrice, tokenOutUsdPrice]);
+
   useEffect(() => {
     if (SWAP_REDIRECT_TOKENS.includes(providedTokenOut)) {
       setNotification({
@@ -251,12 +269,6 @@ const SwapWidget = ({
       });
     }
   }, [providedTokenOut, setNotification]);
-
-  const tokenInUsdPrice = +(inUsdPrice?.price ?? 0) * +valueIn;
-  const tokenOutUsdPrice =
-    +(outUsdPrice?.price ?? 0) *
-    +normalizeValue(routerData?.amountOut?.toString(), tokenOutInfo?.decimals);
-  const priceImpactValue = (routerData as any)?.priceImpact;
 
   const shouldWarnPriceImpact =
     typeof priceImpactValue === "number" &&

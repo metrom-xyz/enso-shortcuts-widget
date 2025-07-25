@@ -141,8 +141,12 @@ const SwapInput = ({
             <Text fontSize="sm" color="fg.muted" whiteSpace={"nowrap"}>
               Balance: {formatNumber(balanceValue)}
             </Text>
+
             <Button
-              _hover={{ bg: "bg.emphasized" }}
+              _hover={{
+                bg: "bg.subtle",
+                borderColor: "border.emphasized",
+              }}
               size="xs"
               color="fg.muted"
               ml={1}
@@ -150,7 +154,6 @@ const SwapInput = ({
               h="18px"
               fontSize="xs"
               variant="outline"
-              borderColor="border.emphasized"
               display={address && !disabled ? undefined : "none"}
               onClick={() =>
                 inputOnChange(

@@ -323,9 +323,6 @@ const SwapWidget = ({
   return (
     <Box
       position={"relative"}
-      border="solid 1px"
-      borderColor="border.emphasized"
-      borderRadius="xl"
       width={adaptive ? { base: "100%", md: "450px" } : "100%"}
     >
       {/* Portal for notifications and swap popover */}

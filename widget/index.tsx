@@ -92,7 +92,12 @@ const Widget = ({
           light: `${varRoot} &, .light &`,
         },
         globalCss: {
-          [varRoot]: { ...defaultConfig.globalCss?.html, borderRadius: "xl", shadow: "sm" },
+          [varRoot]: {
+            ...defaultConfig.globalCss?.html,
+            borderRadius: "xl",
+            shadow: "sm",
+            border: "none",
+          },
         },
       }),
     [themeConfig]
@@ -123,7 +128,7 @@ const Widget = ({
   }, []);
 
   return (
-    <root.div ref={setShadow} >
+    <root.div ref={setShadow}>
       {shadow && cache && (
         <EnvironmentProvider value={() => shadow.shadowRoot ?? document}>
           <CacheProvider value={cache}>

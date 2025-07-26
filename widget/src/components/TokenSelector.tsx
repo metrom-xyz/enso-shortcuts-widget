@@ -270,7 +270,7 @@ const TokenSelector = ({
       setChainId(selectionChainId);
       setSelectionChainId(selectionChainId);
     },
-    [onChange, selectionChainId]
+    [onChange, selectionChainId, setChainId]
   );
   const selectValue = useMemo(
     () => (chainId === selectionChainId ? [value] : []),

@@ -281,6 +281,7 @@ const useEnsoRouterData = (params: CrosschainParams, enabled = true) =>
       params.amountIn,
     ],
     queryFn: () => ensoClient.getRouterData(params),
+    refetchInterval: 30 * 1000,
     enabled:
       enabled &&
       +params.amountIn > 0 &&

@@ -201,6 +201,7 @@ const SwapWidget = ({
   const {
     data: routerData,
     isLoading: routerLoading,
+    isFetching: routerIsFetching,
     sendTransaction,
     error,
   } = useEnsoData(
@@ -417,7 +418,7 @@ const SwapWidget = ({
           limitTokens={outTokens?.include}
           excludeTokens={outTokens?.exclude}
           obligatedToken={obligatedToken === ObligatedToken.TokenOut}
-          loading={routerLoading}
+          loading={routerLoading || routerIsFetching}
           portalRef={portalRef}
           tokenValue={tokenOut}
           tokenOnChange={setTokenOut}
@@ -500,7 +501,9 @@ const SwapWidget = ({
                 colorPalette={"blue"}
                 flex={1}
                 disabled={swapDisabled}
-                loading={sendTransaction.isPending || routerLoading}
+                loading={
+                  sendTransaction.isPending || routerLoading || routerIsFetching
+                }
                 onClick={
                   needToAcceptWarning
                     ? showPriceImpactWarning

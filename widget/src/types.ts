@@ -22,7 +22,7 @@ export type ProjectFilter = {
 };
 
 export type WidgetComponentProps = {
-  onSuccess?: (hash: string) => void;
+  onSuccess?: (hash: string, details?: any) => void;
   adaptive?: boolean;
   tokenOut?: Address;
   tokenIn?: Address;

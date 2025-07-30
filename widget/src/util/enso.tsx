@@ -322,7 +322,7 @@ export const useEnsoData = (
   tokenOut: Address,
   slippage: number,
   referralCode?: string,
-  onSuccess?: (hash: string) => void
+  onSuccess?: (hash: string, details?: any) => void
 ) => {
   const { address = VITALIK_ADDRESS } = useAccount();
   const chainId = usePriorityChainId();
@@ -354,26 +354,6 @@ export const useEnsoData = (
     routerParams.destinationChainId = outChainId;
   }
 
-  // const {
-  //   data: bundleData,
-  //   isLoading: bundleLoading,
-  //   error: bundleError,
-  // } = useBridgeBundle(
-  //   {
-  //     tokenIn,
-  //     tokenOut,
-  //     amountIn,
-  //     receiver: address,
-  //     chainId,
-  //     destinationChainId: outChainId,
-  //     slippage,
-  //   },
-  //   !isCrosschain
-  // );
-
-  // const data = isCrosschain ? routerData : bundleData;
-  // const isLoading = isCrosschain ? routerLoading : bundleLoading;
-
   const {
     tokens: [tokenToData],
   } = useEnsoToken({
@@ -404,9 +384,22 @@ export const useEnsoData = (
         message: swapTitle,
         onConfirmed: () => {},
       });
-      onSuccess?.(hash);
+
+      const details = {
+        tokenIn: tokenToData,
+        tokenOut: tokenFromData,
+        slippage,
+        routerData: routerData.data,
+      };
+      onSuccess?.(hash, details);
     },
-    [swapTitle, chainId]
+    [
+      swapTitle,
+      chainId,
+      routerData.data,
+      tokenToData?.address,
+      tokenFromData?.address,
+    ]
   );
 
   const sendTransaction = useExtendedSendTransaction({

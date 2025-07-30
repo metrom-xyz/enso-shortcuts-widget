@@ -193,8 +193,8 @@ const SwapWidget = ({
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
-  const resetInput = useCallback((hash: string) => {
-    onSuccess?.(hash);
+  const onSuccessCallback = useCallback((hash: string, details: any) => {
+    onSuccess?.(hash, details);
     setValueIn("");
   }, []);
 
@@ -210,7 +210,7 @@ const SwapWidget = ({
     tokenOut,
     slippage,
     referralCode,
-    resetInput
+    onSuccessCallback
   );
 
   const valueOut = normalizeValue(

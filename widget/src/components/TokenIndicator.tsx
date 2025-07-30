@@ -5,7 +5,7 @@ import {
   SupportedChainId,
   STARGATE_CHAIN_NAMES,
 } from "@/constants";
-import { formatCompactUsd, formatNumber } from "@/util";
+import { formatCompactUsd } from "@/util";
 
 const GECKO_HOSTNAME = "coingecko";
 

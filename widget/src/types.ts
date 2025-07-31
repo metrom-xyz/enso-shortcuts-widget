@@ -1,4 +1,25 @@
+import { RouteData } from "@ensofinance/sdk";
 import { Address } from "viem";
+
+export type Token = {
+  address: Address;
+  name: string;
+  symbol: string;
+  decimals: number;
+  logoURI: string;
+  underlyingTokens?: Token[];
+  type?: string;
+  apy?: number;
+  tvl?: number;
+};
+
+export type SuccessDetails = {
+  amountIn: string;
+  tokenIn: Token;
+  tokenOut: Token;
+  slippage: number;
+  routerData: RouteData;
+};
 
 export type Placement =
   | "top-start"
@@ -22,7 +43,7 @@ export type ProjectFilter = {
 };
 
 export type WidgetComponentProps = {
-  onSuccess?: (hash: string, details?: any) => void;
+  onSuccess?: (hash: string, details?: SuccessDetails) => void;
   adaptive?: boolean;
   tokenOut?: Address;
   tokenIn?: Address;

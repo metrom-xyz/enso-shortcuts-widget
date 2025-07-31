@@ -11,7 +11,7 @@ import {
 import { useMemo } from "react";
 import { Address, isAddress } from "viem";
 import { FixedSizeList as List } from "react-window";
-import { Token, useCurrentChainList } from "@/util/common";
+import { useCurrentChainList } from "@/util/common";
 import { formatNumber, normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
@@ -25,7 +25,7 @@ import {
 import { TokenIndicator } from "@/components/TokenIndicator";
 import ChainSelector from "./ChainSelector";
 import ProjectSelector from "./ProjectSelector";
-import { ProjectFilter } from "@/types";
+import { ProjectFilter, Token } from "@/types";
 
 type TokenWithBalance = Token & {
   balance?: string;

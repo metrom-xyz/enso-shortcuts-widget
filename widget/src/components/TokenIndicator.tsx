@@ -1,11 +1,11 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { type Token } from "@/util/common";
 import {
   MOCK_IMAGE_URL,
   SupportedChainId,
   STARGATE_CHAIN_NAMES,
 } from "@/constants";
 import { formatCompactUsd } from "@/util";
+import { Token } from "@/types";
 
 const GECKO_HOSTNAME = "coingecko";
 

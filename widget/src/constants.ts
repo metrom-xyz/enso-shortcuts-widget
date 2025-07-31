@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { Token } from "@/util/common";
+import { Token } from "@/types";
 
 export const ERROR_MSG =
   "Swap not found for a required underlying of defi route, please make sure your amount is within an acceptable range";

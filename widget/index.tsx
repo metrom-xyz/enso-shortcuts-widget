@@ -22,6 +22,7 @@ import {
   WidgetState,
   Placement,
   ObligatedToken,
+  SuccessDetails,
 } from "./src/types";
 
 type WidgetProps = WidgetComponentProps & {
@@ -170,4 +171,5 @@ export type {
   Placement,
   ObligatedToken,
   SystemConfig,
+  SuccessDetails,
 };

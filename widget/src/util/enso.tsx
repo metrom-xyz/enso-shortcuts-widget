@@ -7,10 +7,10 @@ import {
   type BundleAction,
   type BundleParams,
   BundleActionType,
+  type RouteData,
 } from "@ensofinance/sdk";
 import { type Address, isAddress } from "viem";
 import {
-  type Token,
   usePriorityChainId,
   useOutChainId,
   useTokenFromList,
@@ -25,6 +25,7 @@ import {
 } from "@/constants";
 import { formatNumber, normalizeValue } from ".";
 import { useTxTracker } from "./useTracker";
+import { SuccessDetails, Token } from "@/types";
 
 let ensoClient: EnsoClient | null = null;
 
@@ -322,7 +323,7 @@ export const useEnsoData = (
   tokenOut: Address,
   slippage: number,
   referralCode?: string,
-  onSuccess?: (hash: string, details?: any) => void
+  onSuccess?: (hash: string, details?: SuccessDetails) => void
 ) => {
   const { address = VITALIK_ADDRESS } = useAccount();
   const chainId = usePriorityChainId();
@@ -386,8 +387,9 @@ export const useEnsoData = (
       });
 
       const details = {
-        tokenIn: tokenToData,
-        tokenOut: tokenFromData,
+        amountIn,
+        tokenIn: tokenFromData,
+        tokenOut: tokenToData,
         slippage,
         routerData: routerData.data,
       };

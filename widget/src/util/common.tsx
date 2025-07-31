@@ -9,18 +9,7 @@ import {
   SupportedChainId,
 } from "@/constants";
 import { useStore } from "@/store";
-
-export type Token = {
-  address: Address;
-  name: string;
-  symbol: string;
-  decimals: number;
-  logoURI: string;
-  underlyingTokens?: Token[];
-  type?: string;
-  apy?: number;
-  tvl?: number;
-};
+import { Token } from "@/types";
 
 export const compareCaseInsensitive = (a: string, b: string) => {
   return !!(a && b && a?.toLowerCase() === b?.toLowerCase());

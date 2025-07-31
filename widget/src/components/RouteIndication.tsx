@@ -10,9 +10,10 @@ import {
 import { ChevronsRight } from "lucide-react";
 import { type Address, isAddress } from "viem";
 import { type RouteData } from "@ensofinance/sdk";
-import { type Token, useTokenFromList } from "@/util/common";
+import { useTokenFromList } from "@/util/common";
 import { useEnsoToken } from "@/util/enso";
 import { TokenIcon } from "@/components/TokenIndicator";
+import { Token } from "@/types";
 
 const TokenBadge = ({
   address,

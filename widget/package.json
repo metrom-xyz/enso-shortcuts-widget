@@ -14,7 +14,7 @@
   "scripts": {
     "bump": "npm version patch",
     "publish": "npm publish --access public",
-    "dev": "vite build --watch --minify=false",
+    "dev": "vite build --watch --minify=false --mode=dev",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",

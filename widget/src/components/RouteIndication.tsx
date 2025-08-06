@@ -62,7 +62,7 @@ const RouteSegment = ({ step }: { step: RouteSegment }) => (
         fontWeight="medium"
         textTransform="capitalize"
       >
-        {step.protocol}
+        {step.action === "swap" ? "Enso" : step.protocol}
       </Badge>
 
       <Text
@@ -98,45 +98,6 @@ const RouteSegment = ({ step }: { step: RouteSegment }) => (
       ))}
     </VStack>
   </HStack>
-);
-
-const BridgeConnector = ({
-  bridgeName = "Stargate",
-}: {
-  bridgeName?: string;
-}) => (
-  <VStack gap={0}>
-    <VStack gap={0}>
-      <Badge
-        colorScheme="purple"
-        variant="solid"
-        px={1}
-        py={0.5}
-        borderRadius="md"
-        fontSize="2xs"
-        fontWeight="medium"
-      >
-        {bridgeName}
-      </Badge>
-      <Text
-        color="fg.muted"
-        fontSize="2xs"
-        fontWeight="normal"
-        cursor="default"
-      >
-        bridge
-      </Text>
-    </VStack>
-    <Box
-      color="purple.400"
-      p={1}
-      borderRadius="sm"
-      bg="purple.50"
-      _dark={{ bg: "purple.900" }}
-    >
-      <ChevronsRight size={12} />
-    </Box>
-  </VStack>
 );
 
 const RouteIndication = ({

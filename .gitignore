@@ -3,3 +3,7 @@ node_modules
 dist
 .idea
 widget/dist
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

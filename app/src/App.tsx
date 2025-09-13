@@ -9,7 +9,7 @@ import { Address, isAddress } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useLocation, useNavigate } from "react-router-dom";
 import Providers from "@/components/Providers";
-import SwapWidget from "@ensofinance/shortcuts-widget";
+import { Widget } from "@ensofinance/shortcuts-widget";
 
 import logoUrl from "./logo_black_white.png";
 
@@ -58,7 +58,7 @@ function App() {
     if (Object.keys(newState).length > 0) {
       setState(newState);
     }
-  }, []);
+  }, [location.search]);
 
   // Update URL when parameters change
   useEffect(() => {
@@ -89,7 +89,7 @@ function App() {
 
   // Widget props
   const widgetProps = useMemo(() => {
-    const props: ComponentProps<typeof SwapWidget> = {
+    const props: ComponentProps<typeof Widget> = {
       apiKey: EnsoApiKey,
       onChange: handleStateChange,
       indicateRoute: true,
@@ -150,7 +150,7 @@ function App() {
         }}
       >
         <div style={{ marginTop: "70px" }}>
-          <SwapWidget {...widgetProps} enableShare adaptive />
+          <Widget {...widgetProps} enableShare />
         </div>
         <div />
       </div>

@@ -1,19 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSwitchChain, useAccount } from "wagmi";
-import {
-  Box,
-  Center,
-  Flex,
-  IconButton,
-  Link,
-  Text,
-  useDisclosure,
-  Button,
-} from "@chakra-ui/react";
 import { ArrowDown, Fuel, TriangleAlert } from "lucide-react";
 import { type Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
-import { Toaster } from "@/components/ui/toaster";
 import {
   useEnsoApprove,
   useEnsoData,
@@ -39,13 +28,12 @@ import {
   SWAP_REDIRECT_TOKENS,
 } from "@/constants";
 import { useStore } from "@/store";
-import SwapInput from "@/components/SwapInput";
-import Notification from "@/components/Notification";
-import { ClipboardLink, ClipboardRoot } from "@/components/ui/clipboard";
-import RouteIndication from "@/components/RouteIndication";
-import { Tooltip } from "@/components/ui/tooltip";
-import Slippage from "@/components/Slippage";
+// import RouteIndication from "@/components/RouteIndication";
 import { NotifyType, ObligatedToken, type WidgetComponentProps } from "@/types";
+import { Button, InfoTooltip, Typography } from "@metrom-xyz/ui";
+import Notification from "./Notification";
+import SwapInput from "./SwapInput";
+import Slippage from "./Slippage";
 
 const BridgingFee = ({
   gasValue,
@@ -66,19 +54,15 @@ const BridgingFee = ({
   const gasCostUSD = +gasValue * +(nativeTokenPriceData?.price ?? 0);
 
   return (
-    <Text
-      title={"Bridging fee"}
-      cursor={"default"}
-      display={"flex"}
-      alignItems={"center"}
-      gap={1}
-      color="gray.500"
-      fontSize={"xs"}
-    >
-      <Fuel size={12} />
-      {formatNumber(gasValue, true)} {nativeTokenInfo?.symbol},{" "}
-      {formatUSD(gasCostUSD)}
-    </Text>
+    <div className="flex gap-1 items-center">
+      <Fuel size={14} className="theme-text" />
+      <Typography size="sm" weight="medium">
+        {formatNumber(gasValue, true)} {nativeTokenInfo?.symbol}
+      </Typography>
+      <Typography size="sm" weight="medium" light>
+        {formatUSD(gasCostUSD)}
+      </Typography>
+    </div>
   );
 };
 
@@ -88,7 +72,6 @@ const SwapWidget = ({
   obligateSelection,
   enableShare,
   indicateRoute,
-  adaptive,
   rotateObligated,
   outProject,
   outProjects,
@@ -108,6 +91,7 @@ const SwapWidget = ({
   const [obligatedToken, setObligatedToken] = useState(
     obligateSelection && (rotateObligated ?? ObligatedToken.TokenOut)
   );
+  const [showRoute, setShowRoute] = useState(true);
 
   const chainId = usePriorityChainId();
   const { chainId: wagmiChainId, address } = useAccount();
@@ -116,9 +100,6 @@ const SwapWidget = ({
   const obligatedChainId = useStore((state) => state.obligatedChainId);
 
   const { switchChain } = useSwitchChain();
-  const { open: showRoute, onToggle: toggleRoute } = useDisclosure({
-    defaultOpen: true,
-  });
   const setNotification = useStore((state) => state.setNotification);
   const setObligatedChainId = useStore((state) => state.setObligatedChainId);
 
@@ -152,14 +133,15 @@ const SwapWidget = ({
   );
 
   // Notify parent of state changes when any relevant state changes
-  useEffect(() => {
-    onChange?.({
-      tokenIn,
-      tokenOut,
-      chainId,
-      outChainId,
-    });
-  }, [tokenIn, tokenOut, chainId, outChainId]);
+  // FIXME: possible infinite loop
+  // useEffect(() => {
+  //   onChange?.({
+  //     tokenIn,
+  //     tokenOut,
+  //     chainId,
+  //     outChainId,
+  //   });
+  // }, [tokenIn, tokenOut, chainId, outChainId, onChange]);
 
   // Initialize tokens when provided or when chainId changes
   useEffect(() => {
@@ -286,10 +268,10 @@ const SwapWidget = ({
 
   const swapWarning = useMemo(() => {
     if (swapLimitExceeded)
-      return `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}.  You can do multiple transactions of this size.`;
-    if (!isBalanceEnough) return "Balance is not enough to perform transaction";
+      return `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}. You can do multiple transactions of this size.`;
+    if (!isBalanceEnough) return "Not enought balance";
     if (wrongChain) return "Please switch to the correct chain";
-    if (approveNeeded) return "Please approve the token first";
+    if (approveNeeded) return "Approve token first";
     return "";
   }, [
     swapLimitExceeded,
@@ -315,6 +297,29 @@ const SwapWidget = ({
     setWarningAccepted(true);
   }, [priceImpactWarning, setNotification]);
 
+  const handleInvertTokensOnClick = useCallback(() => {
+    const tempTokenIn = tokenIn;
+
+    if (obligateSelection)
+      setObligatedToken((val) =>
+        val === ObligatedToken.TokenIn
+          ? ObligatedToken.TokenOut
+          : ObligatedToken.TokenIn
+      );
+
+    const tempChainId = chainId;
+
+    setObligatedChainId(outChainId);
+    setOutChainId(tempChainId);
+    setTokenIn(tokenOut);
+    setTokenOut(tempTokenIn);
+    setValueIn(valueOut);
+  }, [tokenIn, obligateSelection, chainId, outChainId, tokenOut, valueOut]);
+
+  function toggleRoute() {
+    setShowRoute((prev) => !prev);
+  }
+
   const limitInputTokens =
     chainId === mainnet.id && tokenOutInfo?.symbol === "UNI-V2";
   const displayTokenRotation =
@@ -334,30 +339,13 @@ const SwapWidget = ({
   const isBridging = Boolean(chainId !== outChainId && outChainId);
 
   return (
-    <Box
-      position={"relative"}
-      width={adaptive ? { base: "100%", md: "450px" } : "100%"}
-    >
+    <div className="relative w-full">
       {/* Portal for notifications and swap popover */}
-      <Flex
-        ref={portalRef}
-        position={"absolute"}
-        css={{
-          [`&:has(> div:not([data-state="closed"]))`]: {
-            zIndex: 1000,
-          },
-          zIndex: -1,
-          top: 0,
-          bottom: 0,
-          margin: "auto",
-          left: 0,
-          right: 0,
-        }}
-      >
+      <div ref={portalRef} className="absolute ">
         <Notification />
-      </Flex>
+      </div>
 
-      <Flex flexDirection={"column"} p={3} overflow={"hidden"} gap={1}>
+      <div className="flex flex-col overflow-hidden gap-2.5">
         <SwapInput
           chainId={chainId}
           projects={inProjects}
@@ -374,39 +362,12 @@ const SwapWidget = ({
         />
 
         {displayTokenRotation && (
-          <Flex justifyContent="center" alignItems="center">
-            <IconButton
-              bg="bg.muted"
-              _hover={{ bg: "bg.subtle" }}
-              color="fg.muted"
-              borderRadius={"full"}
-              marginY={-5}
-              zIndex={1}
-              boxShadow={"xs"}
-              size="xs"
-              // variant="subtle"
-              onClick={() => {
-                const tempTokenIn = tokenIn;
-
-                if (obligateSelection)
-                  setObligatedToken((val) =>
-                    val === ObligatedToken.TokenIn
-                      ? ObligatedToken.TokenOut
-                      : ObligatedToken.TokenIn
-                  );
-
-                const tempChainId = chainId;
-
-                setObligatedChainId(outChainId);
-                setOutChainId(tempChainId);
-                setTokenIn(tokenOut);
-                setTokenOut(tempTokenIn);
-                setValueIn(valueOut);
-              }}
-            >
-              <ArrowDown />
-            </IconButton>
-          </Flex>
+          <div
+            onClick={handleInvertTokensOnClick}
+            className="flex justify-center items-center absolute top-[93px] place-self-center rounded-full p-1 theme-surface theme-surface-2-hover hover:cursor-pointer transition-colors duration-200 ease-in-out z-10"
+          >
+            <ArrowDown size={24} className="theme-text" />
+          </div>
         )}
 
         <SwapInput
@@ -427,162 +388,162 @@ const SwapWidget = ({
           usdValue={tokenOutUsdPrice}
         />
 
-        <Box>
-          <Flex justify="space-between" alignItems={"center"}>
-            <Flex flexDirection={"column"} justify={"start"}>
-              <Text
-                color="gray.500"
-                fontSize={"xs"}
-                whiteSpace={"nowrap"}
-                w={"fit-content"}
-              >
-                1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
-                {tokenOutInfo?.symbol}
-              </Text>
+        <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col justify-start gap-2.5">
+            <Typography weight="medium" size="xs">
+              1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
+              {tokenOutInfo?.symbol}
+            </Typography>
 
-              {isBridging && (
-                <BridgingFee gasValue={gasValue} chainId={chainId} />
-              )}
+            {isBridging && (
+              <BridgingFee gasValue={gasValue} chainId={chainId} />
+            )}
 
-              <Slippage slippage={slippage} setSlippage={setSlippage} />
-            </Flex>
-
-            {typeof priceImpactValue === "number" && (
-              <Flex>
-                <Flex
-                  color={shouldWarnPriceImpact ? "orange.400" : "gray.500"}
-                  fontSize={"sm"}
-                  gap={1}
-                  alignItems={"center"}
-                  cursor={"default"}
+            <Slippage slippage={slippage} setSlippage={setSlippage} />
+          </div>
+          {typeof priceImpactValue === "number" && (
+            <div className="flex">
+              <div className="flex items-center gap-1">
+                <Typography
+                  uppercase
+                  weight="medium"
+                  size="xs"
+                  className={`${shouldWarnPriceImpact ? "text-orange-400!" : ""}`}
                 >
                   Price impact: {formattedPriceImpact}%
-                  {shouldWarnPriceImpact && (
-                    <Tooltip openDelay={0} content={priceImpactWarning}>
-                      <TriangleAlert size={16} />
-                    </Tooltip>
-                  )}
-                </Flex>
-              </Flex>
-            )}
-          </Flex>
-        </Box>
+                </Typography>
+                {shouldWarnPriceImpact && (
+                  <InfoTooltip
+                    trigger="hover"
+                    icon={
+                      <TriangleAlert size={14} className="text-orange-400" />
+                    }
+                    placement="right-start"
+                  >
+                    <div className="max-w-72! p-1">
+                      <Typography size="sm" weight="medium">
+                        {priceImpactWarning}
+                      </Typography>
+                    </div>
+                  </InfoTooltip>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {address ? (
-          <Flex w={"full"} gap={4}>
+          <div className="flex w-full gap-2.5">
             {wrongChain ? (
               <Button
-                size="lg"
-                borderRadius={"lg"}
-                colorPalette={"blue"}
                 onClick={() => switchChain({ chainId })}
+                className={{ root: "w-full!" }}
               >
                 Switch to {getChainName(chainId)}
               </Button>
             ) : (
               approveNeeded && (
                 <Button
-                  size="lg"
-                  borderRadius={"lg"}
-                  colorPalette={"blue"}
-                  flex={1}
                   loading={approve.isPending}
                   onClick={approve.write}
+                  className={{ root: "w-full!" }}
                 >
                   Approve
                 </Button>
               )
             )}
 
-            <Tooltip content={swapWarning} disabled={!swapWarning}>
-              <Button
-                size="lg"
-                borderRadius={"lg"}
-                colorPalette={"blue"}
-                flex={1}
-                disabled={swapDisabled}
-                loading={
-                  sendTransaction.isPending || routerLoading || routerIsFetching
-                }
-                onClick={
-                  needToAcceptWarning
-                    ? showPriceImpactWarning
-                    : sendTransaction.sendTransaction
-                }
-              >
-                {chainId === outChainId ? "Swap" : "Bridge"}
-              </Button>
-            </Tooltip>
-          </Flex>
+            <Button
+              disabled={swapDisabled}
+              loading={
+                sendTransaction.isPending || routerLoading || routerIsFetching
+              }
+              onClick={
+                needToAcceptWarning
+                  ? showPriceImpactWarning
+                  : sendTransaction.sendTransaction
+              }
+              className={{ root: "w-full!" }}
+            >
+              {swapWarning
+                ? swapWarning
+                : chainId === outChainId
+                  ? "Swap"
+                  : "Bridge"}
+            </Button>
+          </div>
         ) : (
-          <Flex justifyContent="center" alignItems="center" w={"full"} mt={2}>
-            <Text color="gray.500" fontSize="xs" mt={1}>
+          <div className="flex justify-center items-center w-full mt-2">
+            <Typography size="xs" className="mt-1">
               Please connect your wallet
-            </Text>
-          </Flex>
+            </Typography>
+          </div>
         )}
 
         {error && (
-          <Text color="red.500" fontSize="xs" mt={1}>
+          <Typography
+            uppercase
+            size="xs"
+            weight="medium"
+            className="text-red-600! text-center"
+          >
             {!!error.message && ERROR_MSG}
-          </Text>
+          </Typography>
         )}
 
-        {indicateRoute && (
-          <Box>
-            <Flex color={"gray.500"}>
-              <Text
-                textDecoration={"dotted"}
-                _hover={{ textDecoration: "underline" }}
-                cursor={"pointer"}
-                fontSize={"xs"}
-                onClick={toggleRoute}
-                whiteSpace={"nowrap"}
-              >
-                {showRoute ? "Hide" : "Show"} route
-              </Text>
-            </Flex>
+        {/* TODO: add route indication */}
+        {/* {indicateRoute && (
+          <div>
+            <Typography size="xs" noWrap onClick={toggleRoute}>
+              {showRoute ? "Hide" : "Show"} route
+            </Typography>
             {showRoute && (
               <RouteIndication
                 route={routerData?.route}
                 loading={routerLoading}
               />
             )}
-          </Box>
-        )}
+          </div>
+        )} */}
 
-        <Flex w={"100%"}>
-          {enableShare && (
-            <Box color={"gray.500"}>
-              <ClipboardRoot value={window.location.href} position={"absolute"}>
-                <ClipboardLink textStyle={"xs"} cursor={"pointer"} />
-              </ClipboardRoot>
-            </Box>
-          )}
-          <Center w={"full"}>
-            <Text color={"gray.500"} fontSize={"sm"}>
+        <div className="flex w-full">
+          {
+            // enableShare && "TODO: add cliboard share"
+            // <Box color={"gray.500"}>
+            //   <ClipboardRoot value={window.location.href} position={"absolute"}>
+            //     <ClipboardLink textStyle={"xs"} cursor={"pointer"} />
+            //   </ClipboardRoot>
+            // </Box>
+          }
+          <div className="w-full flex items-center justify-center">
+            <Typography
+              uppercase
+              light
+              weight="medium"
+              size="xs"
+              className="text-[10px]! leading-2.5!"
+            >
               Powered by{" "}
-              <Link
+              <a
                 target={"_blank"}
                 href={"https://www.enso.build/"}
                 color={"fg.muted"}
               >
                 Enso
-              </Link>{" "}
+              </a>{" "}
               and{" "}
-              <Link
+              <a
                 target={"_blank"}
                 href={"https://stargate.finance/"}
                 color={"fg.muted"}
               >
                 Stargate
-              </Link>
-            </Text>
-          </Center>
-        </Flex>
-      </Flex>
-      <Toaster placement={notificationPlacement} />
-    </Box>
+              </a>
+            </Typography>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

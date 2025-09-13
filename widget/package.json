@@ -15,35 +15,38 @@
     "bump": "npm version patch",
     "publish": "npm publish --access public",
     "dev": "vite build --watch --minify=false --mode=dev",
-    "build": "vite build",
+    "build": "vite build && tsc -b --force",
     "lint": "eslint .",
     "preview": "vite preview",
     "publish:complete": "npm run build && npm run bump && npm run publish"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.19.1",
-    "@emotion/cache": "^11.14.0",
-    "@emotion/react": "^11.14.0",
     "@ensofinance/sdk": "^1.0.18",
+    "@fontsource/ibm-plex-mono": "^5.2.6",
+    "@fontsource/ibm-plex-sans": "^5.2.6",
+    "@metrom-xyz/ui": "^0.11.5",
+    "@tailwindcss/postcss": "^4.1.13",
     "@uidotdev/usehooks": "^2.4.1",
     "lucide-react": "^0.469.0",
     "next-themes": "^0.4.4",
+    "postcss": "^8.5.6",
     "posthog-js": "^1.223.3",
-    "react-icons": "^5.4.0",
-    "react-shadow": "^20.6.0",
-    "react-window": "^1.8.11",
+    "react-use": "^17.6.0",
+    "react-window": "^2.1.0",
+    "sonner": "^2.0.7",
     "url": "^0.11.4",
     "viem": "^2.22.1",
     "zustand": "^5.0.3"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.62.10",
-    "react": "^18.2.0 || ^19.0.0",
-    "react-dom": "^18.2.0 || ^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "wagmi": "^2.14.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@tailwindcss/vite": "^4.1.13",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
@@ -52,20 +55,22 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
+    "tailwindcss": "^4.1.13",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",
+    "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-dts": "^4.4.0",
     "vite-plugin-lib-inject-css": "^2.2.1",
     "vite-tsconfig-paths": "^5.1.4"
   },
-  "main": "./dist/shortcuts-widget.umd.js",
-  "module": "./dist/shortcuts-widget.es.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/shortcuts-widget.es.js",
-      "require": "./dist/shortcuts-widget.umd.js"
-    }
-  }
+    ".": "./dist/index.js",
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ]
 }

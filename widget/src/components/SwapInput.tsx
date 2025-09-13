@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
-import { Box, chakra, Flex, Skeleton, Text, Button } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
 import { type Address, isAddress } from "viem";
 import TokenSelector from "@/components/TokenSelector";
@@ -9,6 +8,7 @@ import { useTokenBalance } from "@/util/wallet";
 import { useEnsoToken } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
 import { type ProjectFilter } from "@/types";
+import { TextInput, Typography } from "@metrom-xyz/ui";
 
 const SwapInput = ({
   chainId,
@@ -65,24 +65,18 @@ const SwapInput = ({
 
   const balanceValue = normalizeValue(balance, tokenInInfo?.decimals ?? 18);
 
+  const handleMaxOnClick = useCallback(() => {
+    inputOnChange(normalizeValue(balance, tokenInInfo?.decimals).toString());
+  }, [tokenInInfo?.decimals, balance, inputOnChange]);
+
+  function handleInputOnChange(event: ChangeEvent<HTMLInputElement>) {
+    setTempInputValue(event.target.value);
+  }
+
   return (
-    <Flex
-      bg={!disabled ? "bg.subtle" : undefined}
-      borderRadius="xl"
-      border="solid 1px"
-      borderColor="border.subtle"
-      p={2}
-      align="center"
-      w={"full"}
-      // shadow="xs"
-    >
-      <Box w={"full"}>
-        <Flex w={"full"}>
-          <Text fontSize="sm" color="fg.muted" height="20px">
-            {tokenInInfo?.name || " "}
-          </Text>
-        </Flex>
-        <Flex w={"full"}>
+    <div className="w-full content-center rounded-xl">
+      <div className="w-full flex flex-col gap-2 p-2 rounded-2xl theme-surface-2">
+        <div className="flex w-full gap-2">
           <TokenSelector
             project={project}
             projectsFilter={projects}
@@ -96,81 +90,52 @@ const SwapInput = ({
             onChange={tokenOnChange}
           />
 
-          <Flex
-            alignItems={"center"}
-            justifyContent={"flex-end"}
-            w={"100%"}
-            h={"100%"}
-          >
+          <div className="flex w-full h-full justify-end items-center self-center">
             {loading ? (
-              <Skeleton h={"30px"} w={130} ml={5} />
+              <div className="h-10 w-40 theme-surface rounded-md animate-pulse" />
             ) : (
-              <chakra.input
-                css={{
-                  "&::-webkit-inner-spin-button, &::-webkit-outer-spin-button":
-                    {
-                      WebkitAppearance: "none",
-                    },
-                }}
-                h={"36px"}
-                lineHeight={"100%"}
-                type={"number"}
+              <TextInput
+                type="number"
+                size="lg"
                 disabled={disabled}
-                width={"full"}
-                minWidth={"120px"}
-                fontSize="xl"
-                border={"none"}
-                outline={"none"}
-                background={"transparent"}
                 placeholder="0.0"
-                ml={1}
-                textAlign="right"
                 value={tempInputValue}
-                onChange={(e) => setTempInputValue(e.target.value)}
+                onChange={handleInputOnChange}
+                className="w-full min-w-44 [&>div>input]:h-16 [&>div>input]:text-right [&>div>input]:text-[1.75rem]"
               />
             )}
-          </Flex>
-        </Flex>
+          </div>
+        </div>
 
-        <Flex justifyContent={"space-between"} fontSize="sm">
-          <Flex
-            gap={1}
-            alignItems={"center"}
-            visibility={address ? "visible" : "hidden"}
+        <div className="flex justify-between items-center">
+          <div
+            className={`flex items-center gap-2 ${address ? "visible" : "hidden"}`}
           >
-            <Text fontSize="sm" color="fg.muted" whiteSpace={"nowrap"}>
-              Balance: {formatNumber(balanceValue)}
-            </Text>
+            <Typography weight="medium" size="sm" noWrap>
+              {formatNumber(balanceValue)} {tokenInInfo?.symbol}
+            </Typography>
 
-            <Button
-              _hover={{
-                bg: "bg.subtle",
-                borderColor: "border.emphasized",
-              }}
-              size="xs"
-              color="fg.muted"
-              ml={1}
-              px={2}
-              h="18px"
-              fontSize="xs"
-              variant="outline"
-              display={address && !disabled ? undefined : "none"}
-              onClick={() =>
-                inputOnChange(
-                  normalizeValue(balance, tokenInInfo?.decimals).toString()
-                )
-              }
-            >
-              Max
-            </Button>
-          </Flex>
+            <div className="rounded-sm px-1 theme-surface theme-surface-2-hover hover:cursor-pointer transition-colors duration-200 ease-in-out">
+              <Typography
+                uppercase
+                weight="medium"
+                size="xs"
+                onClick={handleMaxOnClick}
+                className="text-[11px]!"
+              >
+                Max
+              </Typography>
+            </div>
+          </div>
 
           {usdValue ? (
-            <Text color={"gray.500"}>~{formatUSD(usdValue)}</Text>
+            <Typography size="xs" weight="medium">
+              ~{formatUSD(usdValue)}
+            </Typography>
           ) : null}
-        </Flex>
-      </Box>
-    </Flex>
+        </div>
+      </div>
+    </div>
   );
 };
 

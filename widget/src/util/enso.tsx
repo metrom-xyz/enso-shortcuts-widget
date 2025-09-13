@@ -8,6 +8,7 @@ import {
   type BundleParams,
   BundleActionType,
   type RouteData,
+  ProtocolData,
 } from "@ensofinance/sdk";
 import { type Address, isAddress } from "viem";
 import {
@@ -525,7 +526,11 @@ export const useEnsoProtocols = () => {
   });
 };
 
-export const useChainProtocols = (chainId: SupportedChainId) => {
+export type WithProjectId<T> = T & { projectId: string };
+
+export const useChainProtocols = (
+  chainId: SupportedChainId
+): WithProjectId<ProtocolData>[] | undefined => {
   const { data } = useEnsoProtocols();
 
   return data

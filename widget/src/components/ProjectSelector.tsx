@@ -1,42 +1,47 @@
-import {
-  createListCollection,
-  Select,
-  Text,
-  Box,
-  Flex,
-} from "@chakra-ui/react";
-import { useMemo } from "react";
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
-import { useChainProtocols } from "@/util/enso";
+import { useCallback, useMemo } from "react";
+import { useChainProtocols, WithProjectId } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
 import { ProjectFilter } from "@/types";
+import { List, RowComponentProps } from "react-window";
+import { ProtocolData } from "@ensofinance/sdk";
+import { Select, SelectOption, Typography } from "@metrom-xyz/ui";
 
 export const capitalize = (str?: string) =>
   str?.slice(0, 1).toUpperCase() + str?.slice(1);
 
 // Simple protocol icon component
 const ProtocolIcon = ({ logoUri }: { logoUri?: string }) => (
-  <Box
-    borderRadius={"50%"}
-    overflow={"hidden"}
-    width={"28px"}
-    height={"28px"}
-    minWidth={"28px"}
-    marginRight={"8px"}
-    display={"flex"}
-    alignItems={"center"}
-    justifyContent={"center"}
-    backgroundColor={"gray.50"}
-  >
+  <div className="flex items-center justify-center rounded-[50%] overflow-hidden w-7 h-7 mr-2">
     {logoUri && <img src={logoUri} alt="" width={"28px"} height={"28px"} />}
-  </Box>
+  </div>
 );
+
+const ProjectIndicator = ({
+  index,
+  projects,
+  style,
+  onClick,
+}: RowComponentProps<{
+  projects: WithProjectId<ProtocolData>[];
+  onClick: (projectSlug: string) => void;
+}>) => {
+  const project = projects[index];
+
+  const handlePoolOnClick = useCallback(() => {
+    onClick(project.slug);
+  }, [onClick, project.slug]);
+
+  return (
+    <div
+      style={style}
+      className="flex items-center gap-2 mr-8 rounded-lg"
+      onClick={handlePoolOnClick}
+    >
+      <ProtocolIcon logoUri={project.logosUri[0]} />
+      {capitalize(project.projectId)}
+    </div>
+  );
+};
 
 const ProjectSelector = ({
   value,
@@ -52,7 +57,9 @@ const ProjectSelector = ({
   projectsFilter?: ProjectFilter;
 }) => {
   const protocols = useChainProtocols(chainId);
-  const projectOptions = useMemo(() => {
+  const projectOptions: SelectOption<string>[] = useMemo(() => {
+    if (!protocols) return [{ value: "", label: "" }];
+
     let availableProjects = protocols;
 
     if (projectsFilter?.include?.length > 0) {
@@ -66,75 +73,107 @@ const ProjectSelector = ({
       );
     }
 
-    const sortedByName = availableProjects?.sort((a, b) =>
-      a.projectId?.localeCompare(b.projectId)
-    );
-
-    return createListCollection({
-      items: sortedByName || [],
-      itemToValue: (item) => item.projectId,
-      itemToString: (item) => capitalize(item.projectId),
-    });
+    return availableProjects
+      ?.sort((a, b) => a.projectId?.localeCompare(b.projectId))
+      .map((project) => ({
+        // FIXME: not the best solution
+        value: `${project.projectId}_${project.logosUri[0]}`,
+        label: project.projectId,
+      }));
   }, [protocols, projectsFilter]);
 
+  const onSelectChange = useCallback(
+    (option: SelectOption<string>) => {
+      onChange(option.value);
+    },
+    [onChange]
+  );
+
   return (
-    <SelectRoot
-      variant="outline"
+    <Select
+      messages={{ noResults: "Nothing here" }}
+      loading={!projectOptions}
       disabled={disabled}
-      value={[value]}
-      onValueChange={({ value }) => onChange(value[0])}
-      size="md"
-      w={"fit-content"}
-      minWidth={"180px"}
-      transition="all 0.2s ease-in-out"
-      collection={projectOptions}
-    >
-      <Select.Control>
-        <SelectTrigger maxWidth={"100%"} borderRadius={"xl"}>
-          <SelectValueText placeholder="Protocol (opt.)">
-            {([protocol]) =>
-              protocol ? (
-                <Flex alignItems={"center"}>
-                  <ProtocolIcon logoUri={protocol?.logosUri?.[0]} />
-                  <Text whiteSpace={"nowrap"}>
-                    {capitalize(protocol?.projectId)}
-                  </Text>
-                </Flex>
-              ) : (
-                <Flex alignItems={"center"}>
-                  <Text whiteSpace={"nowrap"}>Select protocol (opt.)</Text>
-                </Flex>
-              )
-            }
-          </SelectValueText>
-        </SelectTrigger>
+      options={projectOptions}
+      value={value}
+      search
+      onChange={onSelectChange}
+      renderOption={(option) => {
+        const [, logoUri] = option.value.split("_");
 
-        <Select.IndicatorGroup>
-          {value && !disabled && <Select.ClearTrigger />}
-          <Select.Indicator />
-        </Select.IndicatorGroup>
-      </Select.Control>
+        return (
+          <div className="flex items-center gap-2 mr-8 rounded-lg">
+            <ProtocolIcon logoUri={logoUri} />
+            <Typography
+              weight="medium"
+              autoCapitalize="on"
+              noWrap
+              truncate
+              className="overflow-hidden max-w-24"
+            >
+              {option.label}
+            </Typography>
+          </div>
+        );
+      }}
+    />
+    // <SelectRoot
+    //   variant="outline"
+    //   disabled={disabled}
+    //   value={[value]}
+    //   onValueChange={({ value }) => onChange(value[0])}
+    //   size="md"
+    //   w={"fit-content"}
+    //   minWidth={"180px"}
+    //   transition="all 0.2s ease-in-out"
+    //   collection={projectOptions}
+    // >
+    //   <Select.Control>
+    //     <SelectTrigger maxWidth={"100%"} borderRadius={"xl"}>
+    //       <SelectValueText placeholder="Protocol (opt.)">
+    //         {([protocol]) =>
+    //           protocol ? (
+    //             <Flex alignItems={"center"}>
+    //               <ProtocolIcon logoUri={protocol?.logosUri?.[0]} />
+    //               <Text whiteSpace={"nowrap"}>
+    //                 {capitalize(protocol?.projectId)}
+    //               </Text>
+    //             </Flex>
+    //           ) : (
+    //             <Flex alignItems={"center"}>
+    //               <Text whiteSpace={"nowrap"}>Select protocol (opt.)</Text>
+    //             </Flex>
+    //           )
+    //         }
+    //       </SelectValueText>
+    //     </SelectTrigger>
 
-      <Select.Positioner>
-        <SelectContent
-          portalled={false}
-          borderWidth={1}
-          borderRadius={"xl"}
-          bg={"bg"}
-        >
-          {projectOptions.items.map((item) => {
-            return (
-              <SelectItem key={item.slug} item={item}>
-                <Flex alignItems={"center"}>
-                  <ProtocolIcon logoUri={item.logosUri?.[0]} />
-                  {capitalize(item.projectId)}
-                </Flex>
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select.Positioner>
-    </SelectRoot>
+    //     <Select.IndicatorGroup>
+    //       {value && !disabled && <Select.ClearTrigger />}
+    //       <Select.Indicator />
+    //     </Select.IndicatorGroup>
+    //   </Select.Control>
+
+    //   <Select.Positioner>
+    //     <SelectContent
+    //       portalled={false}
+    //       borderWidth={1}
+    //       borderRadius={"xl"}
+    //       bg={"bg"}
+    //     >
+    //       {projectOptions.items.map((item) => {
+    //         return (
+    //           <SelectItem key={item.slug} item={item}>
+    //             <Flex alignItems={"center"}>
+    //   <ProtocolIcon logoUri={item.logosUri?.[0]} />
+    //   {capitalize(item.projectId)}
+    //             </Flex>
+    //           </SelectItem>
+    //         );
+    //       })}
+    //     </SelectContent>
+    //   </Select.Positioner>
+    // </SelectRoot>
   );
 };
 

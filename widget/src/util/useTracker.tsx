@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { create } from "zustand";
+import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { toaster } from "@/components/ui/toaster";
 import { useChainEtherscanUrl } from "./common";
 import { SupportedChainId } from "@/constants";
 
@@ -61,6 +61,7 @@ enum LayerZeroStatus {
 
 const useLayerZeroUrl = (hash?: `0x${string}`, reset?: () => void) => {
   const [loadingToastId, setLoadingToastId] = useState<string>();
+
   const { data } = useQuery({
     queryKey: ["layerZeroUrl", hash || "none", !!reset],
     queryFn: async () => {
@@ -84,38 +85,35 @@ const useLayerZeroUrl = (hash?: `0x${string}`, reset?: () => void) => {
 
     if (!loadingToastId) {
       setLoadingToastId(hash);
-      toaster.create({
+      toast.loading("Pending (0/4)", {
         id: hash,
-        title: "Pending (0/4)",
         description: "Waiting for source transaction completion",
-        type: "loading",
         action,
       });
     } else if (
       data?.source?.status &&
       data.source.status !== LayerZeroStatus.Success
     ) {
-      toaster.update(loadingToastId, {
-        title: "Pending (1/4)",
+      toast.loading("Pending (1/4)", {
+        id: loadingToastId,
         description: "Waiting for funds to be sent on destination",
       });
     } else if (data?.status?.name === LayerZeroStatus.Delivered) {
       reset?.();
-      toaster.update(loadingToastId, {
-        title: "Success (4/4) ",
+      toast.success("Success (4/4)", {
+        id: loadingToastId,
         description: "Bridging is complete",
-        type: "success",
         action,
       });
       setLoadingToastId(undefined);
     } else if (data?.status?.name === LayerZeroStatus.Confirming) {
-      toaster.update(loadingToastId, {
-        title: "Pending (3/4)",
+      toast.loading("Pending (3/4)", {
+        id: loadingToastId,
         description: "Waiting for destination execution",
       });
     } else if (data?.status?.name === LayerZeroStatus.Inflight) {
-      toaster.update(loadingToastId, {
-        title: "Pending (2/4)",
+      toast.loading("Pending (2/4)", {
+        id: loadingToastId,
         description: "Waiting for funds to be delivered on destination",
       });
     }
@@ -137,10 +135,9 @@ const useSingleChainTransactionTracking = (
     if (!reset) return;
 
     if (waitForTransaction.error) {
-      toaster.update(hash, {
-        title: "Error",
+      toast.error("Error", {
+        id: hash,
         description: waitForTransaction.error.message,
-        type: "error",
         action: link
           ? {
               label: "View on Explorer",
@@ -154,10 +151,9 @@ const useSingleChainTransactionTracking = (
       // reset tx hash to eliminate recurring notifications
       reset?.();
 
-      toaster.update(loadingToastId, {
-        title: "Success",
+      toast.success("Success", {
+        id: loadingToastId,
         description: description,
-        type: "success",
         action: link
           ? {
               label: "View on Explorer",
@@ -167,11 +163,9 @@ const useSingleChainTransactionTracking = (
       });
     } else if (waitForTransaction.isLoading) {
       if (!loadingToastId) {
-        toaster.create({
+        toast.loading("Transaction Pending", {
           id: hash,
-          title: "Transaction Pending",
           description: description,
-          type: "loading",
           action: link
             ? {
                 label: "View on Explorer",

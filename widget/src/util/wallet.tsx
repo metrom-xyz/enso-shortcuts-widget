@@ -19,9 +19,8 @@ import {
   formatNumber,
   normalizeValue,
 } from "@/util/index";
-import { toaster } from "@/components/ui/toaster";
 import { useTxTracker } from "./useTracker";
-
+import { toast } from "sonner";
 
 const useInterval = (callback: () => void, interval: number) => {
   const savedCallback = useCallback(callback, []);
@@ -150,11 +149,9 @@ export const useExtendedSendTransaction = ({
   const send = useCallback(() => {
     sendTransaction.sendTransaction(args, {
       onError: (error) => {
-        toaster.create({
-          title: "Error",
+        toast.error("Error", {
           // @ts-ignore
           description: error?.cause?.shortMessage || error.message,
-          type: "error",
         });
         console.error(error);
       },

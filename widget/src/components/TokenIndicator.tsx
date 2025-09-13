@@ -1,4 +1,3 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
 import {
   MOCK_IMAGE_URL,
   SupportedChainId,
@@ -6,6 +5,7 @@ import {
 } from "@/constants";
 import { formatCompactUsd } from "@/util";
 import { Token } from "@/types";
+import { Typography } from "@metrom-xyz/ui";
 
 const GECKO_HOSTNAME = "coingecko";
 
@@ -22,44 +22,27 @@ export const TokenIcon = ({
   token: Token;
   chainId?: SupportedChainId;
 }) => (
-  <Box position="relative" borderRadius={"50%"} minW={"28px"} minH={"28px"}>
-    <Box
-      borderRadius={"50%"}
-      overflow={"hidden"}
-      width={"28px"}
-      height={"28px"}
-    >
+  <div className="relative rounded-full min-w-8 min-h-8">
+    <div className="rounded-full overflow-hidden w-8 h-8">
       <img
         src={
           token?.logoURI ? transformGeckoUrl(token?.logoURI) : MOCK_IMAGE_URL
         }
         title={token?.symbol}
         alt={token?.symbol}
-        width={"28px"}
-        height={"28px"}
+        className="w-full h-full rounded-full"
       />
-    </Box>
+    </div>
     {chainId && (
-      <Box
-        position="absolute"
-        bottom="0"
-        right="-2px"
-        width="14px"
-        height="14px"
-        borderRadius="50%"
-        overflow="hidden"
-        border="1px solid white"
-        zIndex="1"
-      >
+      <div className="absolute bottom-0 -right-0.5 w-4 h-4 rounded-full overflow-hidden border-white z-10">
         <img
           src={`https://icons-ckg.pages.dev/stargate-light/networks/${STARGATE_CHAIN_NAMES[chainId]}.svg`}
           alt={`Chain ${chainId}`}
-          width="100%"
-          height="100%"
+          className="w-full h-full rounded-full"
         />
-      </Box>
+      </div>
     )}
-  </Box>
+  </div>
 );
 
 export const TokenIndicator = ({
@@ -71,69 +54,61 @@ export const TokenIndicator = ({
   chainId?: SupportedChainId;
   pr?: number;
 }) => (
-  <Flex align="center" gap={2} {...rest} justifyContent={"space-between"}>
+  <div className="flex items-center gap-2 justify-between" {...rest}>
     {token?.symbol === "UNI-V2" && token.underlyingTokens ? (
-      <Box position="relative" width={"28px"} height={"28px"}>
-        <Box
-          position="absolute"
-          width="100%"
-          height="100%"
-          overflow="hidden"
-          clipPath={"polygon(0 0, 46% 0, 46% 100%, 0% 100%)"}
-        >
+      <div className="relative w-8 h-8">
+        <div className="absolute w-full h-full overflow-hidden">
           <TokenIcon token={token.underlyingTokens[0]} chainId={chainId} />
-        </Box>
-
-        <Box
-          position="absolute"
-          width="100%"
-          height="100%"
-          overflow="hidden"
-          clipPath={"polygon(54% 0, 100% 0, 100% 100%, 54% 100%)"}
-        >
+        </div>
+        <div className="absolute w-full h-full overflow-hidden">
           <TokenIcon token={token.underlyingTokens[1]} chainId={chainId} />
-        </Box>
-      </Box>
+        </div>
+      </div>
     ) : (
       <TokenIcon token={token} chainId={chainId} />
     )}
 
-    <Flex flexDirection={"column"} maxW={"100px"}>
-      <Text whiteSpace={"nowrap"} textOverflow={"ellipsis"} overflow={"hidden"}>
-        {chainId ? token?.symbol : token?.name}
-      </Text>
+    <div className="flex flex-col items-start">
+      <Typography weight="medium" size="lg">
+        {token?.symbol}
+      </Typography>
       {token.underlyingTokens?.length > 0 && (
-        <Text
-          fontSize={"xs"}
-          color={"gray.500"}
-          whiteSpace={"nowrap"}
-          textOverflow={"ellipsis"}
-          overflow={"hidden"}
+        <Typography
+          weight="medium"
+          light
+          size="xs"
+          noWrap
+          truncate
+          className="overflow-hidden max-w-48"
         >
           {token.underlyingTokens.map((token) => token.symbol).join("/")}
-        </Text>
+        </Typography>
       )}
-    </Flex>
+    </div>
 
     {token.type === "defi" && (
-      <Flex direction="column" ml={2}>
+      <div className="flex flex-col self-end">
         {token.apy && (
-          <Box fontSize="xs" fontWeight="medium" whiteSpace="nowrap">
-            APY{" "}
-            <Text as="span" fontWeight="bold">
+          <div className="flex items-center gap-1">
+            <Typography light size="xs" weight="medium">
+              APY
+            </Typography>
+            <Typography size="xs" weight="medium">
               {token.apy.toFixed(2)}%
-            </Text>
-          </Box>
+            </Typography>
+          </div>
         )}
         {token.tvl && (
-          <Box fontSize="xs" fontWeight="medium" whiteSpace="nowrap">
-            TVL{" "}
-            <Text as="span" fontWeight="bold">
+          <div className="flex items-center gap-1">
+            <Typography light size="xs" weight="medium">
+              TVL
+            </Typography>
+            <Typography size="xs" weight="medium">
               {formatCompactUsd(token.tvl)}
-            </Text>
-          </Box>
+            </Typography>
+          </div>
         )}
-      </Flex>
+      </div>
     )}
-  </Flex>
+  </div>
 );

@@ -10,6 +10,7 @@ import {
 } from "@/constants";
 import { useStore } from "@/store";
 import { Token } from "@/types";
+import { useMemo } from "react";
 
 export const compareCaseInsensitive = (a: string, b: string) => {
   return !!(a && b && a?.toLowerCase() === b?.toLowerCase());
@@ -242,13 +243,18 @@ export const useOneInchTokenList = () => {
 export const useTokenFromList = (
   tokenAddress: Address | Address[],
   priorityChainId?: SupportedChainId
-) => {
+): (Token | undefined)[] => {
   const { data } = useCurrentChainList(priorityChainId);
-  const arrayData = Array.isArray(tokenAddress) ? tokenAddress : [tokenAddress];
 
-  return arrayData.map((address) =>
-    data?.find((token) => token.address == address)
-  );
+  return useMemo(() => {
+    const addresses = Array.isArray(tokenAddress)
+      ? tokenAddress
+      : [tokenAddress];
+
+    return addresses.map((address) =>
+      data?.find((token) => token.address === address)
+    );
+  }, [data, tokenAddress]);
 };
 
 export const useOutChainId = () => {

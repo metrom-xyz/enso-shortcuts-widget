@@ -6,16 +6,9 @@ import {
   ShieldAlert,
   TriangleAlert,
 } from "lucide-react";
-import { Box, Center, Flex, Link, Text } from "@chakra-ui/react";
 import { useStore } from "@/store";
-import { CloseButton } from "@/components/ui/close-button";
-import { Button } from "@/components/ui/button";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { NotifyType } from "@/types";
-import { useEffect } from "react";
+import { Button, Typography } from "@metrom-xyz/ui";
 
 const NOTIFICATION_COLORS = {
   [NotifyType.Success]: "green.500",
@@ -36,20 +29,21 @@ const NotificationIcons = {
 const getIcon = (variant: NotifyType) => {
   if (variant === NotifyType.Loading) {
     return (
-      <Center w={"96px"} h={"96px"}>
-        <ProgressCircleRoot value={null} size={"xl"} colorPalette={"blue"}>
+      <div className="w-24 h-24">
+        {/* TODO: add progress circle */}
+        {/* <ProgressCircleRoot value={null} size={"xl"} colorPalette={"blue"}>
           <ProgressCircleRing />
-        </ProgressCircleRoot>
-      </Center>
+        </ProgressCircleRoot> */}
+      </div>
     );
   }
 
   const Component = NotificationIcons[variant];
 
   return (
-    <Box color={NOTIFICATION_COLORS[variant]}>
+    <div style={{ color: NOTIFICATION_COLORS[variant] }}>
       <Component size={96} />
-    </Box>
+    </div>
   );
 };
 
@@ -70,55 +64,38 @@ export const Notification = () => {
   const handleClose = () => setNotification(undefined);
 
   return (
-    <Center w={"full"} h={"full"}>
-      <Flex
-        width={"95%"}
-        height={"95%"}
-        p={5}
-        boxShadow={"lg"}
-        zIndex={1000}
-        flexDirection={"column"}
-        bg={"bg.subtle"}
-      >
+    <div className="w-full h-full">
+      <div className="flex flex-col w-[95%] h-[95%] p-5 z-[1000]">
         {notification.variant !== NotifyType.Blocked && (
-          <CloseButton
-            position={"absolute"}
-            top={10}
-            right={5}
-            onClick={handleClose}
-            mr={5}
-          />
+          <Button className={{ root: "absolute top-10 right-5 mr-5" }} />
         )}
-        <Flex
-          flexDirection={"column"}
-          width={"full"}
-          height={"full"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          gap={2}
-        >
+        <div className="flex flex-col w-full h-full justify-center content-center gap-2">
           {getIcon(notification.variant)}
 
-          <Text
-            fontSize={notification.variant === NotifyType.Warning ? "lg" : "xl"}
+          <Typography
+            size={notification.variant === NotifyType.Warning ? "lg" : "xl"}
           >
             {notification.message}
-          </Text>
+          </Typography>
 
           {notification.variant !== NotifyType.Blocked && (
-            <Button mt={5} w={200} colorPalette={"black"} onClick={handleClose} >
+            <Button mt={5} w={200} colorPalette={"black"} onClick={handleClose}>
               Close
             </Button>
           )}
           {notification.link && (
-            <Link href={notification.link} target={"_blank"} color={"fg.muted"}>
+            <Button
+              href={notification.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               View details
               <ExternalLink size={14} />
-            </Link>
+            </Button>
           )}
-        </Flex>
-      </Flex>
-    </Center>
+        </div>
+      </div>
+    </div>
   );
 };
 

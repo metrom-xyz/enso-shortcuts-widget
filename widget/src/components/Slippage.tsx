@@ -1,14 +1,14 @@
+import { Chip, NumberInput, Popover, Typography } from "@metrom-xyz/ui";
 import { Settings } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import {
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverRoot,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Box, Flex, Input } from "@chakra-ui/react";
-import { InputGroup } from "@/components/ui/input-group";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useClickAway } from "react-use";
+
+const SLIPPAGE_OPTIONS = [
+  { value: 10, label: "0.1%" },
+  { value: 25, label: "0.25%" },
+  { value: 50, label: "0.5%" },
+  { value: 100, label: "1%" },
+];
 
 const Slippage = ({
   slippage,
@@ -18,6 +18,12 @@ const Slippage = ({
   setSlippage: (value: number) => void;
 }) => {
   const [customValue, setCustomValue] = useState("");
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverAnchor, setPopoverAnchor] = useState<HTMLDivElement | null>(
+    null
+  );
+  const chainNamePopoverRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const numericCustomValue = useMemo(() => {
     const numericValue = parseFloat(customValue);
@@ -31,81 +37,93 @@ const Slippage = ({
     if (numericCustomValue) setSlippage(Math.round(numericCustomValue * 100));
   }, [numericCustomValue]);
 
+  useClickAway(rootRef, () => {
+    setPopoverOpen(false);
+  });
+
   const handleCustomInput = (value: string) => {
     // Remove any non-numeric characters except decimal point
     const sanitizedValue = value.replace(/[^\d.]/g, "");
     setCustomValue(sanitizedValue);
   };
 
+  function handlePopoverToggle() {
+    setPopoverOpen((prev) => !prev);
+  }
+
   const setDefaultSlippage = (value: number) => {
     setSlippage(value);
     setCustomValue("");
   };
 
-  return (
-    <PopoverRoot>
-      <PopoverTrigger asChild>
-        <Flex
-          gap={1}
-          alignItems={"center"}
-          cursor={"pointer"}
-          w={"170px"}
-          _hover={{
-            textDecoration: "underline",
-          }}
-        >
-          <Box color="gray.500" fontSize={"xs"}>
-            Slippage tolerance: {slippage / 100}%
-          </Box>
-          <Settings size={10} />
-        </Flex>
-      </PopoverTrigger>
-      <PopoverContent bg={"bg.subtle"}>
-        <PopoverArrow />
-        <PopoverBody p={2}>
-          <Flex gap={1}>
-            {[
-              { value: 10, label: "0.1%" },
-              { value: 25, label: "0.25%" },
-              { value: 50, label: "0.5%" },
-              { value: 100, label: "1%" },
-            ].map(({ value, label }) => (
-              <Box
-                key={value}
-                onClick={() => setDefaultSlippage(value)}
-                padding={2}
-                flex={1}
-                border="1px solid"
-                borderColor="border.emphasized"
-                backgroundColor={slippage === value ? "bg" : "transparent"}
-                borderRadius={"lg"}
-                cursor={"pointer"}
-              >
-                {label}
-              </Box>
-            ))}
-          </Flex>
+  const getSlippageOnClickHandler = useCallback((value: number) => {
+    return () => {
+      setDefaultSlippage(value);
+    };
+  }, []);
 
-          <Box mt={3}>
-            <InputGroup endElement={"%"}>
-              <Input
-                borderColor={
-                  !numericCustomValue && customValue ? "red.500" : "inherit"
-                }
-                value={customValue}
-                onChange={(e) => handleCustomInput(e.target.value)}
-                placeholder="Custom"
-              />
-            </InputGroup>
+  return (
+    <div ref={rootRef}>
+      <div className="flex items-center gap-1">
+        <Typography uppercase light size="xs" weight="medium">
+          Slippage tolerance:
+        </Typography>
+        <div ref={setPopoverAnchor}>
+          <Chip
+            size="xs"
+            clickable
+            active={popoverOpen}
+            onClick={handlePopoverToggle}
+            className={{ root: "w-12! py-0! px-1! rounded-sm!" }}
+          >
+            <Typography size="xs" weight="medium" className="text-[11px]!">
+              {slippage / 100} %
+            </Typography>
+          </Chip>
+        </div>
+      </div>
+      <Popover
+        open={popoverOpen}
+        anchor={popoverAnchor}
+        ref={chainNamePopoverRef}
+        placement="right-start"
+      >
+        <div className="w-full flex flex-col gap-2.5 max-w-72 p-4">
+          <div className="flex gap-2.5">
+            {SLIPPAGE_OPTIONS.map(({ value, label }) => (
+              <Chip
+                key={value}
+                clickable
+                active={slippage === value}
+                onClick={getSlippageOnClickHandler(value)}
+                className={{ root: "rounded-md!" }}
+              >
+                <Typography weight="medium">{label}</Typography>
+              </Chip>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-2.5">
+            <NumberInput
+              value={customValue}
+              suffix="%"
+              onChange={(e) => handleCustomInput(e.target.value)}
+              placeholder="Custom"
+            />
             {numericCustomValue && numericCustomValue > 1 && (
-              <Box color="orange.500" fontSize="xs" mt={1}>
-                Slippage tolerance above 1% could lead to an unfavorable rate.
-              </Box>
+              <Typography
+                uppercase
+                size="xs"
+                weight="medium"
+                className="text-orange-400!"
+              >
+                Slippage tolerance above 1% could lead to an unfavorable rate
+              </Typography>
             )}
-          </Box>
-        </PopoverBody>
-      </PopoverContent>
-    </PopoverRoot>
+          </div>
+        </div>
+      </Popover>
+    </div>
   );
 };
 

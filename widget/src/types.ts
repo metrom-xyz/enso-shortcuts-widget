@@ -44,7 +44,6 @@ export type ProjectFilter = {
 
 export type WidgetComponentProps = {
   onSuccess?: (hash: string, details?: SuccessDetails) => void;
-  adaptive?: boolean;
   tokenOut?: Address;
   tokenIn?: Address;
   notificationPlacement?: Placement;

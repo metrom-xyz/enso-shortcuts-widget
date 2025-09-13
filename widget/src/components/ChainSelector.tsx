@@ -1,19 +1,7 @@
-import {
-  createListCollection,
-  Flex,
-  Select,
-  Text,
-  Box,
-} from "@chakra-ui/react";
-import { forwardRef, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useChains } from "wagmi";
 import { STARGATE_CHAIN_NAMES, SupportedChainId } from "@/constants";
-import {
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
+import { Select, SelectOption, Typography } from "@metrom-xyz/ui";
 
 // Define chain type with required properties
 type Chain = {
@@ -29,7 +17,7 @@ const ChainIcon = ({ chainId }: { chainId: SupportedChainId }) => {
   const iconUrl = `https://icons-ckg.pages.dev/stargate-light/networks/${STARGATE_CHAIN_NAMES[chainId]}.svg`;
 
   return (
-    <Box borderRadius={"50%"} overflow={"hidden"} minW={"28px"} minH={"28px"}>
+    <div className="overflow-hidden min-w-7 min-h-7 rounded-[50%]">
       <img
         src={iconUrl}
         title={chain?.name || "Unknown Chain"}
@@ -37,20 +25,16 @@ const ChainIcon = ({ chainId }: { chainId: SupportedChainId }) => {
         width={"28px"}
         height={"28px"}
       />
-    </Box>
+    </div>
   );
 };
 
 // Chain indicator component to display in the dropdown
-const ChainIndicator = forwardRef<HTMLDivElement, { chain: Chain }>(
-  ({ chain }, ref) => (
-    <Flex align="center" gap={2} mr={8} ref={ref} borderRadius={"lg"}>
-      <ChainIcon chainId={chain.id} />
-      <Text fontWeight="medium" whiteSpace={"nowrap"}>
-        {chain?.name || "Unknown Chain"}
-      </Text>
-    </Flex>
-  )
+const ChainIndicator = ({ value, label }) => (
+  <div className="flex items-center gap-2 mr-8 rounded-lg">
+    <ChainIcon chainId={value} />
+    <Typography weight="medium">{label || "Unknown Chain"}</Typography>
+  </div>
 );
 
 // Chain selector component
@@ -67,65 +51,33 @@ const ChainSelector = ({
 
   const chainOptions = useMemo(() => {
     // Create collection of available chains
-    const availableChains = chains
+    return chains
       .filter((chain) =>
         Object.values(SupportedChainId).includes(chain.id as SupportedChainId)
       )
       .map((chain) => ({
-        id: chain.id as SupportedChainId,
-        name: chain.name,
+        value: chain.id as SupportedChainId,
+        label: chain.name,
       }));
-
-    return createListCollection({
-      items: availableChains,
-      itemToValue: (item) => item.id.toString(),
-      itemToString: (item) => item.name,
-    });
   }, [chains]);
 
+  const onSelectChange = useCallback(
+    (chain: SelectOption<SupportedChainId>) => {
+      onChange(Number(chain.value) as SupportedChainId);
+    },
+    [onChange]
+  );
+
   return (
-    <SelectRoot
-      variant="outline"
-      borderRadius={"xl"}
-      transition="all 0.2s ease-in-out"
+    <Select
+      messages={{ noResults: "Nothing here" }}
+      options={chainOptions}
+      value={value}
+      search
       disabled={disabled}
-      collection={chainOptions}
-      value={[value?.toString()]}
-      onValueChange={({ value }) =>
-        onChange(Number(value[0]) as SupportedChainId)
-      }
-      size="md"
-      w={"fit-content"}
-      minWidth={"180px"}
-    >
-      <Select.Control>
-        <SelectTrigger borderRadius={"xl"}>
-          <SelectValueText>
-            {(items) =>
-              items[0] ? (
-                <ChainIndicator chain={items[0]} />
-              ) : (
-                <Text whiteSpace={"nowrap"}>Select chain</Text>
-              )
-            }
-          </SelectValueText>
-        </SelectTrigger>
-        <Select.IndicatorGroup>
-          <Select.Indicator />
-        </Select.IndicatorGroup>
-      </Select.Control>
-      <Select.Positioner>
-        <Select.Content borderWidth={1} borderRadius={"xl"} bg={"bg"}>
-          {chainOptions.items.map((item) => {
-            return (
-              <SelectItem key={item.id.toString()} item={item}>
-                <ChainIndicator chain={item} />
-              </SelectItem>
-            );
-          })}
-        </Select.Content>
-      </Select.Positioner>
-    </SelectRoot>
+      onChange={onSelectChange}
+      renderOption={ChainIndicator}
+    />
   );
 };
 

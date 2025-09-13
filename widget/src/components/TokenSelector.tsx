@@ -1,31 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  createListCollection,
-  Stack,
-  Flex,
-  Input,
-  Text,
-  Skeleton,
-  Box,
-} from "@chakra-ui/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMemo } from "react";
 import { Address, isAddress } from "viem";
-import { FixedSizeList as List } from "react-window";
 import { useCurrentChainList } from "@/util/common";
 import { formatNumber, normalizeValue } from "@/util";
 import { useEnsoBalances, useEnsoToken } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
+import { useClickAway } from "react-use";
+import { ProjectFilter, Token } from "@/types";
 import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
-import { TokenIndicator } from "@/components/TokenIndicator";
+  Button,
+  Popover,
+  Skeleton,
+  TextInput,
+  Typography,
+} from "@metrom-xyz/ui";
 import ChainSelector from "./ChainSelector";
 import ProjectSelector from "./ProjectSelector";
-import { ProjectFilter, Token } from "@/types";
+import { List, RowComponentProps } from "react-window";
+import { TokenIndicator } from "./TokenIndicator";
 
 type TokenWithBalance = Token & {
   balance?: string;
@@ -36,40 +28,70 @@ type TokenWithBalance = Token & {
 };
 
 const TokenIndicatorSkeleton = () => (
-  <Flex align="center" gap={2}>
-    <Skeleton height="28px" width="28px" borderRadius="full" />
-    <Flex flexDirection={"column"}>
-      <Skeleton height="22px" width="50px" mb="2px" />
-    </Flex>
-  </Flex>
+  <div className="w-full flex items-center gap-2">
+    <div className="h-7 w-7 theme-surface rounded-full animate-pulse" />
+    <div className="h-6 w-14 theme-surface animate-pulse rounded-md" />
+  </div>
 );
 
-const DetailedTokenIndicator = ({ token }: { token: TokenWithBalance }) => (
-  <Flex align="center" w={"full"} justifyContent={"space-between"}>
-    <TokenIndicator token={token} />
+const DetailedTokenIndicator = ({
+  style,
+  index,
+  loading,
+  value,
+  tokens,
+  onClick,
+}: RowComponentProps<{
+  loading: boolean;
+  value: string;
+  tokens: TokenWithBalance[];
+  onClick: (tokens: string) => void;
+}>) => {
+  const token = tokens[index];
 
-    <Flex flexDirection={"column"} alignItems={"flex-end"}>
-      <Text
-        color={"gray.400"}
-        textOverflow={"ellipsis"}
-        whiteSpace={"nowrap"}
-        overflow={"hidden"}
-        maxWidth={"150px"}
-        title={token.symbol}
+  const handleTokenOnClick = useCallback(() => {
+    onClick(token.address);
+  }, [onClick, token?.address]);
+
+  if (loading)
+    return (
+      <div
+        style={style}
+        className="flex w-full px-4 items-center justify-center"
       >
-        {`${
-          token.balance
-            ? formatNumber(normalizeValue(token.balance, token.decimals))
-            : ""
-        } ${token.symbol}`}
-      </Text>
+        <div className="w-full flex gap-3 items-center">
+          <Skeleton circular width={36} />
+          <Skeleton width={80} />
+        </div>
+        <div className="w-full flex flex-col items-end gap-1">
+          <Skeleton width={36} size="sm" />
+          <Skeleton width={36} size="xs" />
+        </div>
+      </div>
+    );
 
-      <Text ml={2} fontSize={"md"}>
-        {token.costUsd ? `$${token.costUsd.toFixed(2)}` : ""}
-      </Text>
-    </Flex>
-  </Flex>
-);
+  if (!token) return null;
+
+  return (
+    <div
+      style={style}
+      className={`w-full flex items-center justify-between px-4 cursor-pointer theme-surface-hover transition-colors duration-200 ease-in-out ${value === token.address ? "theme-surface-active" : ""}`}
+      onClick={handleTokenOnClick}
+    >
+      <TokenIndicator token={token} />
+      <div className="w-full flex flex-col gap-1 items-end">
+        <Typography size="sm" weight="medium">
+          {token.balance
+            ? formatNumber(normalizeValue(token.balance, token.decimals))
+            : "-"}
+        </Typography>
+        <Typography size="xs" weight="medium" light>
+          {token.costUsd ? `$${token.costUsd.toFixed(2)}` : "-"}
+        </Typography>
+      </div>
+    </div>
+  );
+};
 
 const hasCoincidence = (tokens: Token[], address: Address) =>
   tokens.findIndex(
@@ -115,7 +137,21 @@ const TokenSelector = ({
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectionChainId, setSelectionChainId] = useState(chainId);
-  const [selectedProject, setSelectedProject] = useState(project);
+  const [composedSelectedProject, setComposedSelectedProject] =
+    useState(project);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverAnchor, setPopoverAnchor] = useState<HTMLDivElement | null>(
+    null
+  );
+  const chainNamePopoverRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  const selectedProject = useMemo(() => {
+    // Extract the slug from the composed option value slug_logoUri
+    if (!composedSelectedProject) return;
+    const [projectId, _] = composedSelectedProject.split("_");
+    return projectId;
+  }, [composedSelectedProject]);
 
   const { data: balances, isLoading: balancesLoading } =
     useEnsoBalances(selectionChainId);
@@ -130,6 +166,10 @@ const TokenSelector = ({
       project: selectedProject,
       enabled: !!selectedProject,
     });
+
+  useClickAway(rootRef, () => {
+    setPopoverOpen(false);
+  });
 
   useEffect(() => {
     setSelectionChainId(chainId);
@@ -185,9 +225,9 @@ const TokenSelector = ({
     enabled: isAddress(value),
   });
 
-  useEffect(() => {
-    setSelectedProject(project);
-  }, [project, selectionChainId]);
+  // useEffect(() => {
+  //   setSelectedProject(project);
+  // }, [project, selectionChainId]);
 
   const tokenList = useMemo(() => {
     let tokens = currentTokenList ? currentTokenList.slice() : [];
@@ -257,189 +297,140 @@ const TokenSelector = ({
       );
     }
 
-    return createListCollection({
-      items,
-      itemToValue: (item) => item.address,
-      itemToString: (item) => item.symbol,
-    });
+    return items;
   }, [tokenList, searchText]);
 
   const onValueChange = useCallback(
-    ({ value }: { value: string[] }) => {
-      onChange(value[0] as string);
+    (tokenAddress: string) => {
+      onChange(tokenAddress);
       setChainId(selectionChainId);
       setSelectionChainId(selectionChainId);
+      setPopoverOpen(false);
     },
     [onChange, selectionChainId, setChainId]
   );
+
   const selectValue = useMemo(
-    () => (chainId === selectionChainId ? [value] : []),
+    () => (chainId === selectionChainId ? value : ""),
     [value, chainId, selectionChainId]
   );
 
-  const onOpenChange = useCallback(
-    ({ open }: { open: boolean }) => {
-      if (open || obligatedToken || searchedToken) setSearchText("");
-      setSelectionChainId(chainId);
-    },
-    [obligatedToken, searchedToken, setSearchText, chainId]
-  );
+  // FIXME: not optimal, have the token in the state
+  const selectValueToken = useMemo(() => {
+    if (!selectValue) return undefined;
+    return tokenOptions.find(({ address }) => address === selectValue);
+  }, [selectValue, tokenOptions]);
 
-  const isLoading =
+  //   const onOpenChange = useCallback(
+  //     ({ open }: { open: boolean }) => {
+  //       if (open || obligatedToken || searchedToken) setSearchText("");
+  //       setSelectionChainId(chainId);
+  //     },
+  //     [obligatedToken, searchedToken, setSearchText, chainId]
+  //   );
+
+  const handlePopoverToggle = useCallback(() => {
+    if (popoverOpen || obligatedToken || searchedToken) setSearchText("");
+    setSelectionChainId(chainId);
+    setPopoverOpen((prev) => !prev);
+  }, [popoverOpen]);
+
+  const loading =
     projectTokensLoading ||
     tokensLoading ||
     searchedTokenLoading ||
     valueTokenLoading ||
     !tokensFetched;
 
+  const itemCount = useMemo(
+    () => Math.max(loading ? 7 : tokenOptions.length, 1),
+    [loading, tokenOptions.length]
+  );
+
   return (
-    <SelectRoot
-      variant="outline"
-      disabled={!!obligatedToken}
-      collection={tokenOptions}
-      value={selectValue}
-      onValueChange={onValueChange}
-      size="md"
-      w={"fit-content"}
-      onOpenChange={onOpenChange}
-      borderRadius={"xl"}
-    >
-      <SelectTrigger
-        borderRadius={"xl"}
-        w={"fit-content"}
-        maxWidth={"100%"}
-        transition="all 0.2s ease-in-out"
-        opacity={1}
-        css={{
-          "& > button": {
-            opacity: "1 !important",
-          },
-        }}
+    <div ref={rootRef}>
+      <Popover
+        open={popoverOpen}
+        anchor={popoverAnchor}
+        ref={chainNamePopoverRef}
+        placement="right-start"
       >
-        {value ? (
-          <SelectValueText
-            placeholder="Select token"
-            width={"fit-content"}
-            maxWidth={"100%"}
-          >
-            {(tokens: Token[]) =>
-              isLoading ? (
-                <TokenIndicatorSkeleton />
-              ) : tokens[0] ? (
-                <TokenIndicator
-                  chainId={selectionChainId}
-                  token={tokens[0] || undefined}
-                />
-              ) : (
-                <Text whiteSpace={"nowrap"}>Select token</Text>
-              )
-            }
-          </SelectValueText>
-        ) : (
-          <Text whiteSpace={"nowrap"}>Select Token</Text>
-        )}
-      </SelectTrigger>
-
-      <SelectContent
-        portalRef={portalRef}
-        w={"100%"}
-        minWidth={"300px"}
-        minHeight={"400px"}
-        borderWidth={1}
-        borderRadius={"xl"}
-        bg={"bg"}
-      >
-        <Flex
-          height={"100%"}
-          flexDirection={"column"}
-          gap={2}
-          p={2}
-          width={"100%"}
-        >
-          <Flex justifyContent={"space-between"} gap={2}>
-            <ChainSelector
-              disabled={!!project}
-              value={selectionChainId}
-              onChange={useCallback(
-                (chainId) => {
-                  setSelectionChainId(chainId);
-                },
-                [setSelectionChainId]
-              )}
-            />
-            <ProjectSelector
-              disabled={!!project}
-              value={selectedProject}
-              onChange={setSelectedProject}
-              chainId={selectionChainId}
-              projectsFilter={projectsFilter}
-            />
-          </Flex>
-
-          <Box height={"36px"}>
-            <Input
-              paddingX={2}
+        <div className="w-full max-w-[450px] h-[500px]">
+          <div className="flex flex-col w-full h-full gap-2.5">
+            <div className="flex justify-between gap-2 px-4 pt-4">
+              <ChainSelector
+                disabled={!!project}
+                value={selectionChainId}
+                onChange={useCallback(
+                  (chainId) => {
+                    setSelectionChainId(chainId);
+                  },
+                  [setSelectionChainId]
+                )}
+              />
+              <ProjectSelector
+                disabled={!!project}
+                value={composedSelectedProject}
+                onChange={setComposedSelectedProject}
+                chainId={selectionChainId}
+                projectsFilter={projectsFilter}
+              />
+            </div>
+            <TextInput
               autoFocus
+              size="sm"
               placeholder="Search by name or paste address"
               value={searchText}
               onChange={(e) => obligatedToken || setSearchText(e.target.value)}
-              size={"sm"}
-              borderRadius={"md"}
+              className="px-4"
             />
-          </Box>
-
-          {isLoading && (
-            <Stack gap={3} width="100%" padding={2}>
-              {[...Array(6)].map((_, index) => (
-                <Flex
-                  key={index}
-                  align="center"
-                  w={"full"}
-                  justifyContent={"space-between"}
-                >
-                  <Flex align="center">
-                    <Skeleton
-                      height="24px"
-                      width="24px"
-                      borderRadius="full"
-                      mr={2}
-                    />
-                    <Skeleton height="20px" width="80px" />
-                  </Flex>
-                  <Flex flexDirection={"column"} alignItems={"flex-end"}>
-                    <Skeleton height="16px" width="100px" />
-                    <Skeleton height="16px" width="60px" mt={1} />
-                  </Flex>
-                </Flex>
-              ))}
-            </Stack>
-          )}
-          {
+            <div className="flex justify-between items-center px-4">
+              <Typography uppercase size="xs" weight="medium" light>
+                Token
+              </Typography>
+              <Typography uppercase size="xs" weight="medium" light>
+                Balance
+              </Typography>
+            </div>
             <List
-              height={350}
-              itemCount={tokenOptions.items.length}
-              itemSize={48}
-              width={"100%"}
-            >
-              {({ index, style }) => {
-                const token = tokenOptions.items[index];
-
-                return (
-                  <SelectItem
-                    item={token}
-                    key={token.address}
-                    style={style}
-                    borderRadius={"md"}
-                  >
-                    <DetailedTokenIndicator token={token as TokenWithBalance} />
-                  </SelectItem>
-                );
+              rowCount={itemCount}
+              rowHeight={48}
+              rowProps={{
+                loading,
+                tokens: loading
+                  ? new Array(7).fill(null)
+                  : (tokenOptions as TokenWithBalance[]),
+                value: selectValue,
+                onClick: onValueChange,
               }}
-            </List>
-          }
-        </Flex>
-      </SelectContent>
-    </SelectRoot>
+              rowComponent={DetailedTokenIndicator}
+              className="h-[350px]"
+            />
+          </div>
+        </div>
+      </Popover>
+      <div ref={setPopoverAnchor} className="h-full">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handlePopoverToggle}
+          className={{ root: "min-h-16! min-w-32! py-2! px-3!" }}
+        >
+          {loading ? (
+            <TokenIndicatorSkeleton />
+          ) : selectValueToken ? (
+            <TokenIndicator
+              chainId={selectionChainId}
+              token={selectValueToken || undefined}
+            />
+          ) : (
+            <Typography size="sm" weight="medium" uppercase>
+              Select token
+            </Typography>
+          )}
+        </Button>
+      </div>
+    </div>
   );
 };
 

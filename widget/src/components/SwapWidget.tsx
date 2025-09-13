@@ -344,49 +344,50 @@ const SwapWidget = ({
       <div ref={portalRef} className="absolute ">
         <Notification />
       </div>
+      <div className="flex flex-col gap-2.5">
+        <div className="relative flex flex-col gap-2.5">
+          <SwapInput
+            chainId={chainId}
+            projects={inProjects}
+            setChainId={setFromChainId}
+            limitTokens={limitInputTokens && MAINNET_ZAP_INPUT_TOKENS}
+            excludeTokens={inTokens?.exclude}
+            obligatedToken={obligatedToken === ObligatedToken.TokenIn}
+            portalRef={portalRef}
+            tokenValue={tokenIn}
+            tokenOnChange={setTokenIn}
+            inputValue={valueIn}
+            inputOnChange={setValueIn}
+            usdValue={tokenInUsdPrice}
+          />
 
-      <div className="flex flex-col overflow-hidden gap-2.5">
-        <SwapInput
-          chainId={chainId}
-          projects={inProjects}
-          setChainId={setFromChainId}
-          limitTokens={limitInputTokens && MAINNET_ZAP_INPUT_TOKENS}
-          excludeTokens={inTokens?.exclude}
-          obligatedToken={obligatedToken === ObligatedToken.TokenIn}
-          portalRef={portalRef}
-          tokenValue={tokenIn}
-          tokenOnChange={setTokenIn}
-          inputValue={valueIn}
-          inputOnChange={setValueIn}
-          usdValue={tokenInUsdPrice}
-        />
+          {displayTokenRotation && (
+            <div
+              onClick={handleInvertTokensOnClick}
+              className="flex justify-center items-center absolute top-[43%] place-self-center rounded-full p-1 theme-surface theme-surface-2-hover hover:cursor-pointer transition-colors duration-200 ease-in-out z-10"
+            >
+              <ArrowDown size={24} className="theme-text" />
+            </div>
+          )}
 
-        {displayTokenRotation && (
-          <div
-            onClick={handleInvertTokensOnClick}
-            className="flex justify-center items-center absolute top-[93px] place-self-center rounded-full p-1 theme-surface theme-surface-2-hover hover:cursor-pointer transition-colors duration-200 ease-in-out z-10"
-          >
-            <ArrowDown size={24} className="theme-text" />
-          </div>
-        )}
-
-        <SwapInput
-          disabled
-          project={outProject}
-          projects={outProjects}
-          chainId={outChainId}
-          setChainId={setOutChainId}
-          limitTokens={outTokens?.include}
-          excludeTokens={outTokens?.exclude}
-          obligatedToken={obligatedToken === ObligatedToken.TokenOut}
-          loading={routerLoading || routerIsFetching}
-          portalRef={portalRef}
-          tokenValue={tokenOut}
-          tokenOnChange={setTokenOut}
-          inputValue={valueOut?.toString()}
-          inputOnChange={() => {}}
-          usdValue={tokenOutUsdPrice}
-        />
+          <SwapInput
+            disabled
+            project={outProject}
+            projects={outProjects}
+            chainId={outChainId}
+            setChainId={setOutChainId}
+            limitTokens={outTokens?.include}
+            excludeTokens={outTokens?.exclude}
+            obligatedToken={obligatedToken === ObligatedToken.TokenOut}
+            loading={routerLoading || routerIsFetching}
+            portalRef={portalRef}
+            tokenValue={tokenOut}
+            tokenOnChange={setTokenOut}
+            inputValue={valueOut?.toString()}
+            inputOnChange={() => {}}
+            usdValue={tokenOutUsdPrice}
+          />
+        </div>
 
         <div className="flex flex-col gap-2.5">
           <div className="flex flex-col justify-start gap-2.5">

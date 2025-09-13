@@ -26,7 +26,7 @@ The Enso Shortcuts Widget is a React component that provides a seamless interfac
 To install the widget in your project:
 
 ```bash
-npm install @ensofinance/shortcuts-widget
+npm install @metrom-xyz/enso-shortcuts-widget
 ```
 
 > **Note:** This package requires `wagmi` and `viem` as peer dependencies. Please ensure these are installed in your project.
@@ -41,19 +41,14 @@ To use the widget, you'll need an Enso API key. Visit [https://enso.finance](htt
 
 ```tsx
 import React from "react";
-import SwapWidget from "@ensofinance/shortcuts-widget";
+import { Widget } from "@metrom-xyz/enso-shortcuts-widget";
 
 const App = () => {
-    return (
-        <div className="app-container">
-            <SwapWidget
-                apiKey="YOUR_API_KEY"
-                // Optional configuration
-                enableShare={true}
-                adaptive={true}
-            />
-        </div>
-    );
+  return (
+    <div className="app-container">
+      <Widget apiKey="YOUR_API_KEY" />
+    </div>
+  );
 };
 
 export default App;
@@ -63,30 +58,28 @@ export default App;
 
 ```tsx
 import React, { useState } from "react";
-import SwapWidget from "@ensofinance/shortcuts-widget";
+import { Widget } from "@metrom-xyz/enso-shortcuts-widget";
 
 const App = () => {
-    const [selectedTokens, setSelectedTokens] = useState(null);
+  const [selectedTokens, setSelectedTokens] = useState(null);
 
-    const handleChange = (data) => {
-        setSelectedTokens(data);
-        console.log("Widget selection changed:", data);
-    };
+  const handleChange = (data) => {
+    setSelectedTokens(data);
+    console.log("Widget selection changed:", data);
+  };
 
-    return (
-        <div className="app-container">
-            <SwapWidget
-                apiKey="YOUR_API_KEY"
-                tokenIn="0x1234..." // Specify input token address
-                chainId={1} // Ethereum mainnet
-                tokenOut="0xabcd..." // Specify output token address
-                outChainId={137} // Polygon
-                onChange={handleChange}
-                enableShare={true}
-                indicateRoute={true}
-            />
-        </div>
-    );
+  return (
+    <div className="app-container">
+      <Widget
+        apiKey="YOUR_API_KEY"
+        tokenIn="0x1234..." // Specify input token address
+        chainId={1} // Ethereum mainnet
+        tokenOut="0xabcd..." // Specify output token address
+        outChainId={137} // Polygon
+        onChange={handleChange}
+      />
+    </div>
+  );
 };
 
 export default App;
@@ -96,7 +89,7 @@ export default App;
 
 ### Props
 
-The `SwapWidget` component accepts the following props:
+The `Widget` component accepts the following props:
 
 #### Required
 
@@ -117,7 +110,6 @@ The `SwapWidget` component accepts the following props:
 
 #### UI Configuration
 
-- `themeConfig` (SystemConfig): Customize the widget's appearance
 - `enableShare` (boolean): Enable route sharing functionality (copy with button)
 - `obligateSelection` (boolean): Force users to select tokens
 - `rotateObligated` (boolean | 0 | 1): Display arrow to rotate obligated token selection
@@ -129,10 +121,6 @@ The `SwapWidget` component accepts the following props:
 
 - `onChange` (function): Callback triggered when token selections or route change
 - `onSuccess` (function): Callback called with amount argument once user perfoms swap action
-
-## Customization
-
-The widget can be customized using the `themeConfig` prop which accepts a `SystemConfig` object from Chakra UI. This allows you to match the widget's appearance to your application's design system.
 
 ## License
 

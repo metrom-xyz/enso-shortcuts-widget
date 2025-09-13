@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@ensofinance/sdk": "^1.0.1",
-    "@ensofinance/shortcuts-widget": "workspace:*",
+    "@metrom-xyz/enso-shortcuts-widget": "workspace:*",
     "@metrom-xyz/ui": "^0.11.5",
     "@rainbow-me/rainbowkit": "^2.2.4",
     "@tailwindcss/vite": "^4.1.13",

@@ -26,7 +26,7 @@ The Enso Shortcuts Widget is a React component that provides a seamless interfac
 To install the widget in your project:
 
 ```bash
-npm install @ensofinance/shortcuts-widget
+npm install @metrom-xyz/enso-shortcuts-widget
 ```
 
 > **Note:** This package requires `wagmi` and `viem` as peer dependencies. Please ensure these are installed in your project.
@@ -41,7 +41,7 @@ To use the widget, you'll need an Enso API key. Visit [https://enso.finance](htt
 
 ```tsx
 import React from "react";
-import SwapWidget from "@ensofinance/shortcuts-widget";
+import SwapWidget from "@metrom-xyz/enso-shortcuts-widget";
 
 const App = () => {
   return (
@@ -63,7 +63,7 @@ export default App;
 
 ```tsx
 import React, { useState } from "react";
-import SwapWidget from "@ensofinance/shortcuts-widget";
+import SwapWidget from "@metrom-xyz/enso-shortcuts-widget;
 
 const App = () => {
   const [selectedTokens, setSelectedTokens] = useState(null);

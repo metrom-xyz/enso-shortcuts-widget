@@ -9,12 +9,10 @@ import { Address, isAddress } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useLocation, useNavigate } from "react-router-dom";
 import Providers from "@/components/Providers";
-import { Widget } from "@ensofinance/shortcuts-widget";
-
+import { Widget } from "@metrom-xyz/enso-shortcuts-widget";
 import logoUrl from "./logo_black_white.png";
 
 import "@rainbow-me/rainbowkit/styles.css";
-// import "./App.css";
 
 const EnsoApiKey = import.meta.env.VITE_ENSO_API_KEY;
 

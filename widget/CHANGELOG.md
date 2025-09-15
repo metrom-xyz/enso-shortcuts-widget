@@ -1,5 +1,13 @@
 # @metrom-xyz/enso-shortcuts-widget
 
+## v1.1.1
+
+### Feature changes
+
+- Add accordion with operation details
+- Add connect button
+- General improvements
+
 ## v1.1.0
 
 ### Feature changes

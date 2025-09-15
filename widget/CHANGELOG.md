@@ -1,5 +1,12 @@
 # @metrom-xyz/enso-shortcuts-widget
 
+## v1.1.2
+
+### Fixes changes
+
+- Update build config
+- Minor fixes
+
 ## v1.1.1
 
 ### Feature changes

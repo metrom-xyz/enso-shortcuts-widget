@@ -12,7 +12,7 @@ import {
 import { Address, isAddress } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePriorityChainId, useTokenFromList } from "./common";
-import erc20Abi from "@/erc20Abi.json";
+import erc20Abi from "../abi/erc20Abi.json";
 import { ETH_ADDRESS, SupportedChainId } from "@/constants";
 import {
   compareCaseInsensitive,

@@ -11,13 +11,7 @@ import { useStore } from "@/store";
 import { setApiKey } from "@/util/enso";
 import { TxTracker } from "@/util/useTracker";
 import { Card } from "@metrom-xyz/ui";
-import {
-  WidgetComponentProps,
-  WidgetState,
-  Placement,
-  ObligatedToken,
-  SuccessDetails,
-} from "./types";
+import { WidgetComponentProps } from "./types";
 import { Address } from "viem";
 import SwapWidget from "./components/SwapWidget";
 import { Toaster } from "sonner";
@@ -110,12 +104,3 @@ const Widget = ({
 };
 
 export { Widget };
-
-export type {
-  WidgetComponentProps,
-  WidgetProps,
-  WidgetState,
-  Placement,
-  ObligatedToken,
-  SuccessDetails,
-};

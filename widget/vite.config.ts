@@ -5,13 +5,10 @@ import { peerDependencies } from "./package.json";
 
 export default defineConfig({
   plugins: [
-    dts({
-      insertTypesEntry: true,
-      rollupTypes: true,
-      bundledPackages: ["./src/types"],
-      outDir: "dist",
-    }),
     react(),
+    dts({
+      tsconfigPath: "./tsconfig.json",
+    }),
   ],
   resolve: {
     alias: {
@@ -21,21 +18,12 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     lib: {
-      entry: "src/index.ts",
+      entry: { index: "src/index.tsx" },
       cssFileName: "styles",
       formats: ["es"],
     },
     rollupOptions: {
-      external: [...Object.keys(peerDependencies), "react/jsx-runtime"],
-      output: {
-        preserveModules: true,
-        preserveModulesRoot: "src",
-        entryFileNames: "[name].js",
-        globals: {
-          react: "React",
-          "react-dom": "ReactDOM",
-        },
-      },
+      external: Object.keys(peerDependencies),
     },
   },
 });

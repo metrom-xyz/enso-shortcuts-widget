@@ -69,12 +69,18 @@ const BridgingFee = ({
       <Typography uppercase light size="xs" weight="medium">
         Bridging fee:
       </Typography>
-      <Typography size="sm" weight="medium">
-        {formatNumber(gasValue, true)} {nativeTokenInfo?.symbol}
-      </Typography>
-      <Typography size="sm" weight="medium" light>
-        {formatUSD(gasCostUSD)}
-      </Typography>
+      {nativeTokenInfo && gasCostUSD ? (
+        <>
+          <Typography size="xs" weight="medium">
+            {formatNumber(gasValue, true)} {nativeTokenInfo?.symbol}
+          </Typography>
+          <Typography size="xs" weight="medium" light>
+            {formatUSD(gasCostUSD)}
+          </Typography>
+        </>
+      ) : (
+        <Skeleton size="xs" width={120} />
+      )}
     </div>
   );
 };

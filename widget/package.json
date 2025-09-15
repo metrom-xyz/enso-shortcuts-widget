@@ -7,7 +7,7 @@
   "type": "module",
   "homepage": "https://www.enso.build/",
   "repository": {
-    "url": "https://github.com/metrom-xyz/enso-shortcuts-widget",
+    "url": "git+https://github.com/metrom-xyz/enso-shortcuts-widget.git",
     "type": "git",
     "directory": "widget"
   },
@@ -18,7 +18,7 @@
     "bump": "npm version patch",
     "publish": "npm publish --access public",
     "dev": "vite build --watch --minify=false --mode=dev",
-    "build": "vite build && tsc -b --force",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

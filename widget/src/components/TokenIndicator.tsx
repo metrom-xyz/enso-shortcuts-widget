@@ -48,11 +48,13 @@ export const TokenIcon = ({
 export const TokenIndicator = ({
   token,
   chainId,
+  size = "long",
   ...rest
 }: {
   token?: Token;
   chainId?: SupportedChainId;
   pr?: number;
+  size?: "short" | "long";
 }) => (
   <div className="flex items-center gap-2 justify-between" {...rest}>
     {token?.symbol === "UNI-V2" && token.underlyingTokens ? (
@@ -69,7 +71,17 @@ export const TokenIndicator = ({
     )}
 
     <div className="flex flex-col items-start">
-      <Typography weight="medium" size="lg">
+      <Typography
+        weight="medium"
+        size="lg"
+        truncate
+        noWrap
+        className={
+          size === "short"
+            ? "overflow-hidden max-w-16"
+            : "overflow-hidden max-w-48"
+        }
+      >
         {token?.symbol}
       </Typography>
       {token.underlyingTokens?.length > 0 && (

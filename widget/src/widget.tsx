@@ -4,7 +4,7 @@ import "@fontsource/ibm-plex-sans/700.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "./index.css";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { WagmiContext } from "wagmi";
 import posthog from "posthog-js";
 import { useStore } from "@/store";
@@ -30,6 +30,7 @@ type WidgetProps = WidgetComponentProps & {
 };
 
 const Widget = ({
+  referralCode,
   apiKey,
   tokenOut,
   tokenIn,
@@ -44,10 +45,8 @@ const Widget = ({
   inProjects,
   outTokens,
   inTokens,
-  onChange,
   onSuccess,
-  notificationPlacement,
-  referralCode,
+  onConnectWallet,
 }: WidgetProps) => {
   const context = useContext(WagmiContext);
 
@@ -91,8 +90,7 @@ const Widget = ({
       <Toaster richColors />
       <TxTracker />
       <SwapWidget
-        onSuccess={onSuccess}
-        notificationPlacement={notificationPlacement}
+        referralCode={referralCode}
         outProject={outProject}
         rotateObligated={rotateObligated}
         indicateRoute={indicateRoute}
@@ -104,8 +102,8 @@ const Widget = ({
         inProjects={inProjects}
         outTokens={outTokens}
         inTokens={inTokens}
-        onChange={onChange}
-        referralCode={referralCode}
+        onSuccess={onSuccess}
+        onConnectWallet={onConnectWallet}
       />
     </Card>
   );

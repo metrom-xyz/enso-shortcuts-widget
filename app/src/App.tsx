@@ -1,14 +1,5 @@
-import {
-  ComponentProps,
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-} from "react";
-import { Address, isAddress } from "viem";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useLocation, useNavigate } from "react-router-dom";
-import Providers from "@/components/Providers";
+import { useEffect } from "react";
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { Widget } from "@metrom-xyz/enso-shortcuts-widget";
 import logoUrl from "./logo_black_white.png";
 
@@ -16,94 +7,8 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 const EnsoApiKey = import.meta.env.VITE_ENSO_API_KEY;
 
-// Define types locally to avoid import issues
-type AppState = {
-  tokenIn?: Address;
-  tokenOut?: Address;
-  chainId?: number;
-  outChainId?: number;
-  outProject?: string;
-  obligateSelection?: boolean;
-};
-
 function App() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // Use a single state object instead of multiple state variables
-  const [state, setState] = useState<AppState>({});
-
-  // Parse URL params and save to sate on initial load
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const tokenInParam = searchParams.get("tokenIn");
-    const tokenOutParam = searchParams.get("tokenOut");
-    const chainIdParam = searchParams.get("chainId");
-    const outChainIdParam = searchParams.get("outChainId");
-    const outProjectParam = searchParams.get("outProject");
-    const obligated = searchParams.get("obligated");
-
-    const newState: AppState = {};
-
-    if (chainIdParam) newState.chainId = parseInt(chainIdParam);
-    if (outChainIdParam) newState.outChainId = parseInt(outChainIdParam);
-    if (isAddress(tokenInParam)) newState.tokenIn = tokenInParam as Address;
-    if (isAddress(tokenOutParam)) newState.tokenOut = tokenOutParam as Address;
-    if (outProjectParam) newState.outProject = outProjectParam;
-    if (obligated) newState.obligateSelection = obligated === "true";
-
-    // Only update state if we have actual values
-    if (Object.keys(newState).length > 0) {
-      setState(newState);
-    }
-  }, [location.search]);
-
-  // Update URL when parameters change
-  useEffect(() => {
-    // Get current search params first to preserve any params not managed by this component
-    const searchParams = new URLSearchParams(location.search);
-
-    // Only update params that are in state
-    if (state.tokenIn) searchParams.set("tokenIn", state.tokenIn);
-
-    if (state.tokenOut) searchParams.set("tokenOut", state.tokenOut);
-
-    if (state.outChainId)
-      searchParams.set("outChainId", state.outChainId.toString());
-    if (state.chainId) searchParams.set("chainId", state.chainId.toString());
-    if (state.obligateSelection)
-      searchParams.set("obligated", state.obligateSelection.toString());
-
-    navigate({ search: searchParams.toString() }, { replace: true });
-  }, [state, navigate, location.search]);
-
-  // Handler for state changes coming from the widget
-  const handleStateChange = useCallback((newWidgetState: Partial<AppState>) => {
-    setState((prevState) => ({
-      ...prevState,
-      ...newWidgetState,
-    }));
-  }, []);
-
-  // Widget props
-  const widgetProps = useMemo(() => {
-    const props: ComponentProps<typeof Widget> = {
-      apiKey: EnsoApiKey,
-      onChange: handleStateChange,
-      indicateRoute: true,
-    };
-
-    // Only include props that have values
-    if (state.chainId) props.chainId = state.chainId;
-    if (state.tokenIn) props.tokenIn = state.tokenIn;
-    if (state.tokenOut) props.tokenOut = state.tokenOut;
-    if (state.outChainId) props.outChainId = state.outChainId;
-    if (state.outProject) props.outProject = state.outProject;
-    if (state.obligateSelection)
-      props.obligateSelection = state.obligateSelection;
-
-    return props;
-  }, [state, handleStateChange]);
+  const { openConnectModal } = useConnectModal();
 
   useEffect(() => {
     // Set the title of the page from the environment variable
@@ -121,7 +26,7 @@ function App() {
   }, []);
 
   return (
-    <Providers>
+    <>
       <div
         style={{
           position: "fixed",
@@ -148,11 +53,19 @@ function App() {
         }}
       >
         <div style={{ marginTop: "70px" }}>
-          <Widget {...widgetProps} enableShare />
+          <Widget
+            apiKey={EnsoApiKey}
+            tokenIn="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+            chainId={1}
+            tokenOut="0x2b4b2a06c0fdebd8de1545abdffa64ec26416796"
+            outChainId={1}
+            enableShare
+            onConnectWallet={openConnectModal}
+          />
         </div>
         <div />
       </div>
-    </Providers>
+    </>
   );
 }
 

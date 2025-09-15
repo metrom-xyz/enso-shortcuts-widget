@@ -122,11 +122,9 @@ The `SwapWidget` component accepts the following props:
 - `obligateSelection` (boolean): Force users to select tokens
 - `rotateObligated` (boolean | 0 | 1): Display arrow to rotate obligated token selection
 - `indicateRoute` (boolean): Show routing information in the UI
-- `notificationPlacement` (string): Control the placement of notification toasts
 
 #### Event Handlers
 
-- `onChange` (function): Callback triggered when token selections or route change
 - `onSuccess` (function): Callback called with amount argument once user perfoms swap action
 
 ## Customization

@@ -43,10 +43,9 @@ export type ProjectFilter = {
 };
 
 export type WidgetComponentProps = {
-  onSuccess?: (hash: string, details?: SuccessDetails) => void;
+  referralCode?: string;
   tokenOut?: Address;
   tokenIn?: Address;
-  notificationPlacement?: Placement;
   obligateSelection?: boolean;
   enableShare?: boolean;
   indicateRoute?: boolean;
@@ -54,8 +53,6 @@ export type WidgetComponentProps = {
   outProject?: string;
   outProjects?: ProjectFilter;
   inProjects?: ProjectFilter;
-  onChange?: (newState: WidgetState) => void;
-  referralCode?: string;
   outTokens?: {
     include: Address[];
     exclude: Address[];
@@ -63,6 +60,8 @@ export type WidgetComponentProps = {
   inTokens?: {
     exclude: Address[];
   };
+  onConnectWallet?: () => void;
+  onSuccess?: (hash: string, details?: SuccessDetails) => void;
 };
 
 export enum NotifyType {

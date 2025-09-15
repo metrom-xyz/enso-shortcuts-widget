@@ -225,10 +225,6 @@ const TokenSelector = ({
     enabled: isAddress(value),
   });
 
-  // useEffect(() => {
-  //   setSelectedProject(project);
-  // }, [project, selectionChainId]);
-
   const tokenList = useMemo(() => {
     let tokens = currentTokenList ? currentTokenList.slice() : [];
 
@@ -321,14 +317,6 @@ const TokenSelector = ({
     return tokenOptions.find(({ address }) => address === selectValue);
   }, [selectValue, tokenOptions]);
 
-  //   const onOpenChange = useCallback(
-  //     ({ open }: { open: boolean }) => {
-  //       if (open || obligatedToken || searchedToken) setSearchText("");
-  //       setSelectionChainId(chainId);
-  //     },
-  //     [obligatedToken, searchedToken, setSearchText, chainId]
-  //   );
-
   const handlePopoverToggle = useCallback(() => {
     if (popoverOpen || obligatedToken || searchedToken) setSearchText("");
     setSelectionChainId(chainId);
@@ -336,6 +324,7 @@ const TokenSelector = ({
   }, [popoverOpen]);
 
   const loading =
+    balancesLoading ||
     projectTokensLoading ||
     tokensLoading ||
     searchedTokenLoading ||
@@ -422,6 +411,7 @@ const TokenSelector = ({
             <TokenIndicator
               chainId={selectionChainId}
               token={selectValueToken || undefined}
+              size="short"
             />
           ) : (
             <Typography size="sm" weight="medium" uppercase>

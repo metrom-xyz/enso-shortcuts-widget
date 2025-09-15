@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSwitchChain, useAccount } from "wagmi";
-import { ArrowDown, Fuel, TriangleAlert } from "lucide-react";
+import { ArrowDown, TriangleAlert, WalletIcon } from "lucide-react";
 import { type Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
 import {
@@ -29,8 +29,19 @@ import {
 } from "@/constants";
 import { useStore } from "@/store";
 // import RouteIndication from "@/components/RouteIndication";
-import { NotifyType, ObligatedToken, type WidgetComponentProps } from "@/types";
-import { Button, InfoTooltip, Typography } from "@metrom-xyz/ui";
+import {
+  NotifyType,
+  ObligatedToken,
+  Token,
+  type WidgetComponentProps,
+} from "@/types";
+import {
+  Accordion,
+  Button,
+  InfoTooltip,
+  Skeleton,
+  Typography,
+} from "@metrom-xyz/ui";
 import Notification from "./Notification";
 import SwapInput from "./SwapInput";
 import Slippage from "./Slippage";
@@ -55,7 +66,9 @@ const BridgingFee = ({
 
   return (
     <div className="flex gap-1 items-center">
-      <Fuel size={14} className="theme-text" />
+      <Typography uppercase light size="xs" weight="medium">
+        Bridging fee:
+      </Typography>
       <Typography size="sm" weight="medium">
         {formatNumber(gasValue, true)} {nativeTokenInfo?.symbol}
       </Typography>
@@ -66,7 +79,82 @@ const BridgingFee = ({
   );
 };
 
+const PriceImpact = ({
+  shouldWarnPriceImpact,
+  formattedPriceImpact,
+  priceImpactWarning,
+}: {
+  shouldWarnPriceImpact: boolean;
+  formattedPriceImpact: string;
+  priceImpactWarning: string;
+}) => {
+  return (
+    <div className="flex">
+      <div className="flex gap-1">
+        <Typography
+          uppercase
+          weight="medium"
+          size="xs"
+          className={`${shouldWarnPriceImpact ? "text-orange-400!" : ""}`}
+        >
+          Price impact: {formattedPriceImpact}%
+        </Typography>
+        {shouldWarnPriceImpact && (
+          <InfoTooltip
+            trigger="hover"
+            icon={<TriangleAlert size={14} className="text-orange-400" />}
+            placement="right-start"
+          >
+            <div className="max-w-72! p-1">
+              <Typography size="sm" weight="medium">
+                {priceImpactWarning}
+              </Typography>
+            </div>
+          </InfoTooltip>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const AccordionTitle = ({
+  tokenInInfo,
+  tokenOutInfo,
+  exchangeRate,
+  priceImpactValue,
+  shouldWarnPriceImpact,
+  formattedPriceImpact,
+  priceImpactWarning,
+}: {
+  tokenInInfo?: Token;
+  tokenOutInfo?: Token;
+  exchangeRate: number;
+  priceImpactValue: number;
+  shouldWarnPriceImpact: boolean;
+  formattedPriceImpact: string;
+  priceImpactWarning: string;
+}) => {
+  if (shouldWarnPriceImpact && typeof priceImpactValue === "number")
+    return (
+      <PriceImpact
+        shouldWarnPriceImpact
+        formattedPriceImpact={formattedPriceImpact}
+        priceImpactWarning={priceImpactWarning}
+      />
+    );
+
+  return tokenInInfo && tokenOutInfo ? (
+    <Typography weight="medium" size="xs">
+      1 {tokenInInfo.symbol} = {formatNumber(exchangeRate, true)}{" "}
+      {tokenOutInfo.symbol}
+    </Typography>
+  ) : (
+    <Skeleton size="xs" width={130} />
+  );
+};
+
 const SwapWidget = ({
+  referralCode,
   tokenOut: providedTokenOut,
   tokenIn: providedTokenIn,
   obligateSelection,
@@ -78,10 +166,8 @@ const SwapWidget = ({
   inProjects,
   outTokens,
   inTokens,
-  onChange,
-  notificationPlacement,
   onSuccess,
-  referralCode,
+  onConnectWallet,
 }: WidgetComponentProps) => {
   const [tokenIn, setTokenIn] = useState<Address>();
   const [valueIn, setValueIn] = useState("");
@@ -132,17 +218,6 @@ const SwapWidget = ({
     [wagmiChainId, chainId, switchChain, tokenOut]
   );
 
-  // Notify parent of state changes when any relevant state changes
-  // FIXME: possible infinite loop
-  // useEffect(() => {
-  //   onChange?.({
-  //     tokenIn,
-  //     tokenOut,
-  //     chainId,
-  //     outChainId,
-  //   });
-  // }, [tokenIn, tokenOut, chainId, outChainId, onChange]);
-
   // Initialize tokens when provided or when chainId changes
   useEffect(() => {
     if (providedTokenIn) {
@@ -175,10 +250,13 @@ const SwapWidget = ({
 
   const amountIn = denormalizeValue(valueIn, tokenInInfo?.decimals);
 
-  const onSuccessCallback = useCallback((hash: string, details: any) => {
-    onSuccess?.(hash, details);
-    setValueIn("");
-  }, []);
+  const onSuccessCallback = useCallback(
+    (hash: string, details: any) => {
+      onSuccess?.(hash, details);
+      setValueIn("");
+    },
+    [onSuccess]
+  );
 
   const {
     data: routerData,
@@ -270,7 +348,7 @@ const SwapWidget = ({
     if (swapLimitExceeded)
       return `Due to insufficient underlying liquidity, trade sizes are restricted to ${formatUSD(SWAP_LIMITS[tokenOut])}. You can do multiple transactions of this size.`;
     if (!isBalanceEnough) return "Not enought balance";
-    if (wrongChain) return "Please switch to the correct chain";
+    if (wrongChain) return "Wrong chain";
     if (approveNeeded) return "Approve token first";
     return "";
   }, [
@@ -297,6 +375,11 @@ const SwapWidget = ({
     setWarningAccepted(true);
   }, [priceImpactWarning, setNotification]);
 
+  const handleOnConnect = useCallback(async () => {
+    if (!onConnectWallet) return;
+    onConnectWallet();
+  }, [onConnectWallet]);
+
   const handleInvertTokensOnClick = useCallback(() => {
     const tempTokenIn = tokenIn;
 
@@ -315,10 +398,6 @@ const SwapWidget = ({
     setTokenOut(tempTokenIn);
     setValueIn(valueOut);
   }, [tokenIn, obligateSelection, chainId, outChainId, tokenOut, valueOut]);
-
-  function toggleRoute() {
-    setShowRoute((prev) => !prev);
-  }
 
   const limitInputTokens =
     chainId === mainnet.id && tokenOutInfo?.symbol === "UNI-V2";
@@ -389,50 +468,6 @@ const SwapWidget = ({
           />
         </div>
 
-        <div className="flex flex-col gap-2.5">
-          <div className="flex flex-col justify-start gap-2.5">
-            <Typography weight="medium" size="xs">
-              1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate, true)}{" "}
-              {tokenOutInfo?.symbol}
-            </Typography>
-
-            {isBridging && (
-              <BridgingFee gasValue={gasValue} chainId={chainId} />
-            )}
-
-            <Slippage slippage={slippage} setSlippage={setSlippage} />
-          </div>
-          {typeof priceImpactValue === "number" && (
-            <div className="flex">
-              <div className="flex items-center gap-1">
-                <Typography
-                  uppercase
-                  weight="medium"
-                  size="xs"
-                  className={`${shouldWarnPriceImpact ? "text-orange-400!" : ""}`}
-                >
-                  Price impact: {formattedPriceImpact}%
-                </Typography>
-                {shouldWarnPriceImpact && (
-                  <InfoTooltip
-                    trigger="hover"
-                    icon={
-                      <TriangleAlert size={14} className="text-orange-400" />
-                    }
-                    placement="right-start"
-                  >
-                    <div className="max-w-72! p-1">
-                      <Typography size="sm" weight="medium">
-                        {priceImpactWarning}
-                      </Typography>
-                    </div>
-                  </InfoTooltip>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
         {address ? (
           <div className="flex w-full gap-2.5">
             {wrongChain ? (
@@ -474,12 +509,50 @@ const SwapWidget = ({
             </Button>
           </div>
         ) : (
-          <div className="flex justify-center items-center w-full mt-2">
-            <Typography size="xs" className="mt-1">
-              Please connect your wallet
-            </Typography>
+          <div className="flex justify-center items-center w-full">
+            <Button
+              icon={WalletIcon}
+              iconPlacement="right"
+              className={{ root: "w-full!" }}
+              onClick={handleOnConnect}
+            >
+              Connect wallet
+            </Button>
           </div>
         )}
+
+        <Accordion
+          title={
+            <AccordionTitle
+              tokenInInfo={tokenInInfo}
+              tokenOutInfo={tokenOutInfo}
+              exchangeRate={exchangeRate}
+              formattedPriceImpact={formattedPriceImpact}
+              priceImpactValue={priceImpactValue}
+              priceImpactWarning={priceImpactWarning}
+              shouldWarnPriceImpact={shouldWarnPriceImpact}
+            />
+          }
+          className="[&>.preview]:p-2! [&>.preview]:gap-2.5! [&>.preview]:rounded-xl!"
+        >
+          <div className="flex flex-col gap-2.5 p-2">
+            <div className="flex flex-col justify-start gap-2.5">
+              {isBridging && (
+                <BridgingFee gasValue={gasValue} chainId={chainId} />
+              )}
+
+              {!shouldWarnPriceImpact && (
+                <PriceImpact
+                  formattedPriceImpact={formattedPriceImpact}
+                  priceImpactWarning={priceImpactWarning}
+                  shouldWarnPriceImpact={false}
+                />
+              )}
+
+              <Slippage slippage={slippage} setSlippage={setSlippage} />
+            </div>
+          </div>
+        </Accordion>
 
         {error && (
           <Typography

@@ -1,5 +1,4 @@
 import { Chip, NumberInput, Popover, Typography } from "@metrom-xyz/ui";
-import { Settings } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 

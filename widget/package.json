@@ -1,6 +1,9 @@
 {
   "name": "@metrom-xyz/enso-shortcuts-widget",
   "version": "1.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "homepage": "https://www.enso.build/",
   "repository": {
@@ -17,19 +20,16 @@
     "dev": "vite build --watch --minify=false --mode=dev",
     "build": "vite build && tsc -b --force",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "publish:complete": "npm run build && npm run bump && npm run publish"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@ensofinance/sdk": "^1.0.18",
     "@fontsource/ibm-plex-mono": "^5.2.6",
     "@fontsource/ibm-plex-sans": "^5.2.6",
     "@metrom-xyz/ui": "^0.11.5",
-    "@tailwindcss/postcss": "^4.1.13",
     "@uidotdev/usehooks": "^2.4.1",
     "lucide-react": "^0.469.0",
     "next-themes": "^0.4.4",
-    "postcss": "^8.5.6",
     "posthog-js": "^1.223.3",
     "react-use": "^17.6.0",
     "react-window": "^2.1.0",
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@tailwindcss/postcss": "^4.1.13",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
@@ -53,6 +54,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
+    "postcss": "^8.5.6",
     "prettier": "^3.4.2",
     "tailwindcss": "^4.1.13",
     "typescript": "~5.6.2",

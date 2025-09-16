@@ -15,7 +15,6 @@
   "license": "MIT",
   "description": "Multi-purpose widget powered by Enso API",
   "scripts": {
-    "bump": "npm version patch",
     "dev": "vite build --watch --minify=false --mode=dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

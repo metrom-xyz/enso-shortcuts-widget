@@ -1,5 +1,4 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { useDebounce } from "@uidotdev/usehooks";
 import { useAccount } from "wagmi";
 import { type Address, isAddress } from "viem";
 import TokenSelector from "@/components/TokenSelector";
@@ -9,6 +8,7 @@ import { useEnsoToken } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
 import { type ProjectFilter } from "@/types";
 import { TextInput, Typography } from "@metrom-xyz/ui";
+import { useDebounce } from "react-use";
 
 const SwapInput = ({
   chainId,
@@ -54,7 +54,15 @@ const SwapInput = ({
     priorityChainId: chainId,
   });
   const [tempInputValue, setTempInputValue] = useState("");
-  const debouncedValue = useDebounce(tempInputValue, 400);
+  const [debouncedValue, setDebouncedValue] = useState("");
+
+  useDebounce(
+    () => {
+      setDebouncedValue(tempInputValue);
+    },
+    400,
+    [tempInputValue]
+  );
 
   useEffect(() => {
     inputOnChange(debouncedValue);

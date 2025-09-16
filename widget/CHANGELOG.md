@@ -1,5 +1,13 @@
 # @metrom-xyz/enso-shortcuts-widget
 
+## v1.1.3
+
+### Feature changes
+
+- Remove `lucide-react`
+- Remove `@uidotdev/usehooks`
+- Add option all to project select
+
 ## v1.1.2
 
 ### Fixes changes

@@ -1,9 +1,7 @@
 import { useCallback, useMemo } from "react";
-import { useChainProtocols, WithProjectId } from "@/util/enso";
+import { useChainProtocols } from "@/util/enso";
 import { SupportedChainId } from "@/constants";
 import { ProjectFilter } from "@/types";
-import { List, RowComponentProps } from "react-window";
-import { ProtocolData } from "@ensofinance/sdk";
 import { Select, SelectOption, Typography } from "@metrom-xyz/ui";
 
 export const capitalize = (str?: string) =>
@@ -15,33 +13,6 @@ const ProtocolIcon = ({ logoUri }: { logoUri?: string }) => (
     {logoUri && <img src={logoUri} alt="" width={"28px"} height={"28px"} />}
   </div>
 );
-
-const ProjectIndicator = ({
-  index,
-  projects,
-  style,
-  onClick,
-}: RowComponentProps<{
-  projects: WithProjectId<ProtocolData>[];
-  onClick: (projectSlug: string) => void;
-}>) => {
-  const project = projects[index];
-
-  const handlePoolOnClick = useCallback(() => {
-    onClick(project.slug);
-  }, [onClick, project.slug]);
-
-  return (
-    <div
-      style={style}
-      className="flex items-center gap-2 mr-8 rounded-lg"
-      onClick={handlePoolOnClick}
-    >
-      <ProtocolIcon logoUri={project.logosUri[0]} />
-      {capitalize(project.projectId)}
-    </div>
-  );
-};
 
 const ProjectSelector = ({
   value,
@@ -73,13 +44,15 @@ const ProjectSelector = ({
       );
     }
 
-    return availableProjects
+    const options = availableProjects
       ?.sort((a, b) => a.projectId?.localeCompare(b.projectId))
       .map((project) => ({
         // FIXME: not the best solution
         value: `${project.projectId}_${project.logosUri[0]}`,
-        label: project.projectId,
+        label: capitalize(project.projectId),
       }));
+
+    return [{ value: "", label: "All" }].concat(options);
   }, [protocols, projectsFilter]);
 
   const onSelectChange = useCallback(
@@ -102,8 +75,8 @@ const ProjectSelector = ({
         const [, logoUri] = option.value.split("_");
 
         return (
-          <div className="flex items-center gap-2 mr-8 rounded-lg">
-            <ProtocolIcon logoUri={logoUri} />
+          <div className="flex items-center gap-2 rounded-lg">
+            {logoUri && <ProtocolIcon logoUri={logoUri} />}
             <Typography
               weight="medium"
               autoCapitalize="on"

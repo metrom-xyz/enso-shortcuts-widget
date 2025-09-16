@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSwitchChain, useAccount } from "wagmi";
-import { ArrowDown, TriangleAlert, WalletIcon } from "lucide-react";
 import { type Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
 import {
@@ -45,6 +44,9 @@ import {
 import Notification from "./Notification";
 import SwapInput from "./SwapInput";
 import Slippage from "./Slippage";
+import { ErrorIcon } from "@/assets/error";
+import { ArrowRightIcon } from "@/assets/arrow-right";
+import { WalletIcon } from "@/assets/wallet";
 
 const BridgingFee = ({
   gasValue,
@@ -96,7 +98,7 @@ const PriceImpact = ({
 }) => {
   return (
     <div className="flex">
-      <div className="flex gap-1">
+      <div className="flex items-center gap-1">
         <Typography
           uppercase
           weight="medium"
@@ -108,7 +110,7 @@ const PriceImpact = ({
         {shouldWarnPriceImpact && (
           <InfoTooltip
             trigger="hover"
-            icon={<TriangleAlert size={14} className="text-orange-400" />}
+            icon={<ErrorIcon size={14} className="text-orange-400" />}
             placement="right-start"
           >
             <div className="max-w-72! p-1">
@@ -451,7 +453,7 @@ const SwapWidget = ({
               onClick={handleInvertTokensOnClick}
               className="flex justify-center items-center absolute top-[43%] place-self-center rounded-full p-1 theme-surface theme-surface-2-hover hover:cursor-pointer transition-colors duration-200 ease-in-out z-10"
             >
-              <ArrowDown size={24} className="theme-text" />
+              <ArrowRightIcon size={24} className="theme-text rotate-90" />
             </div>
           )}
 

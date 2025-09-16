@@ -137,8 +137,9 @@ const TokenSelector = ({
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectionChainId, setSelectionChainId] = useState(chainId);
-  const [composedSelectedProject, setComposedSelectedProject] =
-    useState(project);
+  const [composedSelectedProject, setComposedSelectedProject] = useState(
+    project || ""
+  );
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [popoverAnchor, setPopoverAnchor] = useState<HTMLDivElement | null>(
     null
@@ -350,12 +351,7 @@ const TokenSelector = ({
               <ChainSelector
                 disabled={!!project}
                 value={selectionChainId}
-                onChange={useCallback(
-                  (chainId) => {
-                    setSelectionChainId(chainId);
-                  },
-                  [setSelectionChainId]
-                )}
+                onChange={setSelectionChainId}
               />
               <ProjectSelector
                 disabled={!!project}

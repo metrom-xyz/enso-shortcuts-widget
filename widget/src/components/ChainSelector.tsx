@@ -31,7 +31,7 @@ const ChainIcon = ({ chainId }: { chainId: SupportedChainId }) => {
 
 // Chain indicator component to display in the dropdown
 const ChainIndicator = ({ value, label }) => (
-  <div className="flex items-center gap-2 mr-8 rounded-lg">
+  <div className="flex items-center gap-2 rounded-lg">
     <ChainIcon chainId={value} />
     <Typography weight="medium">{label || "Unknown Chain"}</Typography>
   </div>

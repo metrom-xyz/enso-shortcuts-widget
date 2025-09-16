@@ -1,14 +1,12 @@
-import {
-  CircleCheck,
-  CircleX,
-  ExternalLink,
-  Info,
-  ShieldAlert,
-  TriangleAlert,
-} from "lucide-react";
 import { useStore } from "@/store";
 import { NotifyType } from "@/types";
 import { Button, Typography } from "@metrom-xyz/ui";
+import { CircleCheckIcon } from "@/assets/circle-check";
+import { XIcon } from "@/assets/x";
+import { InfoIcon } from "@/assets/info";
+import { ErrorIcon } from "@/assets/error";
+import { ShieldIcon } from "@/assets/shield";
+import { LinkIcon } from "@/assets/link";
 
 const NOTIFICATION_COLORS = {
   [NotifyType.Success]: "green.500",
@@ -19,11 +17,11 @@ const NOTIFICATION_COLORS = {
 };
 
 const NotificationIcons = {
-  [NotifyType.Success]: CircleCheck,
-  [NotifyType.Error]: CircleX,
-  [NotifyType.Info]: Info,
-  [NotifyType.Warning]: TriangleAlert,
-  [NotifyType.Blocked]: ShieldAlert,
+  [NotifyType.Success]: CircleCheckIcon,
+  [NotifyType.Error]: XIcon,
+  [NotifyType.Info]: InfoIcon,
+  [NotifyType.Warning]: ErrorIcon,
+  [NotifyType.Blocked]: ShieldIcon,
 };
 
 const getIcon = (variant: NotifyType) => {
@@ -90,7 +88,7 @@ export const Notification = () => {
               rel="noopener noreferrer"
             >
               View details
-              <ExternalLink size={14} />
+              <LinkIcon size={14} />
             </Button>
           )}
         </div>
